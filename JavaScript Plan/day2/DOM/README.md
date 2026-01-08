@@ -47,9 +47,9 @@ this folder contains a small interactive task list application built to understa
 
 ## summary 
 
-the dom allows javascript to interact directly with webpage elements.  
-events connect user actions with program logic.  
-dynamic element creation enables interactive web applications.  
-dom manipulation is the foundation of all frontend frameworks.
+- the dom allows javascript to interact directly with webpage elements.  
+- events connect user actions with program logic.  
+- dynamic element creation enables interactive web applications.  
+- dom manipulation is the foundation of all frontend frameworks.
 
 ---
