@@ -46,9 +46,9 @@ this folder contains a mini dashboard built to simulate how candidate data can b
 
 ## summary
 
-dynamic dashboards combine dom manipulation with api communication.  
-user actions trigger data pipelines and ui updates.  
-structured logic improves readability and maintainability.  
-this pattern is common in real-world assessment and analytics platforms.
+- dynamic dashboards combine dom manipulation with api communication.  
+- user actions trigger data pipelines and ui updates.  
+- structured logic improves readability and maintainability.  
+- this pattern is common in real-world assessment and analytics platforms.
 
 ---
