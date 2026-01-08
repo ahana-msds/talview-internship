@@ -57,9 +57,8 @@ this folder contains practice files created to understand how javascript handles
 
 ## summary 
 
-objects and arrays are core structures used to represent real-world data in javascript.  
-references and copying behavior affect how data changes across different variables.  
-classes provide a clean and scalable way to organize related data and behavior.  
-strong understanding of these concepts is essential for building large applications.
+- objects and arrays are core structures used to represent real-world data in javascript.  
+- references and copying behavior affect how data changes across different variables.  
+- classes provide a clean and scalable way to organize related data and behavior.  
 
 ---
