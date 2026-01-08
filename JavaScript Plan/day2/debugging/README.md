@@ -50,9 +50,9 @@ this folder contains practice files created to understand how errors occur in re
 
 ## summary 
 
-error handling protects applications from unexpected failures.  
-custom errors help classify problems in complex systems.  
-debugging tools are essential for understanding real execution flow.  
-testing and debugging together improve software reliability.
+- error handling protects applications from unexpected failures.  
+- custom errors help classify problems in complex systems.  
+- debugging tools are essential for understanding real execution flow.  
+- testing and debugging together improve software reliability.
 
 ---
