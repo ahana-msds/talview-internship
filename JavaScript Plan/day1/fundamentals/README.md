@@ -50,9 +50,9 @@ this folder contains hands-on practice files created while learning core javascr
 
 ## summary 
 
-javascript programs are built using variables, conditions, and functions working together.  
-data types and operators control how values are processed and compared.  
-functions help organize logic and make code reusable and readable.  
-strong fundamentals are necessary before working with dom, apis, and frameworks.
+- javascript programs are built using variables, conditions, and functions working together.  
+- data types and operators control how values are processed and compared.  
+- functions help organize logic and make code reusable and readable.  
+- strong fundamentals are necessary before working with dom, apis, and frameworks.
 
 ---
