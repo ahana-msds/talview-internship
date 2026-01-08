@@ -1,4 +1,4 @@
-# debugging and error handling in javascript — learning summary
+# debugging and error handling in javascript 
 
 this folder contains practice files created to understand how errors occur in real programs, how to handle them safely using try and catch, and how to debug both synchronous and asynchronous code using browser developer tools.
 
