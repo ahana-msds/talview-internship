@@ -48,7 +48,7 @@ this folder contains hands-on practice files created while learning core javascr
 
 ---
 
-## summary of understanding 
+## summary 
 
 javascript programs are built using variables, conditions, and functions working together.  
 data types and operators control how values are processed and compared.  
