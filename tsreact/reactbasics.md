@@ -1,4 +1,4 @@
- **single, complete, structured `.md` file that documents EVERYTHING you actually did and used in this chat**, including:
+
 
 * create react app (cra) with typescript
 * npm start vs npm run dev confusion
@@ -12,15 +12,7 @@
 * git init → add → commit → push
 * nested .git problem and solution
 
-This is written as **learning documentation for the user (you)**.
 
-Save as:
-
-```
-react_learning_journey_full_workflow.md
-```
-
----
 
 # react learning journey – full setup and git workflow
 
