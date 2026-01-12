@@ -1,14 +1,4 @@
-got it, ahana. below is a **complete `.md` file**, written in **all small letters**, with **simple definitions**, and based on the **same concepts you shared** (technologies, project setup, build tool, structure, git basics). it is **not tied to any specific project files**, just general learning notes.
 
-you can save this as:
-
-```
-react_project_basics.md
-```
-
-and push it to github.
-
----
 
 # react project basics and workflow
 
