@@ -1,46 +1,149 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# controlled vs uncontrolled components in react (typescript)
 
-## Available Scripts
+this project demonstrates the difference between controlled and uncontrolled form components in react using a simple event registration scenario. it shows how react can manage form inputs using state and how inputs can also be accessed directly from the dom using refs.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## project structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+src/
+├── forms/
+│   ├── ControlledRegistration.tsx
+│   ├── UncontrolledRegistration.tsx
+├── App.tsx
+└── index.tsx
 
-### `npm test`
+````
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## learning objectives
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- understand controlled components using react state
+- understand uncontrolled components using refs
+- compare form handling approaches in react
+- learn when to use each pattern
+- practice clean and modular component design
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## scenario used
 
-### `npm run eject`
+event registration form with:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- name input field
+- meal preference dropdown
+- submit button
+- confirmation message after submission
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+both controlled and uncontrolled versions implement the same ui behavior for easy comparison.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+---
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## controlled registration component
 
-## Learn More
+**file:** `ControlledRegistration.tsx`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### how it works
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- input values are stored in react state using `useState`
+- every change updates state through `onChange`
+- submitted data is displayed using state
+
+### benefits
+
+- easy validation
+- predictable data flow
+- better suited for complex forms
+
+---
+
+## uncontrolled registration component
+
+**file:** `UncontrolledRegistration.tsx`
+
+### how it works
+
+- input values are stored in the dom
+- `useRef` is used to access input values on submit
+- no state updates on every keystroke
+
+### benefits
+
+- simpler code for small forms
+- fewer re-renders
+- useful when integrating non-react ui libraries
+
+---
+
+## app component
+
+**file:** `App.tsx`
+
+- renders both registration forms
+- allows side-by-side comparison of behavior
+- demonstrates component composition
+
+---
+
+## entry point
+
+**file:** `index.tsx`
+
+- mounts the react application to the dom
+- uses `createRoot` and `StrictMode`
+
+---
+
+## how to run the project
+
+### if using vite
+
+```bash
+npm install
+npm run dev
+````
+
+open: [http://localhost:5173](http://localhost:5173)
+
+### if using create react app
+
+```bash
+npm install
+npm start
+```
+
+open: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## key differences summary
+
+| feature         | controlled            | uncontrolled  |
+| --------------- | --------------------- | ------------- |
+| value source    | react state           | dom           |
+| updates         | on every input change | on submit     |
+| validation      | easy                  | harder        |
+| recommended for | most forms            | simple inputs |
+
+---
+
+## what this project demonstrates
+
+* react hooks (`useState`, `useRef`)
+* form submission handling
+* controlled input binding
+* direct dom access using refs
+* clean component separation
+
+---
+
+## summary
+
+this project provides a clear comparison of two important react form-handling techniques. understanding both controlled and uncontrolled components helps in building efficient, maintainable, and scalable user interfaces.
+
+---
+
