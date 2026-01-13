@@ -1,73 +1,150 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# memoization in react (usememo, usecallback, react.memo)
 
-Currently, two official plugins are available:
+this mini project demonstrates how memoization works in react and how it helps improve performance by preventing unnecessary recalculations and re-renders.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+the project is built using react + typescript with vite.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## learning objectives
 
-## Expanding the ESLint configuration
+this project helps understand:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- why react components re-render
+- what memoization means in react
+- how to memoize expensive calculations using usememo
+- how to memoize function references using usecallback
+- how to prevent unnecessary child component renders using react.memo
+- how component re-rendering is related to state changes
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## concepts used
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| concept      | purpose |
+|-------------|--------|
+| usestate     | manages component state |
+| usememo      | caches expensive calculation results |
+| usecallback  | keeps function reference stable |
+| react.memo   | prevents child re-render when props do not change |
+| props        | passes data from parent to child |
+| component    | reusable ui building blocks |
+
+---
+
+## project behavior
+
+the app contains:
+
+- a counter (count state)
+- an input field (text state)
+- an expensive calculation based on count
+- a child button component
+- a student display component
+
+### expected behavior
+
+- typing in input should not trigger slow calculation
+- clicking increase count should trigger slow calculation
+- student component should not re-render unless its props change
+- button component should not re-render due to usecallback
+
+console logs are used to observe rendering behavior.
+
+---
+
+## file structure
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+memoization/
+├── src/
+│   ├── components/
+│   │   ├── button.tsx
+│   │   └── student.tsx
+│   ├── app.tsx
+│   └── main.tsx
+├── index.html
+├── package.json
+└── tsconfig.json
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+````
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## how memoization works in this project
+
+### usememo
+
+used to cache result of slow calculation.
+
+```ts
+const result = useMemo(() => slowCalculation(count), [count]);
+````
+
+this ensures calculation runs only when count changes.
+
+---
+
+### usecallback
+
+used to prevent function recreation on each render.
+
+```ts
+const handleClick = useCallback(() => {
+  console.log("child button clicked");
+}, []);
+```
+
+this prevents child component from re-rendering due to new function reference.
+
+---
+
+### react.memo
+
+used to prevent re-render of student component.
+
+```ts
+export default React.memo(Student);
+```
+
+react performs shallow comparison of props and skips render if unchanged.
+
+---
+
+## how to run locally
+
+inside memoization folder:
+
+```bash
+npm install
+npm run dev
+```
+
+open browser at the shown localhost url.
+
+---
+
+## why memoization is important
+
+without memoization:
+
+* heavy calculations run on every render
+* child components re-render unnecessarily
+* performance degrades for large applications
+
+with memoization:
+
+* only required work is performed
+* ui remains responsive
+* components scale better
+
+memoization is an optimization tool and should be used only when needed.
+
+---
+
+
+
+just say: **next project: useeffect** and we continue 💙
 ```
