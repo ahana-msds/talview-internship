@@ -1,0 +1,13 @@
+body {
+    font-family: system-ui;
+    margin: 0;
+    padding: 0;
+}
+
+.page {
+    padding: 20px;
+}
+
+button {
+    margin-top: 10px;
+}
