@@ -1,0 +1,41 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.userInfo {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.themeSelect {
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.logoutBtn {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+}

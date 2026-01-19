@@ -1,0 +1,54 @@
+.featureCard {
+    height: 100%;
+    min-height: 300px;
+}
+
+.header {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+}
+
+.form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.error {
+    color: red;
+    font-size: 0.9rem;
+}
+
+.profile {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.name {
+    font-size: 1.2rem;
+}
+
+.bio {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin: 0.5rem 0;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.statLabel {
+    opacity: 0.7;
+}
