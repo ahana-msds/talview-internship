@@ -1,0 +1,59 @@
+console.log("=== Module 3.3: Type Assertion and Type Guards ===\n");
+// --- 1. Type Assertion ---
+let someValue: unknown = "This is a string";
+// We know 'someValue' is a string, so we assert it.
+// Without assertion, we can't access .length on 'unknown'.
+let strLength: number = (someValue as string).length;
+console.log("--- Type Assertion ---");
+console.log(`Length of string '${someValue}': ${strLength}`);
+// Alternative syntax (not compatible with JSX)
+let strLengthAlt: number = (<string>someValue).length;
+    // --- 2. Type Guards ---
+    // 'typeof' Guard
+    function padLeft(value: string, padding: string | number) {
+    if (typeof padding === "number") {
+        return Array(padding + 1).join(" ") + value;
+    }
+    if (typeof padding === "string") {
+        return padding + value;
+    }
+    throw new Error(`Expected string or number, got '${padding}'.`);
+}
+    console.log("\n--- 'typeof' Guard ---");
+    console.log(`With number padding: '${padLeft("Hello", 4)}'`);
+    console.log(`With string padding: '${padLeft("Hello", ">>> ")}'`);
+    // 'instanceof' Guard
+    class Bird {
+        fly() {console.log("Bird flying"); }
+    layEggs() {console.log("Bird laying eggs"); }
+}
+    class Fish {
+        swim() {console.log("Fish swimming"); }
+    layEggs() {console.log("Fish laying eggs"); }
+}
+    function move(pet: Bird | Fish) {
+        console.log("\n--- 'instanceof' Guard ---");
+    if (pet instanceof Bird) {
+        pet.fly();
+    }
+    if (pet instanceof Fish) {
+        pet.swim();
+    }
+    pet.layEggs(); // Available in both
+}
+    move(new Bird());
+    move(new Fish());
+    // --- 3. Custom Type Guards ---
+    // A predicate function that returns a boolean and asserts the type
+    function isFish(pet: Bird | Fish): pet is Fish {
+    return (pet as Fish).swim !== undefined;
+}
+    function moveSmart(pet: Bird | Fish) {
+        console.log("\n--- Custom Type Guard ---");
+    if (isFish(pet)) {
+        pet.swim(); // TS knows pet is Fish here
+    } else {
+        pet.fly();  // TS knows pet is Bird here
+    }
+}
+    moveSmart(new Fish());
