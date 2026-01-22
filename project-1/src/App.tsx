@@ -4,12 +4,13 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { ToDoPage } from './pages/ToDoPage';
+import { ProductPage } from './pages/ProductPage';
+import { GitHubPage } from './pages/GitHubPage';
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
-
   if (loading) return <div>Loading...</div>; // Simple loading state
   if (!user) return <Navigate to="/login" replace />;
-
   return children;
 };
 // Redirect root to dashboard (which will redirect to login if needed) or login directly
@@ -32,6 +33,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/todo"
+              element={
+                <ProtectedRoute>
+                  <ToDoPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute>
+                  <ProductPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/github"
+              element={
+                <ProtectedRoute>
+                  <GitHubPage />
                 </ProtectedRoute>
               }
             />
