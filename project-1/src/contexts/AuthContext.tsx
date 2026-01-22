@@ -11,6 +11,7 @@ import {
     onAuthStateChanged,
     type User as FirebaseUser
 } from "firebase/auth";
+
 // Firebase Configuration using Environment Variables
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -21,11 +22,14 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
 // Types
 export type AuthProviderType = 'google' | 'github' | 'email' | 'guest';
+
 export interface User {
     uid: string;
     displayName: string | null;
@@ -33,6 +37,7 @@ export interface User {
     photoURL: string | null;
     provider: AuthProviderType;
 }
+
 interface AuthContextType {
     user: User | null;
     loading: boolean;
@@ -43,10 +48,15 @@ interface AuthContextType {
     loginAsGuest: () => Promise<void>;
     logout: () => Promise<void>;
 }
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const GUEST_USER_KEY = 'guest_user_session';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+
     // Map Firebase User to App User
     const mapUser = (fbUser: FirebaseUser, providerOverride?: AuthProviderType): User => {
         let provider: AuthProviderType = 'email';
@@ -66,49 +76,91 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             provider: provider
         };
     };
+
+    // Check for guest session on mount
+    useEffect(() => {
+        const guestData = sessionStorage.getItem(GUEST_USER_KEY);
+        if (guestData) {
+            try {
+                const guestUser = JSON.parse(guestData);
+                setUser(guestUser);
+                setLoading(false);
+            } catch (e) {
+                sessionStorage.removeItem(GUEST_USER_KEY);
+            }
+        }
+    }, []);
+
     // Monitor Auth State
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
             if (fbUser) {
+                // Clear any guest session when real user logs in
+                sessionStorage.removeItem(GUEST_USER_KEY);
                 setUser(mapUser(fbUser));
             } else {
-                setUser(null);
+                // Check if there's a guest session
+                const guestData = sessionStorage.getItem(GUEST_USER_KEY);
+                if (!guestData) {
+                    setUser(null);
+                }
             }
             setLoading(false);
         });
         return () => unsubscribe();
     }, []);
+
     const loginWithEmail = async (email: string, pass: string) => {
+        // Clear guest session
+        sessionStorage.removeItem(GUEST_USER_KEY);
         await signInWithEmailAndPassword(auth, email, pass);
     };
+
     const signupWithEmail = async (name: string, email: string, pass: string) => {
+        // Clear guest session
+        sessionStorage.removeItem(GUEST_USER_KEY);
         // 1. Create User
         await createUserWithEmailAndPassword(auth, email, pass);
         console.log("Signing up user:", name);
         // 2. Sign out (Redirect flow requirement)
         await signOut(auth);
     };
+
     const loginWithGoogle = async () => {
+        // Clear guest session
+        sessionStorage.removeItem(GUEST_USER_KEY);
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
     };
+
     const loginWithGithub = async () => {
+        // Clear guest session
+        sessionStorage.removeItem(GUEST_USER_KEY);
         const provider = new GithubAuthProvider();
         await signInWithPopup(auth, provider);
     };
+
     const loginAsGuest = async () => {
-        setUser({
+        const guestUser: User = {
             uid: 'guest_' + Date.now(),
             displayName: 'Guest User',
             email: null,
             photoURL: null,
             provider: 'guest'
-        });
+        };
+
+        // Store in sessionStorage to persist across page navigation
+        sessionStorage.setItem(GUEST_USER_KEY, JSON.stringify(guestUser));
+        setUser(guestUser);
     };
+
     const logout = async () => {
+        // Clear guest session
+        sessionStorage.removeItem(GUEST_USER_KEY);
         await signOut(auth);
         setUser(null);
     };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -124,6 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         </AuthContext.Provider>
     );
 };
+
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {

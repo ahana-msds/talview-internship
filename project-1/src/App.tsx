@@ -7,18 +7,29 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ToDoPage } from './pages/ToDoPage';
 import { ProductPage } from './pages/ProductPage';
 import { GitHubPage } from './pages/GitHubPage';
+
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>; // Simple loading state
+  if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
   return children;
 };
+
+// Allow both authenticated and guest users
+const AuthenticatedRoute = ({ children }: { children: React.ReactElement }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
+
 // Redirect root to dashboard (which will redirect to login if needed) or login directly
 const RootRedirect = () => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   return user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
 }
+
 function App() {
   return (
     <ThemeProvider>
@@ -31,25 +42,25 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute>
+                <AuthenticatedRoute>
                   <DashboardPage />
-                </ProtectedRoute>
+                </AuthenticatedRoute>
               }
             />
             <Route
               path="/todo"
               element={
-                <ProtectedRoute>
+                <AuthenticatedRoute>
                   <ToDoPage />
-                </ProtectedRoute>
+                </AuthenticatedRoute>
               }
             />
             <Route
               path="/products"
               element={
-                <ProtectedRoute>
+                <AuthenticatedRoute>
                   <ProductPage />
-                </ProtectedRoute>
+                </AuthenticatedRoute>
               }
             />
             <Route
@@ -66,4 +77,5 @@ function App() {
     </ThemeProvider>
   );
 }
+
 export default App;

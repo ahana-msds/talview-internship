@@ -1,26 +1,40 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import styles from './TodoList.module.css';
+
 interface Todo {
     id: number;
     text: string;
 }
+
 export const TodoList = () => {
+    const { user } = useAuth();
     const [todos, setTodos] = useState<Todo[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
+
+    const isGuest = user?.provider === 'guest';
+    const canAddMore = !isGuest || todos.length < 2;
+
     const handleAdd = () => {
         if (!inputValue.trim()) return;
+        if (!canAddMore) return;
+
         setTodos([...todos, { id: Date.now(), text: inputValue }]);
         setInputValue('');
     };
+
     const handleDelete = (id: number) => {
         setTodos(todos.filter(t => t.id !== id));
     };
+
     const startEdit = (todo: Todo) => {
         setEditingId(todo.id);
         setEditValue(todo.text);
     };
+
     const saveEdit = () => {
         if (editingId !== null && editValue.trim()) {
             setTodos(todos.map(t => t.id === editingId ? { ...t, text: editValue } : t));
@@ -28,6 +42,7 @@ export const TodoList = () => {
             setEditValue('');
         }
     };
+
     return (
         <div className={`card ${styles.featureCard}`}>
             <h3 className={styles.header}>
@@ -41,9 +56,38 @@ export const TodoList = () => {
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="New Task..."
                     onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                    disabled={!canAddMore}
                 />
-                <button onClick={handleAdd} className={`btn ${styles.addBtn}`}>+</button>
+                <button
+                    onClick={handleAdd}
+                    className={`btn ${styles.addBtn}`}
+                    disabled={!canAddMore}
+                >
+                    +
+                </button>
             </div>
+
+            {isGuest && todos.length >= 2 && (
+                <div style={{
+                    padding: '1rem',
+                    marginTop: '1rem',
+                    background: 'rgba(255, 165, 0, 0.1)',
+                    borderRadius: '8px',
+                    textAlign: 'center'
+                }}>
+                    <p style={{ marginBottom: '0.5rem', fontWeight: '500' }}>
+                        Guest users can only add 2 items
+                    </p>
+                    <Link
+                        to="/login"
+                        className="btn btn-secondary"
+                        style={{ fontSize: '0.9rem' }}
+                    >
+                        Login to add more items
+                    </Link>
+                </div>
+            )}
+
             <ul className={styles.list}>
                 {todos.length === 0 && <li className={styles.emptyState}>No tasks yet.</li>}
 

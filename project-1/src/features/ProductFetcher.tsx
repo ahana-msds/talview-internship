@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import styles from './ProductFetcher.module.css';
+
 interface Product {
     id: number;
     title: string;
     price: number;
     image: string;
 }
+
 export const ProductFetcher = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasFetched, setHasFetched] = useState(false);
+
     const handleFetch = async () => {
         setLoading(true);
         try {
-            const res = await fetch('https://fakestoreapi.com/products?limit=5');
+            // Random limit between 3-8 to get different products on refresh
+            const limit = Math.floor(Math.random() * 6) + 3;
+            const res = await fetch(`https://fakestoreapi.com/products?limit=${limit}`);
             const data = await res.json();
             setProducts(data);
             setHasFetched(true);
@@ -23,6 +28,7 @@ export const ProductFetcher = () => {
             setLoading(false);
         }
     };
+
     return (
         <div className={`card ${styles.featureCard}`}>
             <h3 className={styles.header}>
@@ -51,8 +57,12 @@ export const ProductFetcher = () => {
                         </div>
                     ))}
                     <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                        <button onClick={handleFetch} className={`btn btn-secondary`} style={{ fontSize: '0.8rem' }}>
-                            Refresh
+                        <button
+                            onClick={handleFetch}
+                            className="btn"
+                            style={{ fontSize: '0.9rem' }}
+                        >
+                            Refresh Products
                         </button>
                     </div>
                 </div>
