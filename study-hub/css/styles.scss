@@ -1,0 +1,101 @@
+/* ==============================
+   VARIABLES
+   ============================== */
+$primary-color: #4f46e5;
+$text-color: #333;
+$spacing: 16px;
+
+/* ==============================
+   MIXINS
+   ============================== */
+@mixin flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ==============================
+   GLOBAL STYLES
+   ============================== */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: $text-color;
+}
+
+/* ==============================
+   HEADER
+   ============================== */
+header {
+    @include flex-between; // reusable flex logic
+    background-color: $primary-color;
+    padding: $spacing;
+    color: white;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+/* ==============================
+   SECTIONS (BOX MODEL)
+   ============================== */
+section {
+    margin: $spacing;
+    padding: $spacing;
+    border: 1px solid #ddd;
+}
+
+/* ==============================
+   TABLE
+   ============================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+}
+
+/* ==============================
+   FORM
+   ============================== */
+form {
+    display: flex; // Flexbox
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ==============================
+   BUTTON
+   ============================== */
+button {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+
+    // Smooth hover animation
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: darken($primary-color, 10%);
+    }
+}
+
+/* ==============================
+   MEDIA QUERY (RESPONSIVE)
+   ============================== */
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

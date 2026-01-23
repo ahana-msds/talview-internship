@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudyHub - Tailwind</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-sans text-gray-800">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center bg-indigo-600 text-white p-4">
+        <h1 class="text-xl font-bold">StudyHub</h1>
+
+        <nav class="space-x-4">
+            <a href="#" class="hover:underline">Courses</a>
+            <a href="#" class="hover:underline">Register</a>
+        </nav>
+    </header>
+
+    <!-- Courses Section -->
+    <section class="m-4 p-4 border rounded">
+        <h2 class="text-lg font-semibold mb-2">Available Courses</h2>
+
+        <table class="w-full border">
+            <tr class="bg-gray-100">
+                <th class="border p-2">Course</th>
+                <th class="border p-2">Duration</th>
+            </tr>
+            <tr>
+                <td class="border p-2">Data Science</td>
+                <td class="border p-2">6 Months</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Registration -->
+    <section class="m-4 p-4 border rounded">
+        <h2 class="text-lg font-semibold mb-2">Register</h2>
+
+        <form class="flex flex-col gap-3">
+            <input class="border p-2 rounded" placeholder="Name" />
+            <input class="border p-2 rounded" placeholder="Email" />
+
+            <button class="bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 transition">
+                Submit
+            </button>
+        </form>
+    </section>
+
+</body>
+
+</html>
