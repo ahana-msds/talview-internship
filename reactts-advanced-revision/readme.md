@@ -1,7 +1,6 @@
 # Advanced React & TypeScript Mastery
 This project demonstrates professional-grade React and TypeScript concepts, including **React Router v7 loaders**, **shared server-side typing**, and **advanced TypeScript patterns**.
----
-## Project Structure
+---## Project Structure
 ```text
 /reactts-advanced-revision
 ├── shared/
