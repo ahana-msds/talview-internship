@@ -1,10 +1,10 @@
 # Advanced React Patterns: SSR, A11y, and Sagas
 
-This project demonstrates internship-level proficiency in **Server-Side Rendering (SSR)**, **Accessibility (A11y)**, and **Advanced Redux Saga logic**.
+this project demonstrates **Server-Side Rendering (SSR)**, **Accessibility (A11y)**, and **Advanced Redux Saga logic**.
 
 ---
 
-## Project Structure
+## project structure
 
 ```text
 /advanced-patterns
@@ -26,40 +26,40 @@ This project demonstrates internship-level proficiency in **Server-Side Renderin
 
 ---
 
-## Key Implementations
+## key implementations
 
-### 1. Server-Side Rendering (SSR)
-*   **The Server**: `server/index.js` utilizes Vite in middleware mode to pre-render the application on the server.
-*   **The Flow**: When a request is received, Express calls the `render()` function in `entry-server.jsx` to generate the HTML string, which is then injected into the `index.html` template before being sent to the client.
+### 1. server-side rendering (SSR)
+*   **the server**: `server/index.js` utilizes Vite in middleware mode to pre-render the application on the server.
+*   **the flow**: when a request is received, Express calls the `render()` function in `entry-server.jsx` to generate the HTML string, which is then injected into the `index.html` template before being sent to the client.
 
-### 2. Accessibility (A11y) Standards
-*   **Semantic HTML**: Proper use of `<main>`, `<section>`, and `<header>` tags to provide a meaningful document structure.
-*   **ARIA Attributes**: `A11yComponent.jsx` uses `aria-expanded` and `aria-controls` to communicate dynamic UI states to screen readers.
-*   **Focus Management**: Demonstrates professional programmatic focus control (e.g., returning focus to a trigger button) using React `useRef`.
+### 2. accessibility (A11y) standards
+*   **semantic HTML**: proper use of `<main>`, `<section>`, and `<header>` tags to provide a meaningful document structure.
+*   **ARIA attributes**: `A11yComponent.jsx` uses `aria-expanded` and `aria-controls` to communicate dynamic UI states to screen readers.
+*   **focus management**: demonstrates professional programmatic focus control (e.g., returning focus to a trigger button) using React `useRef`.
 
-### 3. Redux Saga: Throttle & Select
-*   **Throttle Effect**: In `sagas.js`, the `USER_SCROLLED` event is throttled to execute at most once every 2 seconds, preventing performance issues from high-frequency user actions.
-*   **Select Pattern**: Uses the `yield select(selector)` effect inside sagas to pull current state data, allowing business logic to be decoupled from action payloads.
+### 3. redux saga: throttle & select
+*   **throttle effect**: in `sagas.js`, the `USER_SCROLLED` event is throttled to execute at most once every 2 seconds, preventing performance issues from high-frequency user actions.
+*   **select pattern**: uses the `yield select(selector)` effect inside sagas to pull current state data, allowing business logic to be decoupled from action payloads.
 
 ---
 
-## How to Run
+## how to Run
 
-### Step 1: Install Dependencies
+### step 1: install dependencies
 ```bash
 cd advanced-patterns
 npm install
 ```
 
-### Step 2: Start the SSR Server
+### step 2: start the SSR server
 ```bash
 npm run start:server
 ```
-*The server will run at **http://localhost:3002***
+*the server will run at **http://localhost:3002***
 
 ---
 
-## Verification Steps
-1.  **SSR Check**: Right-click the page and select "View Page Source". You will see the full pre-rendered HTML content instead of an empty `<div id="root">`.
-2.  **A11y Check**: Navigate the app using only the **TAB** key. Observe the focus indicators and how focus is managed when components expand or close.
-3.  **Saga Check**: Click the "Simulate Scroll" button rapidly. Observe the activity list and notice that it only updates once every 2 seconds due to the **Throttle** effect.
+## verification Steps
+1.  **SSR check**: right-click the page and select "View Page Source". You will see the full pre-rendered HTML content instead of an empty `<div id="root">`.
+2.  **A11y check**: navigate the app using only the **TAB** key. Observe the focus indicators and how focus is managed when components expand or close.
+3.  **saga check**: click the "Simulate Scroll" button rapidly. Observe the activity list and notice that it only updates once every 2 seconds due to the **Throttle** effect.
