@@ -1,15 +1,15 @@
 # Node.js Async & Express Mastery Practice
 
-This directory contains standalone, executable scripts designed to deeply explain and demonstrate core Node.js asynchronous patterns and Express.js framework fundamentals.
+this directory contains standalone, executable scripts designed to deeply explain and demonstrate core Node.js asynchronous patterns and Express.js framework fundamentals.
 
-## Project Structure
+## project Structure
 
-### Express Skills
+### express 
 *   **`express-routing.js`**: Demonstrates modular routing using `express.Router` and handling of URL parameters.
 *   **`express-middleware.js`**: Showcases application-level global middleware vs. route-specific middleware (like a security guard).
 *   **`express-req-res.js`**: Explains how to handle various request types: `req.query`, `req.params`, and `req.body`.
 
-### Asynchronous Skills
+### asynchronous 
 *   **`async-callbacks.js`**: The foundational pattern for handling asynchronous operations in Node.js.
 *   **`async-promises.js`**: Demonstrates the Promise API, chaining `.then()`, and error handling with `.catch()`.
 *   **`async-async-await.js`**: Showcases the modern, readable syntax for handling asynchronous operations.
@@ -17,28 +17,27 @@ This directory contains standalone, executable scripts designed to deeply explai
 
 ---
 
-## Getting Started
 
-### 1. Install Dependencies
-Navigate to this directory and install Express:
+### 1. install dependencies
+navigate to this directory and install Express:
 ```bash
 cd node-async-express-practice
 npm install express
 ```
 
-### 2. Run a Demo
-You can run any script individually using the `node` command:
+### 2. run a demo
+you can run any script individually using the `node` command:
 ```bash
-# Example: Running the Async/Await demo
+# example: Running the Async/Await demo
 node async-async-await.js
 
-# Example: Running the Routing demo
+# example: Running the Routing demo
 node express-routing.js
 ```
 
 ---
 
-## Key Learning Outcomes
-*   Understand why blocking the Event Loop is dangerous.
-*   Master the transition from legacy Callbacks to modern Async/Await.
-*   Build a modular and secure Express API using Middleware and Routers.
+##  learning outcomes
+*   understand why blocking the Event Loop is dangerous.
+*   master the transition from legacy Callbacks to modern Async/Await.
+*   build a modular and secure Express API using Middleware and Routers.
