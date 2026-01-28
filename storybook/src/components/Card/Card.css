@@ -1,0 +1,46 @@
+/* rounded card container with soft shadow */
+.card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    background: white;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* header with bottom border */
+.card-header {
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+/* bold title styling */
+.card-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* body area for description */
+.card-body {
+    padding: 16px;
+}
+
+/* readable content text */
+.card-text {
+    margin: 0;
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+/* optional footer area with gray background */
+.card-footer {
+    padding: 12px 16px;
+    background: #f9fafb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
