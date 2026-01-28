@@ -29,6 +29,7 @@ This project demonstrates professional-grade React and TypeScript concepts, incl
 In `App.tsx`, we implement the modern v7 pattern:
 - **Loader**: Fetches data *before* the component mounts, eliminating loading spinners and ensuring type-safe data is ready on render.
 - **Outlet**: Used in the `Layout` component to render child routes, maintaining a consistent UI shell across the app.
+- **V6 Comparison**: This project also includes a side-by-side comparison with the **v6 approach** (component-based fetching with `useEffect`) to show the differences in lifecycle and performance.
 
 ### 2. Advanced TypeScript
 Mapped in `shared/types.ts`:
@@ -79,3 +80,4 @@ cd frontend && npm run dev
 1.  **Open the frontend URL.**
 2.  **Trigger Events**: Click the "Trigger Events" button to see the Custom Event system in action via console and UI.
 3.  **V7 Routing**: Click "Users" in the navbar to trigger the **React Router v7 Loader** and view the instantly-appearing typed list fetched from the backend.
+4.  **V6 Comparison**: Click "Users (v6 useEffect)" to see the legacy fetching pattern with its corresponding loading states.
