@@ -1,0 +1,32 @@
+{
+    "name": "testing-utility-practice",
+    "version": "1.0.0",
+    "description": "Internship level practice for Node.js testing and utility libraries",
+    "main": "index.js",
+    "scripts": {
+        "test": "npm run test:jest && npm run test:mocha",
+        "test:jest": "jest",
+        "test:mocha": "mocha tests/mocha/**/*.test.js",
+        "test:coverage": "jest --coverage"
+    },
+    "keywords": [
+        "testing",
+        "jest",
+        "mocha",
+        "lodash",
+        "luxon",
+        "joi"
+    ],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "chai": "^4.3.10",
+        "jest": "^29.7.0",
+        "mocha": "^10.2.0"
+    },
+    "dependencies": {
+        "joi": "^17.11.0",
+        "lodash": "^4.17.21",
+        "luxon": "^3.4.4"
+    }
+}

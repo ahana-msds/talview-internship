@@ -1,5 +1,5 @@
 # node.js core modules practice
-this project contains internship-level practice codes for fundamental node.js core modules. each file is self-contained and demonstrates specific concepts with clear, efficient logic.
+this project contains practice codes for fundamental node.js core modules. each file is self-contained and demonstrates specific concepts with clear, efficient logic.
 ## concepts & files
 | concept | description | file |
 | :--- | :--- | :--- |

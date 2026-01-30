@@ -1,6 +1,6 @@
 # node-express-practice
 
-this project demonstrates core node.js and express.js concepts for an internship level. it follows a professional structure using routes, controllers, and services for better scalability.
+this project demonstrates core node.js and express.js concepts . it follows a  structure using routes, controllers, and services for better scalability.
 
 ## concepts covered
 - get and post routes
