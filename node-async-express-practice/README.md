@@ -1,4 +1,4 @@
-# Node.js Async & Express Mastery Practice
+# Node.js Async & Express Practice
 
 this directory contains standalone, executable scripts designed to deeply explain and demonstrate core Node.js asynchronous patterns and Express.js framework fundamentals.
 
