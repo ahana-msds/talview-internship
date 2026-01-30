@@ -14,18 +14,18 @@ async function main() {
         // 2. create user
         console.log('creating user...');
         const user = await userService.createUser({
-            email: 'alice@prisma.io',
-            name: 'Alice Prisma',
+            email: 'ahana@prisma.io',
+            name: 'Ahana',
         });
         console.log('created user:', user);
 
         // 3. create transaction (user + profile)
         console.log('creating user with profile (transaction)...');
-        const bob = await userService.createUserWithProfile(
-            { email: 'bob@prisma.io', name: 'Bob Prisma' },
+        const anika = await userService.createUserWithProfile(
+            { email: 'anika@prisma.io', name: 'Anika' },
             { bio: 'i love orms' }
         );
-        console.log('created bob:', bob);
+        console.log('created anika:', anika);
 
         // 4. add posts
         console.log('adding posts...');
@@ -33,7 +33,7 @@ async function main() {
             data: [
                 { title: 'hello prisma', content: 'types are cool', authorId: user.id },
                 { title: 'why orm?', content: 'because speed', authorId: user.id },
-                { title: 'nested writes', content: 'so simple', authorId: bob.id }
+                { title: 'nested writes', content: 'so simple', authorId: anika.id }
             ]
         });
 
