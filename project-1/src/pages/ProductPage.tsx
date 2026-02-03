@@ -1,5 +1,5 @@
 import { Navbar } from '../components/Navbar';
-import { ProductFetcher } from '../features/ProductFetcher';
+import ProductList from '../features/products/ProductList';
 import { useNavigate } from 'react-router-dom';
 
 export const ProductPage = () => {
@@ -27,8 +27,8 @@ export const ProductPage = () => {
                     </button>
                 </div>
                 <h2>Product Catalog</h2>
-                <div style={{ marginTop: '1rem', maxWidth: '600px', margin: '1rem auto' }}>
-                    <ProductFetcher />
+                <div style={{ marginTop: '1rem', width: '100%', maxWidth: '1200px', margin: '1rem auto' }}>
+                    <ProductList />
                 </div>
             </div>
         </div>

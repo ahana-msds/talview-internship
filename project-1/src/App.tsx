@@ -6,6 +6,7 @@ import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ToDoPage } from './pages/ToDoPage';
 import { ProductPage } from './pages/ProductPage';
+import { CartPage } from './pages/CartPage';
 import { GitHubPage } from './pages/GitHubPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -60,6 +61,14 @@ function App() {
               element={
                 <AuthenticatedRoute>
                   <ProductPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <AuthenticatedRoute>
+                  <CartPage />
                 </AuthenticatedRoute>
               }
             />
