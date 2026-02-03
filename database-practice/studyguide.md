@@ -49,5 +49,4 @@ a query builder (like **knex.js**) provides a programmable interface to construc
 
 
 
-## 5. how to explain this project
-"i built a dual-implementation backend system to master database interactions. i implemented the same user-post-profile architecture using both knex.js (for low-level query building) and prisma (for high-level orm features). i handled complex scenarios like database transactions and one-to-many relationships in both approaches to understand the trade-offs in developer experience versus control."
+
