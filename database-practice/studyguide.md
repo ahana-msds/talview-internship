@@ -47,16 +47,7 @@ a query builder (like **knex.js**) provides a programmable interface to construc
 | **join/relation** | `.leftJoin('posts', 'u.id', 'p.uid')` | `include: { posts: true }` |
 | **migrations** | manual up/down functions | `prisma migrate` / `db push` auto-generates |
 
-## 4. internship interview questions & answers
 
-**q: why would you choose knex over prisma?**
-a: "i would choose knex if i needed raw performance and precise control over my sql queries, or if the project has a legacy database schema that doesn't map cleanly to prisma's strict models."
-
-**q: what is a transaction and why did we use it?**
-a: "a transaction ensures that a group of database operations either all succeed or all fail. in our project, we used it when creating a user and their profile. if creating the profile fails, we don't want a 'ghost' user left in the database; the transaction rolls back everything."
-
-**q: explain 'migration' in database terms.**
-a: "migrations are like version control for your database schema. they allow you to evolve your database structure (adding tables, columns) over time and share those changes with the team."
 
 ## 5. how to explain this project
 "i built a dual-implementation backend system to master database interactions. i implemented the same user-post-profile architecture using both knex.js (for low-level query building) and prisma (for high-level orm features). i handled complex scenarios like database transactions and one-to-many relationships in both approaches to understand the trade-offs in developer experience versus control."
