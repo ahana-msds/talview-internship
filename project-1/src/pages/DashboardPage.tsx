@@ -1,6 +1,7 @@
 import { Navbar } from '../components/Navbar';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './DashboardPage.module.css';
+import { FeatureCard } from '../components/dashboard/FeatureCard';
 
 export const DashboardPage = () => {
     const { user } = useAuth();
@@ -18,36 +19,24 @@ export const DashboardPage = () => {
                     Select a feature to get started.
                 </p>
                 <div className={styles.grid}>
-                    {/* Feature 1: Todo List */}
-                    <div
+                    <FeatureCard
+                        title="Task Manager"
+                        description="Manage your daily tasks efficiently."
                         onClick={() => openInNewTab('/todo')}
-                        className={`${styles.navCard} card`}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <h3> Task Manager</h3>
-                        <p>Manage your daily tasks efficiently.</p>
-                    </div>
+                    />
 
-                    {/* Feature 2: Product API */}
-                    <div
+                    <FeatureCard
+                        title="Product Catalog"
+                        description="Browse products from the store API."
                         onClick={() => openInNewTab('/products')}
-                        className={`${styles.navCard} card`}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <h3> Product Catalog</h3>
-                        <p>Browse products from the store API.</p>
-                    </div>
+                    />
 
-                    {/* Feature 3: Github API (Conditional) */}
                     {showGithub && (
-                        <div
+                        <FeatureCard
+                            title="GitHub Explorer"
+                            description="View your profile and repositories."
                             onClick={() => openInNewTab('/github')}
-                            className={`${styles.navCard} card`}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <h3> GitHub Explorer</h3>
-                            <p>View your profile and repositories.</p>
-                        </div>
+                        />
                     )}
                 </div>
             </div>

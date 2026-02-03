@@ -2,9 +2,13 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.css';
-import { ShoppingCart } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { selectCartItems } from '../features/cart/cartSlice';
+import { NavbarLogo } from './navbar/NavbarLogo';
+import { NavbarUserInfo } from './navbar/NavbarUserInfo';
+import { NavbarThemeSelector } from './navbar/NavbarThemeSelector';
+import { NavbarLogout } from './navbar/NavbarLogout';
+import { NavbarCartIcon } from './navbar/NavbarCartIcon';
 
 export const Navbar = () => {
     const { theme, setTheme } = useTheme();
@@ -19,51 +23,24 @@ export const Navbar = () => {
     };
     return (
         <nav className={styles.nav}>
-            <div className={styles.logo}>
-                Project App
-            </div>
+            <NavbarLogo />
             <div className={styles.actions}>
                 {user && (
-                    <span className={styles.userInfo}>
-                        Hi, {user.displayName || 'Guest'}
-                    </span>
+                    <NavbarUserInfo displayName={user.displayName} />
                 )}
-                <select
-                    value={theme}
-                    onChange={(e) => setTheme(e.target.value as any)}
-                    className={styles.themeSelect}
-                >
-                    <option value="default">Minimal</option>
-                    <option value="ocean">Ocean</option>
-                    <option value="forest">Forest</option>
-                </select>
+                <NavbarThemeSelector
+                    theme={theme}
+                    onThemeChange={(newTheme) => setTheme(newTheme as any)}
+                />
 
                 {user && (
-                    <button
-                        onClick={handleLogout}
-                        className={`btn btn-secondary ${styles.logoutBtn}`}
-                    >
-                        Logout
-                    </button>
+                    <NavbarLogout onLogout={handleLogout} />
                 )}
                 {user && (
-                    <div style={{ position: 'relative', cursor: 'pointer', marginLeft: '15px' }} onClick={() => navigate('/cart')}>
-                        <ShoppingCart size={24} />
-                        {cartTotal > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-8px',
-                                right: '-8px',
-                                backgroundColor: 'red',
-                                color: 'white',
-                                borderRadius: '50%',
-                                padding: '2px 6px',
-                                fontSize: '12px'
-                            }}>
-                                {cartTotal}
-                            </span>
-                        )}
-                    </div>
+                    <NavbarCartIcon
+                        count={cartTotal}
+                        onClick={() => navigate('/cart')}
+                    />
                 )}
             </div>
         </nav>
