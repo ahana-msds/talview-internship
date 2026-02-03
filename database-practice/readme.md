@@ -1,6 +1,6 @@
-# database mastery: knex.js vs prisma
+# database practice: knex.js vs prisma
 
-this project demonstrates internship-level database management in node.js, comparing two popular approaches:
+this project demonstrates database management in node.js, comparing two popular approaches:
 1. **knex.js**: a sql query builder.
 2. **prisma**: a modern object-relational mapper (orm).
 
