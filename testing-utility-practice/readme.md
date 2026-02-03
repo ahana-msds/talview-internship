@@ -1,6 +1,6 @@
 # testing and utility practice
 
-this project demonstrates internship-level node.js testing and utility usage.
+this project demonstrates node.js testing and utility usage.
 it covers unit testing with jest and mocha, and uses libraries like joi, lodash, and luxon.
 
 ## project structure
