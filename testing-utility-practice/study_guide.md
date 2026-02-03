@@ -1,7 +1,6 @@
 # Study Guide: Node.js Testing and Utility Concepts
 
-This guide provides a clear understanding of the concepts implemented in this project. It is designed to prepare you for internship-level discussions and tasks.
-
+This guide provides a clear understanding of the concepts implemented in this project. 
 ## 1. Testing in Node.js
 
 Testing ensures your code works as expected and prevents bugs when you make changes.
@@ -75,4 +74,3 @@ This project follows a modular structure suitable for scalable applications.
 - **Command:** `npm run test:coverage` (configured in `package.json` to use Jest).
 
 ---
-*Use this guide to explain your work confidently during your internship review.*
