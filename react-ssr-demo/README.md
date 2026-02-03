@@ -1,7 +1,6 @@
-# react ssr mastery demo
+# react ssr demo
 
-this project provides an implementation of server-side rendering (ssr) using react, vite, and express. it's designed to illustrate the core mechanics of ssr and hydration at a company internship level.
-
+this project provides an implementation of server-side rendering (ssr) using react, vite, and express. it's designed to illustrate the core mechanics of ssr and hydration .
 ## key concepts demonstrated
 
 - **`rendertostring`**: converting a react component tree into a static html string on the server.
