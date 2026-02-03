@@ -1,6 +1,6 @@
-# database concept mastery: knex.js vs prisma
+# database concept: knex.js vs prisma
 
-this guide explains the core concepts used in this project, designed to help you answer internship-level questions confidently.
+this guide explains the core concepts used in this project.
 
 ## 1. fundamental concepts
 
