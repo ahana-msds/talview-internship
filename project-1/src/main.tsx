@@ -5,12 +5,44 @@ import { createRoot } from 'react-dom/client'
 // Global styling for the application
 import './index.css'
 
+// Sentry for error tracking
+import * as Sentry from "@sentry/react";
+
 // Root App component
 import App from './App.tsx'
 
 // Redux configuration for state management
 import { Provider } from 'react-redux'
 import { store } from './app/store'
+
+// Initialize Sentry for centralized error handling
+Sentry.init({
+  dsn: "https://examplePublicKey@o0.ingest.sentry.io/0", // Placeholder DSN
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration(),
+  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0,
+  // Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+
+  /**
+   * beforeSend: Global filter to prevent expected errors from hitting Sentry.
+   * We filter out 404 "Not Found" errors which are common/expected during search.
+   */
+  beforeSend(event, hint) {
+    const error = hint.originalException;
+    if (error && error instanceof Error) {
+      // Filter out common API 404/Not Found messages
+      if (error.message.includes('404') || error.message.toLowerCase().includes('not found')) {
+        return null;
+      }
+    }
+    return event;
+  },
+});
 
 // Entry point of the application
 // We render the App component within the Redux Provider and React StrictMode

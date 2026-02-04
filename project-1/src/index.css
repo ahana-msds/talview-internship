@@ -1,14 +1,14 @@
 /* Global Reset and Base Styles */
 :root {
-  /* Default Theme (Minimalist Monochrome) */
-  --color-bg: #ffffff;
-  --color-text: #000000;
-  --color-primary: #000000;
-  --color-secondary: #fafafa;
-  --color-border: #e0e0e0;
-  --color-accent: #333333;
+  /* Default Theme (Soft Minimalist) */
+  --color-bg: #fcfcfc;
+  --color-text: #1a1a1a;
+  --color-primary: #2d3436;
+  --color-secondary: #f5f5f5;
+  --color-border: #e8e8e8;
+  --color-accent: #636e72;
   --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --radius: 0px;
+  --radius: 12px;
 }
 
 /* Ocean Theme */
@@ -110,9 +110,15 @@ a {
 .card {
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
-  padding: 20px;
+  padding: 24px;
   border-radius: var(--radius);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
 }
 
 .pageWrapper {

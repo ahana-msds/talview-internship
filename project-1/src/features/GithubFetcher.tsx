@@ -1,5 +1,6 @@
 // React and styling imports
 import React, { useState } from 'react';
+import * as Sentry from "@sentry/react";
 import styles from './GithubFetcher.module.css';
 
 /**
@@ -92,6 +93,10 @@ export const GithubFetcher = () => {
             }
         } catch (err: any) {
             setError(err.message);
+            // Report unexpected errors to Sentry (404s are filtered globally)
+            Sentry.captureException(err, {
+                extra: { query, searchType, context: 'handleSearch' }
+            });
         } finally {
             setLoading(false);
         }
@@ -128,6 +133,10 @@ export const GithubFetcher = () => {
             }
         } catch (err: any) {
             setError(err.message);
+            // Report unexpected errors to Sentry
+            Sentry.captureException(err, {
+                extra: { fullName, path, context: 'fetchContents' }
+            });
         } finally {
             setLoading(false);
         }
