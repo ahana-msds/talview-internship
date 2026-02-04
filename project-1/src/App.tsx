@@ -1,6 +1,11 @@
+// Routing components from react-router-dom
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Context providers for Auth and Theme management
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+
+// Page components representing different views in the app
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -9,6 +14,10 @@ import { ProductPage } from './pages/ProductPage';
 import { CartPage } from './pages/CartPage';
 import { GitHubPage } from './pages/GitHubPage';
 
+/**
+ * ProtectedRoute: Wraps components that require authentication.
+ * Redirects to /login if the user is not authenticated.
+ */
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
@@ -16,7 +25,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   return children;
 };
 
-// Allow both authenticated and guest users
+/**
+ * AuthenticatedRoute: Wraps components that require at least a guest session or full login.
+ */
 const AuthenticatedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
@@ -24,13 +35,19 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactElement }) => {
   return children;
 };
 
-// Redirect root to dashboard (which will redirect to login if needed) or login directly
+/**
+ * RootRedirect: Handles the logic for the initial root (/) route.
+ * Redirects to /dashboard if logged in, otherwise to /login.
+ */
 const RootRedirect = () => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   return user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
 }
 
+/**
+ * Main App component that defines the application structure and routing.
+ */
 function App() {
   return (
     <ThemeProvider>
@@ -40,6 +57,7 @@ function App() {
             <Route path="/" element={<RootRedirect />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            {/* Feature pages wrapped in appropriate route guards */}
             <Route
               path="/dashboard"
               element={

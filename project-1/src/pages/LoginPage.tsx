@@ -3,13 +3,24 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import styles from './Auth.module.css';
+
+/**
+ * LoginPage component handles user authentication.
+ * It provides options for email/password login, social logins (Google, GitHub), and guest access.
+ */
 export const LoginPage = () => {
     const { loginWithEmail, loginWithGoogle, loginWithGithub, loginAsGuest } = useAuth();
     const navigate = useNavigate();
+
+    // Local state for form inputs and loading status
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    /**
+     * Handles authentication using email and password.
+     */
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -23,6 +34,11 @@ export const LoginPage = () => {
             setIsLoading(false);
         }
     };
+
+    /**
+     * Handles social and guest login methods.
+     * @param method - The login method to use.
+     */
     const handleSocialLogin = async (method: 'google' | 'github' | 'guest') => {
         setIsLoading(true);
         setError('');

@@ -2,9 +2,17 @@ import { Navbar } from '../components/Navbar';
 import ProductList from '../features/products/ProductList';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * ProductPage component displays the product catalog.
+ * It allows users to browse and add products to their shopping cart.
+ */
 export const ProductPage = () => {
     const navigate = useNavigate();
 
+    /**
+     * Navigates back to the Dashboard.
+     * Uses tab closure if applicable, or browser navigation.
+     */
     const goToDashboard = () => {
         // Check if opened in new tab
         if (window.opener) {

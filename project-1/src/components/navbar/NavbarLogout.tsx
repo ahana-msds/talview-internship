@@ -4,6 +4,9 @@ interface NavbarLogoutProps {
     onLogout: () => void;
 }
 
+/**
+ * NavbarLogout: A button component to trigger the logout process.
+ */
 export const NavbarLogout = ({ onLogout }: NavbarLogoutProps) => {
     return (
         <button

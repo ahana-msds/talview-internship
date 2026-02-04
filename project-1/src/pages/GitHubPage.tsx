@@ -2,9 +2,17 @@ import { Navbar } from '../components/Navbar';
 import { GithubFetcher } from '../features/GithubFetcher';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * GitHubPage allows users to explore GitHub users and repositories via the API.
+ * This feature is exclusive to users authenticated via GitHub.
+ */
 export const GitHubPage = () => {
     const navigate = useNavigate();
 
+    /**
+     * Navigates back to the Dashboard.
+     * Redirects to /dashboard or closes the tab if opened separately.
+     */
     const goToDashboard = () => {
         // Check if opened in new tab
         if (window.opener) {

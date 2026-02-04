@@ -3,14 +3,25 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import styles from './Auth.module.css';
+
+/**
+ * SignupPage component handles new user registrations.
+ * Users can create an account using their name, email, and password.
+ */
 export const SignupPage = () => {
     const { signupWithEmail } = useAuth();
     const navigate = useNavigate();
+
+    // Local state for signup form inputs and UI state
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    /**
+     * Handles the signup form submission.
+     */
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);

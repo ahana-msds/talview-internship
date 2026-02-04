@@ -2,6 +2,10 @@ import { Navbar } from '../components/Navbar';
 import Cart from '../features/cart/Cart';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * CartPage component displays the contents of the user's shopping cart.
+ * Users can review their selections and manage quantities.
+ */
 export const CartPage = () => {
     const navigate = useNavigate();
 

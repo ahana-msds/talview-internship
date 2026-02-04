@@ -1,6 +1,11 @@
+// Storybook metadata and component imports
 import type { Meta, StoryObj } from '@storybook/react';
 import { FeatureCard } from '../../components/dashboard/FeatureCard';
 
+/**
+ * Storybook configuration for the FeatureCard component.
+ * Includes interaction logging for the onClick event.
+ */
 const meta = {
     title: 'Components/Dashboard/FeatureCard',
     component: FeatureCard,
@@ -15,6 +20,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/**
+ * Default story showing a generic feature card.
+ */
 export const Default: Story = {
     args: {
         title: 'Feature Title',
@@ -22,6 +30,9 @@ export const Default: Story = {
     }
 };
 
+/**
+ * Specific story for the Task Manager feature card.
+ */
 export const TaskManager: Story = {
     args: {
         title: 'Task Manager',

@@ -2,16 +2,35 @@ import { describe, it, expect } from 'vitest';
 import { loginSchema, validateProduct, type ProductType } from '@/lib/validation'; // Testing Alias
 
 describe('Validation Logic', () => {
-    it('zod: validates correct email', () => {
-        const result = loginSchema.safeParse({ email: 'test@example.com', password: 'password123' });
+    it('zod: validates correct email and complex password', () => {
+        const result = loginSchema.safeParse({ email: 'test@example.com', password: 'Password123' });
         expect(result.success).toBe(true);
     });
 
     it('zod: fails invalid email', () => {
-        const result = loginSchema.safeParse({ email: 'invalid-email', password: 'password123' });
+        const result = loginSchema.safeParse({ email: 'invalid-email', password: 'Password123' });
         expect(result.success).toBe(false);
     });
 
+    it('zod: fails if password is too short', () => {
+        const result = loginSchema.safeParse({ email: 'test@example.com', password: 'Pass1' });
+        expect(result.success).toBe(false);
+    });
+
+    it('zod: fails if password missing uppercase', () => {
+        const result = loginSchema.safeParse({ email: 'test@example.com', password: 'password123' });
+        expect(result.success).toBe(false);
+    });
+
+    it('zod: fails if password missing lowercase', () => {
+        const result = loginSchema.safeParse({ email: 'test@example.com', password: 'PASSWORD123' });
+        expect(result.success).toBe(false);
+    });
+
+    it('zod: fails if password missing number', () => {
+        const result = loginSchema.safeParse({ email: 'test@example.com', password: 'Password' });
+        expect(result.success).toBe(false);
+    });
     it('typebox: validates correct product', () => {
         const product: ProductType = {
             id: 1,

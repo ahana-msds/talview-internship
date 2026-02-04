@@ -3,10 +3,18 @@ import { useAuth } from '../contexts/AuthContext';
 import styles from './DashboardPage.module.css';
 import { FeatureCard } from '../components/dashboard/FeatureCard';
 
+/**
+ * DashboardPage is the main landing page for authenticated users.
+ * It provides navigation cards for the application's core features.
+ */
 export const DashboardPage = () => {
     const { user } = useAuth();
+    // Only show GitHub Explorer if the user logged in via GitHub
     const showGithub = user?.provider === 'github';
 
+    /**
+     * Opens a specific application route in a new browser tab.
+     */
     const openInNewTab = (path: string) => {
         window.open(path, '_blank');
     };

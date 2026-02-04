@@ -6,6 +6,9 @@ interface FeatureCardProps {
     onClick: () => void;
 }
 
+/**
+ * FeatureCard: A reusable UI component used on the Dashboard to represent application features.
+ */
 export const FeatureCard = ({ title, description, onClick }: FeatureCardProps) => {
     return (
         <div

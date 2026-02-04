@@ -1,6 +1,11 @@
+// Storybook metadata and component imports
 import type { Meta, StoryObj } from '@storybook/react';
 import { NavbarLogout } from '../../components/navbar/NavbarLogout';
 
+/**
+ * Storybook configuration for the NavbarLogout component.
+ * Includes interaction logging for the logout button click.
+ */
 const meta = {
     title: 'Components/Navbar/Logout',
     component: NavbarLogout,
@@ -15,4 +20,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/**
+ * Default story for the logout button.
+ */
 export const Default: Story = {};

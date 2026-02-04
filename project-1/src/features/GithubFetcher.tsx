@@ -1,5 +1,10 @@
+// React and styling imports
 import React, { useState } from 'react';
 import styles from './GithubFetcher.module.css';
+
+/**
+ * Interface for GitHub User data.
+ */
 interface GithubUser {
     login: string;
     avatar_url: string;
@@ -15,6 +20,9 @@ interface GithubRepo {
     html_url: string;
     full_name: string;
 }
+/**
+ * Interface for repository file/directory items.
+ */
 interface FileItem {
     name: string;
     path: string;
@@ -22,23 +30,36 @@ interface FileItem {
     html_url: string;
     download_url: string | null;
 }
+
+/**
+ * GithubFetcher: A comprehensive component for exploring the GitHub API.
+ * Supports searching for users, viewing their repositories, and browsing repo contents.
+ */
 export const GithubFetcher = () => {
     // Global State
+    // State for search query and search type (User or Repository)
     const [query, setQuery] = useState('');
     const [searchType, setSearchType] = useState<'user' | 'repo'>('user');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    // Feature State
+
+    // state to toggle between profile view and repository content view
     const [view, setView] = useState<'profile' | 'repo'>('profile');
-    // Data State
+
+    // Data storage for api results
     const [userData, setUserData] = useState<GithubUser | null>(null);
     const [repos, setRepos] = useState<GithubRepo[]>([]);
     const [searchRepoResults, setSearchRepoResults] = useState<GithubRepo[]>([]);
-    // Repo View State
+
+    // State for repo code browsing
     const [currentRepo, setCurrentRepo] = useState<GithubRepo | null>(null);
     const [currentPath, setCurrentPath] = useState('');
     const [files, setFiles] = useState<FileItem[]>([]);
 
+    /**
+     * handleSearch: Main entry point for performing GitHub API searches.
+     * Branches logic based on whether searching for a user or a specific repository.
+     */
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!query.trim()) return;
@@ -51,19 +72,19 @@ export const GithubFetcher = () => {
 
         try {
             if (searchType === 'user') {
-                // 1. Fetch User
+                // 1. Fetch User profile data
                 const userRes = await fetch(`https://api.github.com/users/${query}`);
                 if (!userRes.ok) throw new Error('User not found');
                 const user = await userRes.json();
                 setUserData(user);
-                // 2. Fetch Repos
+                // 2. Fetch the user's public repositories
                 const reposRes = await fetch(`https://api.github.com/users/${query}/repos?sort=updated&per_page=30`);
                 if (reposRes.ok) {
                     const reposData = await reposRes.json();
                     setRepos(reposData);
                 }
             } else {
-                // Search Repository
+                // Perform a general repository search by name
                 const res = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc&per_page=30`);
                 if (!res.ok) throw new Error('Failed to search repositories');
                 const data = await res.json();
@@ -75,12 +96,19 @@ export const GithubFetcher = () => {
             setLoading(false);
         }
     };
+    /**
+     * openRepo: Transitions to the repository content view.
+     */
     const openRepo = async (repo: GithubRepo) => {
         setCurrentRepo(repo);
         setCurrentPath('');
         setView('repo');
         await fetchContents(repo.full_name, '');
     };
+
+    /**
+     * fetchContents: Fetches files/directories for a specific path in a repository.
+     */
     const fetchContents = async (fullName: string, path: string) => {
         setLoading(true);
         setError('');
@@ -88,17 +116,15 @@ export const GithubFetcher = () => {
             const res = await fetch(`https://api.github.com/repos/${fullName}/contents/${path}`);
             if (!res.ok) throw new Error('Failed to fetch contents');
             const data = await res.json();
-            // data can be array (directory) or object (file)
+            // Data can be an array (for a directory) or an object (for a file)
             if (Array.isArray(data)) {
-                // Sort: Directories first, then files
+                // Sort contents: Directories first, then files alphabetically
                 const sorted = data.sort((a: FileItem, b: FileItem) => {
                     if (a.type === b.type) return a.name.localeCompare(b.name);
                     return a.type === 'dir' ? -1 : 1;
                 });
                 setFiles(sorted);
                 setCurrentPath(path);
-            } else {
-                // It's a file
             }
         } catch (err: any) {
             setError(err.message);
