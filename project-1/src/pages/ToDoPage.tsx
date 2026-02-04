@@ -22,16 +22,19 @@ export const ToDoPage = () => {
         }
     };
 
+    const triggerManualCrash = () => {
+        throw new Error('Manual crash triggered by user.');
+    };
+
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Navbar />
             <div style={{ padding: '1rem 20px', textAlign: 'left' }}>
-                <button
-                    onClick={goToDashboard}
-                    className="btn btn-secondary"
-                >
-                    ← Back to Dashboard
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <button onClick={goToDashboard} className="btn btn-secondary">
+                        ← Back to Dashboard
+                    </button>
+                </div>
             </div>
             <div className="container" style={{ padding: '1rem 20px', flex: 1, textAlign: 'left' }}>
                 <h2>Task Manager</h2>
