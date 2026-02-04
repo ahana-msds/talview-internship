@@ -53,8 +53,8 @@ export const productsApi = createApi({
     reducerPath: 'productsApi',
     baseQuery: baseQueryWithSentry,
     endpoints: (builder) => ({
-        getProducts: builder.query<ProductResponse, void>({
-            query: () => 'products',
+        getProducts: builder.query<ProductResponse, { limit: number; skip: number }>({
+            query: ({ limit, skip }) => `products?limit=${limit}&skip=${skip}`,
         }),
     }),
 });

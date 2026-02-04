@@ -22,9 +22,6 @@ export const ToDoPage = () => {
         }
     };
 
-    const triggerManualCrash = () => {
-        throw new Error('Manual crash triggered by user.');
-    };
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

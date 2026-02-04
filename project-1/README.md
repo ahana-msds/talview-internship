@@ -9,6 +9,7 @@ a comprehensive single page application (spa) built with react, typescript, vite
 - **guest access**: simulated guest login for quick access.
 - **protected routes**: dashboard and other protected pages are inaccessible without logging in.
 - **global state**: managed via `authcontext` to persist user sessions.
+- **enhanced validation**: enforced complex password requirements (uppercase, lowercase, numbers) using zod.
 
 ### 2. global state management (redux toolkit)
 - **client state (cart)**:
@@ -17,41 +18,39 @@ a comprehensive single page application (spa) built with react, typescript, vite
   - persistent cart state across the application session.
 - **server state (products)**:
   - managed using rtk query.
-  - efficient caching and fetching of product data from dummyjson api.
+  - efficient caching and fetching from dummyjson api.
   - handles loading and error states automatically.
 
-### 3. validation & type safety
-- **zod**: used for runtime validation of forms (e.g., email validation).
-- **typebox**: used for validating api response schemas (e.g., product data).
-- **path aliases**: configured `@/` to map to `src/` for clean imports.
+### 3. error tracking & monitoring (sentry)
+- **centralized reporting**: automatic capture of api failures and runtime crashes.
+- **real-time alerts**: integrated with sentry dashboard for immediate feedback.
+- **smart filtering**: automatically ignores common 404 search errors to reduce noise.
+- **pii enabled**: captures user context and device info for easier debugging.
 
-### 4. testing & quality assurance
-- **vitest**: fast unit test runner configured with `jsdom`.
-- **testing library**: used for component testing.
-- **unit tests**: coverage for validation logic and core utilities.
-- **command**: `npm test` runs the full test suite.
+### 4. validation & type safety
+- **zod**: centralized schemas for form validation and login logic.
+- **typebox**: schema validation for api response data.
+- **path aliases**: configured `@/` mapping for clean imports.
 
-### 5. ui development (storybook)
-- **component driven**: develop components in isolation.
-- **interactive stories**:
-  - **login page**: simulate network delays and error states.
-  - **dashboard**: toggle user providers and themes dynamicall.
-  - **cart**: add/remove items using interactive controls.
-- **command**: `npm run storybook` starts the ui explorer.
+### 5. testing & quality assurance
+- **vitest**: standard test runner for unit and integration tests.
+- **react testing library**: used for verifying component behaviors.
+- **coverage**: unit tests for validation logic and password complexity.
 
-### 6. dynamic dashboard & pages
-- **dashboard**: grid layout hosting interactive widgets.
-- **product catalog**: displays products with "add to cart" functionality.
-- **shopping cart**: real-time calculation of totals.
-- **github explorer**: search and view github user profiles.
+### 6. ui development & theme
+- **storybook**: component library developed in isolation with interactive stories.
+- **theme persistence**: saves selected theme (minimal, ocean, forest) to localstorage.
+- **redesigned dashboard**: modern grid layout with feature-specific icons.
+- **consistent nav**: back to dashboard navigation standardized across all features.
 
 ## tech stack
 - **core**: react 19, typescript, vite
 - **state management**: redux toolkit, rtk query, context api
+- **error handling**: sentry sdk
 - **validation**: zod, typebox
 - **testing**: vitest, react testing library
 - **ui/docs**: storybook 8
-- **styling**: css modules + global variables
+- **styling**: css modules + theme variables
 - **backend/auth**: firebase v12
 
 ## setup instructions
