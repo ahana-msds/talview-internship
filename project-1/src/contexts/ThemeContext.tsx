@@ -6,8 +6,15 @@ interface ThemeContextType {
 }
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-    const [theme, setTheme] = useState<Theme>('default');
+    const [theme, setTheme] = useState<Theme>(() => {
+        const savedTheme = localStorage.getItem('app-theme');
+        return (savedTheme as Theme) || 'default';
+    });
+
     useEffect(() => {
+        // Persist theme choice
+        localStorage.setItem('app-theme', theme);
+
         // Remove all theme classes first
         document.body.classList.remove('theme-ocean', 'theme-forest');
 
@@ -18,6 +25,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
             document.body.classList.add('theme-forest');
         }
     }, [theme]);
+
     return (
         <ThemeContext.Provider value={{ theme, setTheme }}>
             {children}

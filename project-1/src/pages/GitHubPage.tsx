@@ -17,15 +17,15 @@ export const GitHubPage = () => {
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Navbar />
-            <div className="container" style={{ padding: '2rem 20px', flex: 1 }}>
-                <div style={{ marginBottom: '1rem' }}>
-                    <button
-                        onClick={goToDashboard}
-                        className="btn btn-secondary"
-                    >
-                        ← Back to Dashboard
-                    </button>
-                </div>
+            <div style={{ padding: '1rem 20px', textAlign: 'left' }}>
+                <button
+                    onClick={goToDashboard}
+                    className="btn btn-secondary"
+                >
+                    ← Back to Dashboard
+                </button>
+            </div>
+            <div className="container" style={{ padding: '1rem 20px', flex: 1, textAlign: 'left' }}>
                 <h2>GitHub Explorer</h2>
                 <div style={{ marginTop: '1rem', maxWidth: '800px', margin: '1rem auto' }}>
                     <GithubFetcher />

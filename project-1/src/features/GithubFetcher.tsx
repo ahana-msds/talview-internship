@@ -24,7 +24,8 @@ interface FileItem {
 }
 export const GithubFetcher = () => {
     // Global State
-    const [username, setUsername] = useState('');
+    const [query, setQuery] = useState('');
+    const [searchType, setSearchType] = useState<'user' | 'repo'>('user');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     // Feature State
@@ -32,29 +33,41 @@ export const GithubFetcher = () => {
     // Data State
     const [userData, setUserData] = useState<GithubUser | null>(null);
     const [repos, setRepos] = useState<GithubRepo[]>([]);
+    const [searchRepoResults, setSearchRepoResults] = useState<GithubRepo[]>([]);
     // Repo View State
     const [currentRepo, setCurrentRepo] = useState<GithubRepo | null>(null);
     const [currentPath, setCurrentPath] = useState('');
     const [files, setFiles] = useState<FileItem[]>([]);
+
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!username.trim()) return;
+        if (!query.trim()) return;
         setLoading(true);
         setError('');
         setUserData(null);
         setRepos([]);
+        setSearchRepoResults([]);
         setView('profile');
+
         try {
-            // 1. Fetch User
-            const userRes = await fetch(`https://api.github.com/users/${username}`);
-            if (!userRes.ok) throw new Error('User not found');
-            const user = await userRes.json();
-            setUserData(user);
-            // 2. Fetch Repos
-            const reposRes = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=30`);
-            if (reposRes.ok) {
-                const reposData = await reposRes.json();
-                setRepos(reposData);
+            if (searchType === 'user') {
+                // 1. Fetch User
+                const userRes = await fetch(`https://api.github.com/users/${query}`);
+                if (!userRes.ok) throw new Error('User not found');
+                const user = await userRes.json();
+                setUserData(user);
+                // 2. Fetch Repos
+                const reposRes = await fetch(`https://api.github.com/users/${query}/repos?sort=updated&per_page=30`);
+                if (reposRes.ok) {
+                    const reposData = await reposRes.json();
+                    setRepos(reposData);
+                }
+            } else {
+                // Search Repository
+                const res = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc&per_page=30`);
+                if (!res.ok) throw new Error('Failed to search repositories');
+                const data = await res.json();
+                setSearchRepoResults(data.items);
             }
         } catch (err: any) {
             setError(err.message);
@@ -85,8 +98,7 @@ export const GithubFetcher = () => {
                 setFiles(sorted);
                 setCurrentPath(path);
             } else {
-                // It's a file, shouldn't happen via this flow usually unless we clicked a file directly
-                // But if we did, we might want to show it. For now, simple directory browser.
+                // It's a file
             }
         } catch (err: any) {
             setError(err.message);
@@ -116,16 +128,38 @@ export const GithubFetcher = () => {
             {view === 'profile' && (
                 <>
                     <h3 className={styles.header}>GitHub API Explorer</h3>
+
+                    <div className={styles.searchType}>
+                        <label className={styles.radioLabel}>
+                            <input
+                                type="radio"
+                                checked={searchType === 'user'}
+                                onChange={() => setSearchType('user')}
+                            />
+                            Search by User
+                        </label>
+                        <label className={styles.radioLabel}>
+                            <input
+                                type="radio"
+                                checked={searchType === 'repo'}
+                                onChange={() => setSearchType('repo')}
+                            />
+                            Search by Repository
+                        </label>
+                    </div>
+
                     <form onSubmit={handleSearch} className={styles.form}>
                         <input
                             className="input"
-                            placeholder="Username"
-                            value={username}
-                            onChange={e => setUsername(e.target.value)}
+                            placeholder={searchType === 'user' ? "Username (e.g. facebook)" : "Repository name (e.g. react)"}
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
                         />
                         <button type="submit" className="btn" disabled={loading}>Search</button>
                     </form>
                     {error && <div className={styles.error}>{error}</div>}
+
+                    {/* User Profile View */}
                     {userData && (
                         <div className={styles.profileSection}>
                             <div className={styles.profileHeader}>
@@ -144,6 +178,21 @@ export const GithubFetcher = () => {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    )}
+
+                    {/* Repository Search View */}
+                    {searchRepoResults.length > 0 && (
+                        <div className={styles.repoResults}>
+                            {searchRepoResults.map(repo => (
+                                <div key={repo.id} onClick={() => openRepo(repo)} className={styles.repoCard}>
+                                    <div className={styles.repoFullName}>{repo.full_name}</div>
+                                    <div className={styles.repoDesc}>{repo.description}</div>
+                                    <div className={styles.stats} style={{ marginTop: '0.5rem' }}>
+                                        <span>⭐ stars</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </>
