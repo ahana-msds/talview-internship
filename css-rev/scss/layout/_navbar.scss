@@ -1,0 +1,20 @@
+.nav-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, $primary-color, $secondary-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: $spacing-md;
+
+    @include mobile {
+        display: none; // Simplified for demo
+    }
+
+    a:hover {
+        color: $primary-color;
+    }
+}

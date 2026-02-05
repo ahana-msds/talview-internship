@@ -1,0 +1,31 @@
+// Navbar
+.navbar {
+    @include flex-center;
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-md;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Layout Grid (CSS Grid)
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: $spacing-md;
+}
+
+// Flex Layout
+.flex-row {
+    display: flex;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+
+    &-center {
+        justify-content: center;
+        align-items: center;
+    }
+}

@@ -1,0 +1,23 @@
+// --- Variables ---
+// Colors
+$primary-color: #6366f1; // Indigo
+$secondary-color: #a855f7; // Purple
+$accent-color: #f43f5e; // Rose
+$bg-dark: #0f172a; // Deep slate
+$card-bg: rgba(30, 41, 59, 0.7); // Translucent slate for glassmorphism
+$text-light: #f8fafc;
+$text-muted: #94a3b8;
+
+// Typography
+$font-main: 'Outfit', sans-serif;
+$font-code: 'Fira Code', monospace;
+
+// Spacing
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 2rem;
+$spacing-lg: 4rem;
+
+// Transitions
+$transition-fast: all 0.2s ease-in-out;
+$transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
