@@ -1,0 +1,82 @@
+/* 
+    Chapter 2: CSS Basics 
+    Focus: Selectors, Cascading, Box Model, Text, Backgrounds, Borders
+*/
+
+/* 1. Basic Selectors */
+/* Universal Selector */
+* {
+    box-sizing: border-box; /* Ensures padding and border don't increase element width */
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Element Selector */
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+/* 2. Box Model Demonstration */
+.box-demo {
+    width: 300px;
+    /* Content width: 300px */
+    padding: 20px;
+    /* Padding: adds space inside */
+    border: 5px solid #2ecc71;
+    /* Border: boundary around padding */
+    margin: 20px auto;
+    /* Margin: adds space outside */
+    background-color: white;
+    text-align: center;
+    border-radius: 10px;
+}
+
+/* 3. Class and ID Selectors */
+#special-id {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px;
+}
+
+.highlight-text {
+    font-weight: bold;
+    color: #3498db;
+    text-decoration: underline;
+}
+
+/* 4. Cascading and Specificity */
+/* This will be overridden by the next rule because it's more specific or later */
+p { color: grey; }
+.content p { color: #555; }
+
+/* 5. Text and Font Properties */
+.text-box {
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 300;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* 6. Backgrounds and Borders */
+.gradient-bg {
+    height: 100px;
+    background: linear-gradient(135deg, #3498db, #8e44ad);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px dashed white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SASS Showcase</title>
+    <link rel="stylesheet" href="../css/sass-demo.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f4f4f4;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav><a href="../index.html">&larr; Back to Dashboard</a></nav>
+
+    <header>
+        <h1>SASS Concepts</h1>
+        <p>Demonstrating how CSS Preprocessors make styling more efficient.</p>
+    </header>
+
+    <!-- Nesting & Variables -->
+    <section class="section">
+        <h2>1. Nesting & Variables</h2>
+        <div class="sass-card">
+            <h2>Card Title (Hover Me)</h2>
+            <p>This card was styled using SASS variables and nested selectors.</p>
+            <p class="status status--active">Status: Active (BEM Nesting)</p>
+        </div>
+    </section>
+
+    <!-- Inheritance / Extend -->
+    <section class="section">
+        <h2>2. Inheritance (@extend)</h2>
+        <p>Both messages below share a base style but have their own colors.</p>
+        <div class="success-message">
+            This is a success message sharing base styles.
+        </div>
+        <div class="error-message" style="margin-top: 10px;">
+            This is an error message sharing base styles.
+        </div>
+    </section>
+
+    <!-- Sidebars & Operations -->
+    <section class="section">
+        <h2>3. Operations & Variables</h2>
+        <div class="sidebar">
+            <h3>Sidebar (350px width)</h3>
+            <p>Width calculated using arithmetic (300px + 50px) in SASS.</p>
+        </div>
+    </section>
+
+    <section class="section" style="background: #fff; padding: 20px; border-radius: 8px;">
+        <h3>How to Compile SASS?</h3>
+        <p>If you have SASS installed, you can compile the <code>.scss</code> file to <code>.css</code> using:</p>
+        <code>sass sass/main.scss css/sass-demo.css --watch</code>
+    </section>
+
+</body>
+
+</html>

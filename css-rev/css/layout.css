@@ -1,0 +1,132 @@
+/* 
+    Chapter 2: CSS Layout 
+    Focus: Display, Visibility, Positioning, Floats, Flexbox, Grid, Responsive
+*/
+
+/* 1. Display & Visibility */
+.hidden-element {
+    display: none;
+    /* Element removed from document flow */
+}
+
+.invisible-element {
+    visibility: hidden;
+    /* Element hidden but still takes up space */
+}
+
+/* 2. Positioning */
+.relative-parent {
+    position: relative;
+    height: 200px;
+    background: #ecf0f1;
+    border: 2px solid #bdc3c7;
+    margin: 20px 0;
+}
+
+.absolute-child {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: #e67e22;
+    color: white;
+    padding: 10px;
+}
+
+.fixed-demo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #c0392b;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    /* Ensures it's on top */
+}
+
+/* 3. Floats and Clearing */
+.float-container {
+    padding: 10px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    /* One way to clear floats */
+}
+
+.float-left {
+    float: left;
+    width: 100px;
+    height: 100px;
+    background: #27ae60;
+    margin-right: 15px;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* 4. Flexbox (Modern Layout) */
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    /* Distributes space */
+    align-items: center;
+    /* Vertical alignment */
+    background: #34495e;
+    padding: 20px;
+    border-radius: 5px;
+    gap: 10px;
+}
+
+.flex-item {
+    background: #3498db;
+    color: white;
+    padding: 20px;
+    flex: 1;
+    /* Makes items grow equally */
+    text-align: center;
+}
+
+/* 5. CSS Grid (2D Layout) */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 equal columns */
+    grid-template-rows: auto;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.grid-item {
+    background: #9b59b6;
+    color: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.grid-span {
+    grid-column: span 2;
+    /* Spans 2 columns */
+    background: #8e44ad;
+}
+
+/* 6. Media Queries (Responsive Design) */
+@media (max-width: 768px) {
+    .flex-container {
+        flex-direction: column;
+        /* Stacks items on small screens */
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+        /* 1 column on mobile */
+    }
+}

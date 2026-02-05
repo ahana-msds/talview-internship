@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lists and Tables</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .demo-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <nav><a href="../index.html">&larr; Back to Dashboard</a></nav>
+    <h1>HTML Lists & Tables</h1>
+
+    <!-- Lists Demonstration -->
+    <section class="demo-box">
+        <h2>1. HTML Lists</h2>
+
+        <h3>Unordered List (&lt;ul&gt;)</h3>
+        <ul>
+            <li>Frontend (HTML, CSS, JS)</li>
+            <li>Backend (Node, Python, Go)</li>
+            <li>Database (SQL, NoSQL)</li>
+        </ul>
+
+        <h3>Ordered List (&lt;ol&gt;)</h3>
+        <ol>
+            <li>Plan the project</li>
+            <li>Design the UI</li>
+            <li>Write the code</li>
+            <li>Test and Deploy</li>
+        </ol>
+
+        <h3>Description List (&lt;dl&gt;)</h3>
+        <dl>
+            <dt>HTML</dt>
+            <dd>HyperText Markup Language</dd>
+            <dt>CSS</dt>
+            <dd>Cascading Style Sheets</dd>
+        </dl>
+    </section>
+
+    <!-- Tables Demonstration -->
+    <section class="demo-box">
+        <h2>2. HTML Tables</h2>
+        <p>Tables are used to display tabular data using <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code> (row),
+            <code>&lt;th&gt;</code> (header), and <code>&lt;td&gt;</code> (data).</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Concept</th>
+                    <th>Sub-topics</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>HTML</td>
+                    <td>Tags, Forms, Semantic</td>
+                    <td>Done</td>
+                </tr>
+                <tr>
+                    <td>CSS</td>
+                    <td>Box Model, Grid, Flex</td>
+                    <td>In Progress</td>
+                </tr>
+                <tr>
+                    <td>SASS</td>
+                    <td>Mixins, Nesting</td>
+                    <td>Pending</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Total Progress</td>
+                    <td>~50%</td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+</body>
+
+</html>

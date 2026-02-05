@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Layout Demo</title>
+    <link rel="stylesheet" href="../css/layout.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: auto;
+            background: #fafafa;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            border-left: 5px solid #3498db;
+            padding-left: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav><a href="../index.html">&larr; Back to Dashboard</a></nav>
+    <h1>CSS Layout & Responsiveness</h1>
+
+    <div class="fixed-demo">TOP</div>
+
+    <!-- Positioning -->
+    <section class="section">
+        <h2>1. Positioning & Z-Index</h2>
+        <p>Relative vs. Absolute vs. Fixed (the 'TOP' button is fixed!)</p>
+        <div class="relative-parent">
+            I am a relative parent.
+            <div class="absolute-child">I am absolutely positioned inside the parent.</div>
+        </div>
+    </section>
+
+    <!-- Floats and Clearing -->
+    <section class="section">
+        <h2>2. Floating & Clearing</h2>
+        <div class="float-container clearfix">
+            <div class="float-left">Float Left</div>
+            <p>This text wraps around the floated green square. Floats were the old way of doing layouts before Flexbox
+                and Grid. We use a "clearfix" to prevent the parent container from collapsing.</p>
+        </div>
+    </section>
+
+    <!-- Flexbox -->
+    <section class="section">
+        <h2>3. Flexbox (1D Layout)</h2>
+        <p>Flexbox is great for aligning items in a row or column.</p>
+        <div class="flex-container">
+            <div class="flex-item">Item 1</div>
+            <div class="flex-item">Item 2</div>
+            <div class="flex-item">Item 3</div>
+        </div>
+        <p style="text-align: center;"><small>Resize your browser to see Flex direction change (Media Query
+                demo).</small></p>
+    </section>
+
+    <!-- CSS Grid -->
+    <section class="section">
+        <h2>4. CSS Grid (2D Layout)</h2>
+        <div class="grid-container">
+            <div class="grid-item">Grid Area 1</div>
+            <div class="grid-item">Grid Area 2</div>
+            <div class="grid-item">Grid Area 3</div>
+            <div class="grid-span">Grid Area 4 (Spans 2 columns)</div>
+            <div class="grid-item">Grid Area 5</div>
+        </div>
+    </section>
+
+</body>
+
+</html>

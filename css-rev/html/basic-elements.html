@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- 
+    Chapter 1: Basic structure of an HTML document 
+    The <!DOCTYPE html> declaration defines that this document is an HTML5 document.
+-->
+<html lang="en">
+
+<head>
+    <!-- Meta tags for character set and responsive viewport -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic HTML Elements</title>
+    <!-- Internal CSS for styling the demonstration -->
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .demo-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav><a href="../index.html">&larr; Back to Dashboard</a></nav>
+
+    <h1>Chapter 1: Basic HTML Elements</h1>
+
+    <!-- Headings Demonstration -->
+    <section class="demo-box">
+        <h2>1. Headings (h1 - h6)</h2>
+        <p>Headings help structure the content hierarchy.</p>
+        <h1>This is H1 (Main Title)</h1>
+        <h2>This is H2 (Section Title)</h2>
+        <h3>This is H3 (Sub-section)</h3>
+        <h4>This is H4</h4>
+        <h5>This is H5</h5>
+        <h6>This is H6 (Smallest)</h6>
+    </section>
+
+    <!-- Paragraphs and Text Formatting -->
+    <section class="demo-box">
+        <h2>2. Paragraphs & Text Formatting</h2>
+        <p>The <code>&lt;p&gt;</code> tag defines a paragraph of text.</p>
+        <p>You can use <strong>strong</strong> for bold, <em>em</em> for italics, and <mark>mark</mark> for
+            highlighting.</p>
+        <p>Line breaks are done with the <code>&lt;br&gt;</code> tag.<br>This line is below a break.</p>
+    </section>
+
+    <!-- Links Demonstration -->
+    <section class="demo-box">
+        <h2>3. Links (Anchor Tag)</h2>
+        <p>The <code>&lt;a&gt;</code> tag creates hyperlinks.</p>
+        <p>Absolute Link: <a href="https://google.com" target="_blank">Go to Google (Opens in new tab)</a></p>
+        <p>Relative Link: <a href="index.html">Stay on this page (Relative)</a></p>
+    </section>
+
+    <!-- Images Demonstration -->
+    <section class="demo-box">
+        <h2>4. Images</h2>
+        <p>The <code>&lt;img&gt;</code> tag embeds images. It needs <code>src</code> and <code>alt</code> attributes.
+        </p>
+        <!-- Using a placeholder image for demonstration -->
+        <img src="https://via.placeholder.com/400x200?text=HTML+Image+Demo" alt="A demonstration placeholder image">
+        <p><small>Note: Always provide 'alt' text for accessibility.</small></p>
+    </section>
+
+</body>
+
+</html>

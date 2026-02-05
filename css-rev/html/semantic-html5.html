@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic HTML5</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background: #34495e;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        article {
+            flex: 3;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        aside {
+            flex: 1;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        section {
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+        }
+
+        /* New HTML5 features */
+        figure {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        figcaption {
+            font-style: italic;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        details {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Semantic Header -->
+    <header>
+        <h1>Semantic HTML5 Demonstration</h1>
+        <p>Using structural tags to convey meaning</p>
+    </header>
+
+    <!-- Semantic Navigation -->
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="#about">About</a>
+        <a href="#content">Content</a>
+    </nav>
+
+    <!-- Semantic Main Content -->
+    <main>
+        <!-- Article representing a self-contained piece of content -->
+        <article id="content">
+            <h2>The Power of Semantic HTML</h2>
+            <p>Semantic HTML tags like <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>,
+                <code>&lt;article&gt;</code>, and <code>&lt;footer&gt;</code> help search engines and screen readers
+                understand the structure of the page.</p>
+
+            <!-- Section for grouping related content -->
+            <section>
+                <h3>New HTML5 Elements</h3>
+                <p>HTML5 introduced many elements for better data representation.</p>
+
+                <!-- Figure and Figcaption -->
+                <figure>
+                    <div
+                        style="background: #3498db; height: 100px; color: white; display:flex; align-items:center; justify-content:center;">
+                        Graphic Placeholder</div>
+                    <figcaption>Fig 1. A representation of a data graphic using Figure tag.</figcaption>
+                </figure>
+
+                <!-- Details and Summary -->
+                <details>
+                    <summary>Click to reveal more information</summary>
+                    <p>This is hidden by default and only visible when the user clicks the summary. This is built-in
+                        browser functionality without JavaScript!</p>
+                </details>
+            </section>
+        </article>
+
+        <!-- Aside for content indirectly related to the main content (Sidebar) -->
+        <aside>
+            <h3>Sidebar</h3>
+            <p>Information here is related to the main content but fits better in a sidebar (e.g., related links, ads,
+                author info).</p>
+            <ul>
+                <li>Author: Antigravity</li>
+                <li>Date: Feb 2025</li>
+            </ul>
+        </aside>
+    </main>
+
+    <!-- Semantic Footer -->
+    <footer>
+        <p>&copy; 2025 SEMANTIC DEMO | <time datetime="2025-02-05">February 5, 2025</time></p>
+    </footer>
+
+</body>
+
+</html>

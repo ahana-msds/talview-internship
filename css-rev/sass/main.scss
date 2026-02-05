@@ -1,0 +1,80 @@
+// Chapter 2: CSS Preprocessors (SASS)
+// Focus: Variables, Mixins, Nesting, Inheritance
+
+// 1. Variables
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$dark-bg: #2c3e50;
+$padding-base: 15px;
+
+// 2. Mixins (Reusable code blocks)
+@mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    border-radius: $radius;
+}
+
+// 3. Nesting and Selectors
+.sass-card {
+    background: white;
+    padding: $padding-base * 2;
+    border: 1px solid #ddd;
+    @include border-radius(8px);
+
+    h2 {
+        // Nested selector (equivalent to .sass-card h2)
+        color: $primary-color;
+        margin-bottom: 10px;
+
+        &:hover {
+            // Reference parent selector (&)
+            color: darken($primary-color, 15%);
+        }
+    }
+
+    .status {
+        font-weight: bold;
+
+        &--active {
+            // BEM style nesting
+            color: $secondary-color;
+        }
+
+        &--pending {
+            color: #f1c40f;
+        }
+    }
+}
+
+// 4. Inheritance / Extend
+%message-shared {
+    padding: 10px;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+.success-message {
+    @extend %message-shared;
+    border-color: $secondary-color;
+    background: lighten($secondary-color, 40%);
+}
+
+.error-message {
+    @extend %message-shared;
+    border-color: #e74c3c;
+    background: lighten(#e74c3c, 40%);
+}
+
+// 5. Operations
+.sidebar {
+    width: 300px + 50px; // Arithmetic
+    background: $dark-bg;
+    color: white;
+    padding: $padding-base;
+}

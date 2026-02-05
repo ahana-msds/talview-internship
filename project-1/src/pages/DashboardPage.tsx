@@ -20,7 +20,7 @@ export const DashboardPage = () => {
      */
     const triggerSentryTest = () => {
         console.log("Triggering Sentry test error...");
-        throw new Error("🔥 Sentry Manual Verification Error - Dashboard");
+        throw new Error("Sentry Manual Verification Error - Dashboard");
     };
 
     return (

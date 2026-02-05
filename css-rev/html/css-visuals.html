@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Visuals & Animations</title>
+    <link rel="stylesheet" href="../css/visuals.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            text-align: center;
+            background: #ecf0f1;
+        }
+
+        .section {
+            background: white;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav><a href="../index.html">&larr; Back to Dashboard</a></nav>
+    <h1>Transitions & Animations</h1>
+
+    <!-- Transitions -->
+    <section class="section">
+        <h2>1. Transitions</h2>
+        <p>Hover over the button to see a smooth transition of color and scale.</p>
+        <button class="transition-btn">Hover Me</button>
+    </section>
+
+    <!-- Keyframe Animations -->
+    <section class="section">
+        <h2>2. Keyframe Animations</h2>
+        <p>The green box below animated on page load using <code>@keyframes</code>.</p>
+        <div class="animated-box">I slid in from the left!</div>
+
+        <p style="margin-top: 30px;">This circle has an infinite pulse animation.</p>
+        <div class="pulse-circle">PULSE</div>
+    </section>
+
+    <!-- 3D Transforms -->
+    <section class="section">
+        <h2>3. 3D Transforms</h2>
+        <p>Hover over the card to see a flip animation.</p>
+        <div class="card-container">
+            <div class="card">FLIP ME</div>
+        </div>
+    </section>
+
+</body>
+
+</html>
