@@ -1,4 +1,4 @@
-# Redux-Rev: Mastering State Management
+# Redux-Rev: Practicing State Management
 
 This project is a comprehensive guide and practice implementation for **Redux Toolkit (RTK)** and **RTK Query** in a modern React application. It demonstrates how to handle both **Client State** (UI preferences) and **Server State** (API data) efficiently and scalably.
 
