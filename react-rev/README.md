@@ -1,6 +1,6 @@
 # React Revision Project
 
-This project demonstrates the core concepts of React as requested for Chapters 1-6.
+This project demonstrates the core concepts of React 
 
 ## Concepts Covered
 
