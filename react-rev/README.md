@@ -1,4 +1,4 @@
-# React Revision Project
+# React Revision 
 
 This project demonstrates the core concepts of React 
 
@@ -20,7 +20,7 @@ This project demonstrates the core concepts of React
 - Using the `useState` hook.
 - Updating state and understanding re-renders.
 
-### 5. Event Handling (Chapter 6)
+### 5. Event Handling 
 - **Synthetic Events**: React's cross-browser event wrapper.
 - **Handlers**: Functions that respond to UI interactions (onClick, onMouseEnter, etc.).
 - **Bubbling & Capturing**: Understanding the two phases of event propagation.
