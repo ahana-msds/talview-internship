@@ -20,7 +20,7 @@ const ChildComponent = (props) => {
 const PropsDemo = () => {
     return (
         <div style={{ border: '2px solid #10b981', padding: '20px', borderRadius: '8px', margin: '10px' }}>
-            <h2>2 & 3. Understanding & Using Props</h2>
+            <h2>Understanding & Using Props</h2>
             <p>Props allow components to be dynamic and reusable by passing data down.</p>
 
             {/* Passing data to ChildComponent via attributes */}

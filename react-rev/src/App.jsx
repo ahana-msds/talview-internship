@@ -9,6 +9,7 @@ import StateDemo from './components/StateAndProps/StateDemo';
 import SyntheticEvents from './components/EventHandling/SyntheticEvents';
 import EventBubbling from './components/EventHandling/EventBubbling';
 import PreventDefaultDemo from './components/EventHandling/PreventDefaultDemo';
+import HooksRevision from './components/HooksDemo/HooksRevision';
 
 function App() {
   const [activeTab, setActiveTab] = useState('components');
@@ -37,6 +38,12 @@ function App() {
             <PreventDefaultDemo />
           </div>
         );
+      case 'hooks':
+        return (
+          <div className="section-fade-in">
+            <HooksRevision />
+          </div>
+        );
       default:
         return null;
     }
@@ -46,7 +53,7 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <h1>React Concepts Revision</h1>
-        <p className="subtitle">Chapters 1-6: Components, Props, State, and Events</p>
+        <p className="subtitle">Components, Props, State, and Events</p>
       </header>
 
       <nav className="app-nav">
@@ -60,13 +67,19 @@ function App() {
           className={activeTab === 'props-state' ? 'nav-btn active' : 'nav-btn'}
           onClick={() => setActiveTab('props-state')}
         >
-          2-4. Props & State
+          2. Props & State
         </button>
         <button
           className={activeTab === 'events' ? 'nav-btn active' : 'nav-btn'}
           onClick={() => setActiveTab('events')}
         >
-          6. Event Handling
+          3. Event Handling
+        </button>
+        <button
+          className={activeTab === 'hooks' ? 'nav-btn active' : 'nav-btn'}
+          onClick={() => setActiveTab('hooks')}
+        >
+          4. React Hooks
         </button>
       </nav>
 
@@ -75,7 +88,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Created for Talview Internship Revision</p>
+        <p>Created for Revision</p>
       </footer>
     </div>
   );

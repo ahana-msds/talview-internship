@@ -29,7 +29,7 @@ const EventBubbling = () => {
 
     return (
         <div style={{ border: '2px solid #ec4899', padding: '20px', borderRadius: '8px', margin: '10px' }}>
-            <h2>6.3. Bubbling and Capturing</h2>
+            <h2> Bubbling and Capturing</h2>
             <p>Watch the order of execution in the log below:</p>
 
             <div

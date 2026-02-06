@@ -11,7 +11,7 @@ const FunctionalComponent = () => {
     // but for this basic demo, we just return a UI.
     return (
         <div style={{ border: '2px solid #646cff', padding: '20px', borderRadius: '8px', margin: '10px' }}>
-            <h2>1. Functional Component</h2>
+            <h2>Functional Component</h2>
             <p>I am a Functional Component! I am defined as a regular JavaScript function.</p>
             <ul>
                 <li>Concise and easier to read.</li>

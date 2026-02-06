@@ -27,10 +27,10 @@ const PreventDefaultDemo = () => {
 
     return (
         <div style={{ border: '2px solid #0891b2', padding: '20px', borderRadius: '8px', margin: '10px' }}>
-            <h2>6.4. preventDefault Method</h2>
+            <h2>preventDefault Method</h2>
 
             <div style={{ marginBottom: '20px' }}>
-                <h4>Example 1: Form Submission</h4>
+                <h4>Example : Form Submission</h4>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <input
                         type="text"

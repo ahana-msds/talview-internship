@@ -25,7 +25,7 @@ const StateDemo = () => {
 
     return (
         <div style={{ border: '2px solid #3b82f6', padding: '20px', borderRadius: '8px', margin: '10px' }}>
-            <h2>2 & 4. Managing and Updating State</h2>
+            <h2>Managing and Updating State</h2>
             <p>State is local to the component. When state changes, the UI updates automatically.</p>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '15px 0' }}>

@@ -24,7 +24,14 @@ This project demonstrates the core concepts of React as requested for Chapters 1
 - **Synthetic Events**: React's cross-browser event wrapper.
 - **Handlers**: Functions that respond to UI interactions (onClick, onMouseEnter, etc.).
 - **Bubbling & Capturing**: Understanding the two phases of event propagation.
-- **preventDefault**: Stopping default browser behaviors like form submission or link navigation.
+- **preventDefault**: Stopping default browser behaviors.
+
+### 6. React Hooks (Advanced)
+- **useState**: Functional state management.
+- **useEffect**: Lifecycle equivalents and side effects.
+- **useRef**: Persistent references and DOM interaction.
+- **useMemo**: Performance optimization for values.
+- **useCallback**: Performance optimization for functions.
 
 ---
 
