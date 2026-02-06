@@ -28,7 +28,7 @@ const SyntheticEvents = () => {
 
     return (
         <div style={{ border: '2px solid #8b5cf6', padding: '20px', borderRadius: '8px', margin: '10px' }}>
-            <h2>6.1 & 6.2. Synthetic Events & Handlers</h2>
+            <h2>Synthetic Events & Handlers</h2>
             <p>React catches events at the root and wraps them in SyntheticEvents.</p>
 
             <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f5f3ff', borderRadius: '4px' }}>

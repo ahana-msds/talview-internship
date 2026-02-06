@@ -28,10 +28,32 @@ This project demonstrates the core concepts of React as requested for Chapters 1
 
 ### 6. React Hooks (Advanced)
 - **useState**: Functional state management.
-- **useEffect**: Lifecycle equivalents and side effects.
-- **useRef**: Persistent references and DOM interaction.
-- **useMemo**: Performance optimization for values.
-- **useCallback**: Performance optimization for functions.
+- **Direct DOM & Values**: Using `useRef` correctly.
+- **Context API**: Global state management.
+
+### 7. Forms and Controlled Components
+- **Controlled vs Uncontrolled**: Managing input state via React vs DOM.
+- **Form Handling**: Capturing input, select, and checkbox data.
+- **Validation**: Implementing client-side validation logic.
+
+### 8. React Router
+- **Navigation**: Using Link and Routes for SPAs.
+- **Dynamic Routes**: Handling URL parameters with `:id`.
+- **Protected Routes**: Restricting access based on authentication status.
+
+### 9. Debugging and Error Boundaries
+- **React DevTools**: Inspecting components and profiling performance.
+- **Debugging Techniques**: Using `debugger`, console logs, and breakpoints.
+- **Error Boundaries**: Catching JavaScript errors in components using `componentDidCatch`.
+
+### 10. API Integration
+- **REST**: Using the native `fetch` API, handling loading/error states, and async/await.
+- **GraphQL**: Understanding the query structure and fetching data via POST requests.
+
+### 11. Unit Testing
+- **Vitest & Jest**: Writing assertions using `describe`, `it`, and `expect`.
+- **Quality & Coverage**: Best practices for writing determinisitic and isolated tests.
+- **Commands**: Running tests with `npm test`.
 
 ---
 
@@ -52,7 +74,7 @@ This project demonstrates the core concepts of React as requested for Chapters 1
    npm run dev
    ```
 
-4. **Open in browser**: 点击 the link provided in the terminal (usually `http://localhost:5173`).
+4. **Open in browser**: Open the link provided in the terminal (usually `http://localhost:5173`).
 
 ---
 
