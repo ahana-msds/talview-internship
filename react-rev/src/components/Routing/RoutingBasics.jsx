@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
 /**
  * RoutingBasics Component
  * 
- * Chapter 8.1 & 8.2: Role of React Router, setting up routes and links.
+ * Chapter: Role of React Router, setting up routes and links.
  */
 
 const Home = () => <div><h4>Home Page</h4><p>Welcome to the main section of our mini-app.</p></div>;
@@ -30,7 +30,7 @@ const RoutingLayout = () => {
 const RoutingBasics = () => {
     return (
         <div className="demo-section">
-            <h3>8.1 & 8.2. React Router Setup and Links</h3>
+            <h3>React Router Setup and Links</h3>
             <p style={{ fontSize: '0.85em', color: '#666' }}>
                 React Router allows us to create dynamic, single-page navigation.
                 Note how the URL in your address bar doesn't change significantly,

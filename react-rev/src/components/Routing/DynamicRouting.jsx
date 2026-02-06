@@ -4,7 +4,7 @@ import { Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 /**
  * DynamicRouting Component
  * 
- * Chapter 8.3: Using dynamic routes and parameters.
+ * Chapter: Using dynamic routes and parameters.
  */
 
 const UserProfile = () => {
@@ -24,7 +24,7 @@ const UserProfile = () => {
 const DynamicRouting = () => {
     return (
         <div className="demo-section">
-            <h3>8.3. Dynamic Routes and Parameters</h3>
+            <h3>Dynamic Routes and Parameters</h3>
 
             <div style={{ marginBottom: '15px' }}>
                 <p>Click links to pass different IDs to the same component:</p>
