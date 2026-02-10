@@ -1,68 +1,71 @@
-# database practice: knex.js vs prisma
+# SQL Practice: Order Management System
 
-this project demonstrates database management in node.js, comparing two popular approaches:
-1. **knex.js**: a sql query builder.
-2. **prisma**: a modern object-relational mapper (orm).
+This project is a hands-on practice environment for mastering SQL concepts including Data Definition Language (DDL), Data Manipulation Language (DML), and Database Normalization (3NF).
 
-## structure
+## Scenario
+We are building a simplified **Order Management System** that tracks Customers, Products, Orders, and Order Items.
 
-- `knex-demo/`: implementation using knex (manual migrations, query building).
-- `prisma-demo/`: implementation using prisma (schema-first, type-safe client).
+## Concepts Covered
 
-## setup
+### Chapter 1: Data Definition Language (DDL)
+- **Schema Design**: Creating a relational schema.
+- **Normalization**: Ensuring the database is in **3rd Normal Form (3NF)** to reduce redundancy.
+- **Data Types**: Using `VARCHAR`, `INTEGER`, `DECIMAL`, `BOOLEAN`, `TIMESTAMP`.
+- **Constraints**:
+    - `PRIMARY KEY`: Uniquely identifies rows.
+    - `FOREIGN KEY`: Enforces relationships between tables.
+    - `UNIQUE`: Ensures email addresses are unique.
+    - `NOT NULL`: Ensures critical data is always present.
+    - `CHECK`: Validates data (e.g., price >= 0, status in specific values).
+- **Indexes**: Created on frequently searched columns like `customer_id` and product `name` for performance.
 
-14: prerequisites: a postgresql database running locally.
-15: 
-16: ### running with docker
-17: 
-18: 1. start postgres and create databases automatically:
-19:    ```bash
-20:    docker-compose up -d
-21:    ```
-22: 2. the `.env` files are already configured to connect to this container.
-23: 
-24: 1. create a `.env` file in the root `database-practice` folder with your postgres connection string:
-   ```
-   database_url="postgresql://user:password@localhost:5432/your_db_name"
-   ```
+### Chapter 2: Data Manipulation Language (DML)
+- **INSERT**: Adding new records to tables.
+- **Bulk Insert**: Inserting multiple rows in a single statement.
+- **SELECT**: Retrieving data with filtering (`WHERE`).
+- **JOINS**:
+    - `INNER JOIN`: Matching records in both tables.
+    - `LEFT JOIN`: All records from left table, matching from right.
+- **SUBQUERIES**: Nested queries for complex filtering.
+- **UPDATE**: Modifying existing data based on conditions.
+- **DELETE**: Removing records (and cascading deletes).
+- **VIEWS**: Creating virtual tables for simplified reporting.
 
-2. copy this `.env` to both subdirectories.
+## Project Structure
+```
+sql-mastery/
+├── docker-compose.yml       # PostgreSQL container configuration
+├── README.md                # This documentation
+└── scripts/
+    ├── 01_schema.sql        # DDL: Create tables, constraints, indexes
+    ├── 02_seed.sql          # DML: Insert sample data
+    ├── 03_queries.sql       # DML: Practice selects, updates, deletes
+```
 
-### running knex demo
+## How to Run
 
-1. navigate to `knex-demo`:
-   ```bash
-   cd knex-demo
-   npm install
-   ```
-2. run migrations:
-   ```bash
-   npx knex migrate:latest
-   ```
-3. run the demo script:
-   ```bash
-   node index.js
-   ```
+### 1. Start PostgreSQL
+Ensure you have Docker installed and run:
+```bash
+docker-compose up -d
+```
 
-### running prisma demo
+### 2. Connect to the Database
+You can use any SQL client (like DBeaver, pgAdmin) or the command line.
+**Credentials:**
+- **Host**: `localhost` (Port 5433)
+- **User**: `user`
+- **Password**: `password`
+- **Database**: `order_management`
 
-1. navigate to `prisma-demo`:
-   ```bash
-   cd prisma-demo
-   npm install
-   ```
-2. push schema to database:
-   ```bash
-   npx prisma db push
-   ```
-3. run the demo script:
-   ```bash
-   node index.js
-   ```
+### 3. Run the Scripts
+Execute the SQL files in order:
+1.  **Run `01_schema.sql`**: Creates the tables and structure.
+2.  **Run `02_seed.sql`**: Populates the database with initial data.
+3.  **Run `03_queries.sql`**: Executes practice queries and modifications.
 
-## key concepts demonstrated
-- **setting up connections**: managing db clients.
-- **migrations**: schema management (imperative vs declarative).
-- **crud**: create, read, update, delete operations.
-- **relationships**: handling one-to-one and one-to-many.
-- **transactions**: ensuring data integrity across multiple operations.
+### 4. Clean Up
+To stop and remove the container:
+```bash
+docker-compose down
+```
