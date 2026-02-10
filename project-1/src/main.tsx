@@ -17,7 +17,7 @@ import { store } from './app/store'
 
 // Initialize Sentry for centralized error handling
 Sentry.init({
-  dsn: "https://examplePublicKey@o0.ingest.sentry.io/0", // Placeholder DSN
+  dsn: "https://79779bd681cec58216671f7e8c94951d@o4510826507993088.ingest.us.sentry.io/4510826512121856",
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
@@ -49,7 +49,9 @@ Sentry.init({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
+        <App />
+      </Sentry.ErrorBoundary>
     </Provider>
   </StrictMode>,
 )

@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import * as Sentry from "@sentry/react";
 import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import styles from './Auth.module.css';
+
+import { loginSchema } from '../lib/validation';
 
 /**
  * LoginPage component handles user authentication.
@@ -25,10 +28,21 @@ export const LoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+
+        // 1. Validate with Zod
+        const result = loginSchema.safeParse({ email, password: pass });
+
+        if (!result.success) {
+            setError(result.error.issues[0].message);
+            setIsLoading(false);
+            return;
+        }
+
         try {
             await loginWithEmail(email, pass);
             navigate('/dashboard');
         } catch (err: any) {
+            Sentry.captureException(err);
             setError(err.message || 'Failed to login');
         } finally {
             setIsLoading(false);
@@ -48,6 +62,7 @@ export const LoginPage = () => {
             if (method === 'guest') await loginAsGuest();
             navigate('/dashboard');
         } catch (err) {
+            Sentry.captureException(err);
             setError('Login failed. Please try again.');
         } finally {
             setIsLoading(false);

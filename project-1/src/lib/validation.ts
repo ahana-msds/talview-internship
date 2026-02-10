@@ -18,6 +18,13 @@ export const loginSchema = z.object({
 });
 
 /**
+ * Signup Schema: Extension of loginSchema including name.
+ */
+export const signupSchema = loginSchema.extend({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+});
+
+/**
  * User Schema: Validates the structure of User objects, typically from an API.
  */
 export const userSchema = z.object({

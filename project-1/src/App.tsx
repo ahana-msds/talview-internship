@@ -13,6 +13,9 @@ import { ToDoPage } from './pages/ToDoPage';
 import { ProductPage } from './pages/ProductPage';
 import { CartPage } from './pages/CartPage';
 import { GitHubPage } from './pages/GitHubPage';
+import { ProductDetailPage } from './pages/ProductDetailPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { AddressPage } from './pages/AddressPage';
 
 /**
  * ProtectedRoute: Wraps components that require authentication.
@@ -83,10 +86,34 @@ function App() {
               }
             />
             <Route
+              path="/product/:id"
+              element={
+                <AuthenticatedRoute>
+                  <ProductDetailPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
               path="/cart"
               element={
                 <AuthenticatedRoute>
                   <CartPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AuthenticatedRoute>
+                  <ProfilePage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/addresses"
+              element={
+                <AuthenticatedRoute>
+                  <AddressPage />
                 </AuthenticatedRoute>
               }
             />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as Sentry from "@sentry/react";
 import styles from './ProductFetcher.module.css';
 
 interface Product {
@@ -24,6 +25,7 @@ export const ProductFetcher = () => {
             setHasFetched(true);
         } catch (err) {
             console.error("Failed to fetch products", err);
+            Sentry.captureException(err);
         } finally {
             setLoading(false);
         }

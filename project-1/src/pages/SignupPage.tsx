@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import * as Sentry from "@sentry/react";
 import { useNavigate, Link } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import styles from './Auth.module.css';
+
+import { signupSchema } from '../lib/validation';
 
 /**
  * SignupPage component handles new user registrations.
@@ -26,10 +29,22 @@ export const SignupPage = () => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+
+        // 1. Validate with Zod before proceeding
+        const result = signupSchema.safeParse({ name, email, password: pass });
+
+        if (!result.success) {
+            // Get the first error message
+            setError(result.error.issues[0].message);
+            setIsLoading(false);
+            return;
+        }
+
         try {
             await signupWithEmail(name, email, pass);
             navigate('/login');
         } catch (err: any) {
+            Sentry.captureException(err);
             setError(err.message || 'Failed to create account');
         } finally {
             setIsLoading(false);

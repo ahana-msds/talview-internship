@@ -37,11 +37,23 @@ a comprehensive single page application (spa) built with react, typescript, vite
 - **react testing library**: used for verifying component behaviors.
 - **coverage**: unit tests for validation logic and password complexity.
 
-### 6. ui development & theme
-- **storybook**: component library developed in isolation with interactive stories.
-- **theme persistence**: saves selected theme (minimal, ocean, forest) to localstorage.
-- **redesigned dashboard**: modern grid layout with feature-specific icons.
-- **consistent nav**: back to dashboard navigation standardized across all features.
+### 6. Product Detail View
+- **Single Product Fetch**: Detailed view for individual items with full description and high-res images.
+- **Dynamic Quantity**: Select desired quantity before adding to the cart.
+- **Window Isolation**: Product details open in a new window/tab for focus, with auto-close support when navigating back.
+- **Quick Purchase**: "Buy Now" button for immediate checkout flow.
+
+### 7. Account & Profile Management
+- **Profile Dropdown**: Interactive user menu in the Navbar.
+- **Personal Information**: Update display name (Firebase) and Birthday (LocalStorage).
+- **Security Check**: Password change feature requiring re-authentication with current credentials.
+- **Address Book**: Manage multiple shipping addresses with a clean form-based interface.
+
+### 8. UI Development & Theme
+- **Storybook**: Component library developed in isolation with interactive stories.
+- **Theme Persistence**: Saves selected theme (Ocean, Forest, Default) to LocalStorage.
+- **Redesigned Dashboard**: Modern grid layout with feature-specific icons.
+- **User Greeting**: Interactive "Hi, User" greeting with dropdown functionality.
 
 ## tech stack
 - **core**: react 19, typescript, vite

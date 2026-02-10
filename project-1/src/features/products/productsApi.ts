@@ -56,7 +56,10 @@ export const productsApi = createApi({
         getProducts: builder.query<ProductResponse, { limit: number; skip: number }>({
             query: ({ limit, skip }) => `products?limit=${limit}&skip=${skip}`,
         }),
+        getProductById: builder.query<Product, string | number>({
+            query: (id) => `products/${id}`,
+        }),
     }),
 });
 
-export const { useGetProductsQuery } = productsApi;
+export const { useGetProductsQuery, useGetProductByIdQuery } = productsApi;

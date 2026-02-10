@@ -1,9 +1,6 @@
 import { useState } from 'react';
 // RTK Query hook for fetching products
 import { useGetProductsQuery } from './productsApi';
-// Redux dispatch for adding items to the cart
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../cart/cartSlice';
 
 // Type definitions for products
 import type { Product } from './productsApi';
@@ -17,7 +14,6 @@ interface ProductListProps {
  * Displays 8 products per page.
  */
 const ProductList = ({ products: injectedProducts }: ProductListProps) => {
-    const dispatch = useDispatch();
     const [page, setPage] = useState(0);
     const LIMIT = 8;
 
@@ -104,18 +100,18 @@ const ProductList = ({ products: injectedProducts }: ProductListProps) => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', opacity: isFetching ? 0.6 : 1, transition: 'opacity 0.2s' }}>
-                {products?.map((product) => (
+                {products?.map((product: Product) => (
                     <div key={product.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
                         <img src={product.thumbnail} alt={product.title} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: 'var(--radius)', marginBottom: '1rem' }} />
                         <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{product.title}</h3>
                         <p style={{ fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '1rem' }}>${product.price}</p>
                         <div style={{ marginTop: 'auto' }}>
                             <button
-                                onClick={() => dispatch(addToCart({ ...product, quantity: 1 }))}
+                                onClick={() => window.open(`/product/${product.id}`, '_blank')}
                                 className="btn"
                                 style={{ width: '100%' }}
                             >
-                                Add to Cart
+                                View Details
                             </button>
                         </div>
                     </div>

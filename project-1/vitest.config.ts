@@ -22,7 +22,6 @@ export default defineConfig({
     css: true,
     projects: [
       {
-        name: 'unit',
         extends: true,
         resolve: {
           alias: {
@@ -30,6 +29,7 @@ export default defineConfig({
           }
         },
         test: {
+          name: 'unit',
           include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
           environment: 'jsdom',
         }

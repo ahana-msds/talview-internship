@@ -10,6 +10,10 @@ import {
     GithubAuthProvider,
     signOut,
     onAuthStateChanged,
+    updateProfile,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider,
     type User as FirebaseUser
 } from "firebase/auth";
 
@@ -54,6 +58,8 @@ interface AuthContextType {
     loginWithGithub: () => Promise<void>;
     loginAsGuest: () => Promise<void>;
     logout: () => Promise<void>;
+    updateProfileName: (name: string) => Promise<void>;
+    changePassword: (oldPass: string, newPass: string) => Promise<void>;
 }
 
 // Create the context for authentication
@@ -195,6 +201,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
     };
 
+    /**
+     * updateProfileName: Updates the user's display name in Firebase and local state.
+     */
+    const updateProfileName = async (name: string) => {
+        if (!auth.currentUser) throw new Error("No user logged in");
+        await updateProfile(auth.currentUser, { displayName: name });
+        setUser(prev => prev ? { ...prev, displayName: name } : null);
+    };
+
+    /**
+     * changePassword: Changes user password after re-authenticating with the old one.
+     */
+    const changePassword = async (oldPass: string, newPass: string) => {
+        const user = auth.currentUser;
+        if (!user || !user.email) throw new Error("No user logged in");
+
+        // 1. Re-authenticate
+        const credential = EmailAuthProvider.credential(user.email, oldPass);
+        await reauthenticateWithCredential(user, credential);
+
+        // 2. Update Password
+        await updatePassword(user, newPass);
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -204,7 +234,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             loginWithGoogle,
             loginWithGithub,
             loginAsGuest,
-            logout
+            logout,
+            updateProfileName,
+            changePassword
         }}>
             {children}
         </AuthContext.Provider>
