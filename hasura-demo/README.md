@@ -1,61 +1,40 @@
-# Hasura & React Todo Demo
+# Logistics Command Center: Hasura & React Demo
 
-A full-stack demonstration of **Hasura GraphQL Engine** integrated with a **React + TypeScript** frontend using **Apollo Client**. This project showcases how to rapidly build GraphQL APIs on top of PostgreSQL and consume them in a modern web application.
+A real-time **Logistics & Package Tracking System** demonstration using **Hasura GraphQL Engine** and **React + Apollo Client**.
 
-## Project Architecture
+## 🚚 Logistics Scenario
+This project simulates a delivery network with three key roles:
+- **Admin**: Full visibility into all packages globally.
+- **Agent (Rider)**: Can track and update packages assigned to them.
+- **Customer**: Can only see real-time updates for packages they sent or are receiving.
 
-- **Backend**:
-  - **PostgreSQL**: Relational database for storage.
-  - **Hasura GraphQL Engine**: Automatically generates a real-time GraphQL API from the database schema.
-  - **Docker**: Containerization for easy setup of the database and engine.
-- **Frontend**:
-  - **React (Vite)**: modern frontend framework.
-  - **Apollo Client**: Manages GraphQL queries, mutations, and local state.
-  - **TypeScript**: Ensures type safety across the frontend.
+## 🚀 Advanced Hasura Features
 
-## Features
+### 1. Real-time Subscriptions & Row-Level Security (RLS)
+The `PackageTracker` uses GraphQL Subscriptions to listen for coordinate changes in the `packages` table.
+- **Learning Point**: Subscriptions automatically respect **Access Control** rules. If a Customer is logged in, they only receive updates for *their* packages because of the Row-Level Permissions defined in Hasura.
 
-- **GraphQL Queries**: Fetching real-time todo lists.
-- **GraphQL Mutations**: Adding new todos to the database.
-- **Authentication Simulation**: A simple UI to simulate user login (Admin/User roles).
-- **Relational Data**: Demonstrates foreign key relationships between `users` and `todos`.
+### 2. Access Control (Permissions)
+Configured in the Hasura Console (**Data -> [Table] -> Permissions**):
+- **Select Permission (Customer)**: `{"_or": [{"sender_id": {"_eq": "X-Hasura-User-Id"}}, {"receiver_id": {"_eq": "X-Hasura-User-Id"}}]}`
+- **Update Permission (Agent)**: Allowed only on `status` and `location` columns where `agent_id == X-Hasura-User-Id`.
 
-## Setup & Running the Project
+### 3. Custom Actions (Extending Functionality)
+Custom Actions allow you to integrate REST APIs or serverless functions into your GraphQL schema.
+- **Logic**: Use an Action to `calculate_shipping_cost`.
+- **Workflow**: Hasura receives the GraphQL call -> Forwards it as a REST POST to your Node.js/Python webhook -> Returns the result to the client.
 
-### 1. Requirements
-- [Docker & Docker Compose](https://www.docker.com/products/docker-desktop/)
-- [Node.js](https://nodejs.org/) (for the frontend)
+### 4. Remote Schemas (Unified Graph)
+You can stitch existing GraphQL APIs (like weather or currency services) into Hasura.
+- **Scenario**: Stitch a Weather API to show weather conditions at the package's current `location_lat/lng`.
 
-### 2. Launch Backend (Hasura & Postgres)
-Navigate to the root of the project and start the containers:
-```bash
-cd hasura-demo
-docker-compose up -d
-```
-The **Hasura Console** will be available at [http://localhost:8080/console](http://localhost:8080/console) (Admin Secret: `myadminsecretkey`).
+## 🛠️ Performance & Error Monitoring
+Managed in `src/apollo/client.ts`:
+- **Error Link**: Intercepts and logs all GraphQL and Network errors to the console (perfect for debugging permission issues).
+- **Performance Link**: Logs operation duration (ms) for every query and mutation to help identify slow resolvers.
 
-### 3. Database Initialization
-The `init.sql` script creates the following tables:
-- `users`: ID, username, role, timestamps.
-- `todos`: ID, title, completion status, user_id (FK), visibility.
+## 🏃 Running the Project
 
-> [!IMPORTANT]
-> You must **Track** these tables in the Hasura Console (Data tab) to make them available via GraphQL.
-
-### 4. Launch Frontend
-Navigate to the frontend directory, install dependencies, and start the development server:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-The app will be available at [http://localhost:5173](http://localhost:5173).
-
-## Project Structure
-- `docker-compose.yml`: Infrastructure configuration.
-- `init.sql`: Database schema and seed data.
-- `frontend/`:
-  - `src/apollo/client.ts`: Apollo Client setup connecting to `localhost:8080`.
-  - `src/components/AddTodo.tsx`: GraphQL mutation example.
-  - `src/components/TodoList.tsx`: GraphQL query example.
-  - `src/components/Auth.tsx`: simple Authentication UI.
+1. **Backend**: `cd hasura-demo && docker-compose up -d`
+2. **Hasura Console**: Go to [http://localhost:8080](http://localhost:8080) and **Track All** tables in the `public` schema.
+3. **Frontend**: `cd frontend && npm install && npm run dev`

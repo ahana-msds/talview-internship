@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run setup:hasura && vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup:hasura": "node scripts/setup-hasura.js"
   },
   "dependencies": {
     "@apollo/client": "^4.1.4",

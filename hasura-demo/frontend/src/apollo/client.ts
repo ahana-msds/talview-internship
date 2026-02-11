@@ -3,50 +3,65 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { setContext } from '@apollo/client/link/context';
-
-/**
- * Apollo Client Configuration
- * This setup enables both HTTP (Queries/Mutations) and WebSocket (Subscriptions) connections.
- * It also injects authentication headers to simulate role-based access control.
- */
+import { onError } from '@apollo/client/link/error';
 
 const HASURA_GRAPHQL_ENDPOINT = 'http://localhost:8080/v1/graphql';
 const HASURA_WS_ENDPOINT = 'ws://localhost:8080/v1/graphql';
 
-// 1. HTTP Link for Queries and Mutations
+/**
+ * Global Error Handler
+ */
+const errorLink = onError((err: any) => {
+    const { graphQLErrors, networkError, operation } = err;
+    if (graphQLErrors) {
+        for (const error of graphQLErrors) {
+            console.error(
+                `[GraphQL Error] ${error.message} (Operation: ${operation.operationName})`
+            );
+        }
+    }
+    if (networkError) console.error(`[Network Error] ${networkError}`);
+});
+
 const httpLink = new HttpLink({
     uri: HASURA_GRAPHQL_ENDPOINT,
 });
 
-// 2. Auth Link to inject headers
 const authLink = setContext((_, { headers }) => {
-    // Get the role and user ID from local storage (Simulating auth)
-    const role = localStorage.getItem('role') || 'user';
-    const userId = localStorage.getItem('userId') || '1';
+    const role = localStorage.getItem('role');
+    const userId = localStorage.getItem('userId');
+
+    if (!role || role === 'public') {
+        return { headers };
+    }
 
     return {
         headers: {
             ...headers,
-            'x-hasura-admin-secret': 'myadminsecretkey', // In a real app, use JWT tokens instead!
             'x-hasura-role': role,
-            'x-hasura-user-id': userId,
+            'x-hasura-user-id': userId || '0',
         }
-    }
+    };
 });
 
-// 3. Modern WebSocket Link for Subscriptions (using graphql-ws)
 const wsLink = new GraphQLWsLink(createClient({
     url: HASURA_WS_ENDPOINT,
-    connectionParams: {
-        headers: {
-            'x-hasura-admin-secret': 'myadminsecretkey',
-            'x-hasura-role': localStorage.getItem('role') || 'user',
-            'x-hasura-user-id': localStorage.getItem('userId') || '1',
-        },
+    connectionParams: () => {
+        const role = localStorage.getItem('role');
+        const userId = localStorage.getItem('userId');
+
+        if (!role || role === 'public') {
+            return {}; // No headers for public access
+        }
+
+        // Return flat headers as top-level params for graphql-ws/Hasura
+        return {
+            'x-hasura-role': role,
+            'x-hasura-user-id': userId || '0'
+        };
     },
 }));
 
-// 4. Split Link: Routes traffic based on operation type
 const splitLink = split(
     ({ query }) => {
         const definition = getMainDefinition(query);
@@ -56,10 +71,9 @@ const splitLink = split(
         );
     },
     wsLink,
-    authLink.concat(httpLink),
+    errorLink.concat(authLink.concat(httpLink)),
 );
 
-// 5. Initialize Client
 export const client = new ApolloClient({
     link: splitLink,
     cache: new InMemoryCache(),
