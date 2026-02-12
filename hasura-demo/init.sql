@@ -1,5 +1,5 @@
 -- 1. Users Table with Roles and Regions
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE,
@@ -10,7 +10,7 @@ CREATE TABLE users (
 );
 
 -- 2. Packages Table for Real-time Tracking
-CREATE TABLE packages (
+CREATE TABLE IF NOT EXISTS packages (
   id SERIAL PRIMARY KEY,
   tracking_number TEXT UNIQUE NOT NULL DEFAULT 'TRK' || floor(random() * 1000000)::text,
   contents TEXT NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE packages (
 );
 
 -- 3. Audit Logs for Status Tracking
-CREATE TABLE package_logs (
+CREATE TABLE IF NOT EXISTS package_logs (
   id SERIAL PRIMARY KEY,
   package_id INTEGER REFERENCES packages(id) ON DELETE CASCADE,
   status TEXT NOT NULL,
@@ -42,17 +42,20 @@ CREATE TABLE package_logs (
 -- Seed Data
 INSERT INTO users (username, email, password, role, region) VALUES 
 ('cargo_admin', 'admin@cargo.com', 'password123', 'manager', 'global'),
-('rider_bob', 'bob@rider.com', 'password123', 'agent', 'north'),
-('rider_alice', 'alice@rider.com', 'password123', 'agent', 'south'),
-('customer_ahana', 'ahana@customer.com', 'password123', 'customer', 'global'),
-('customer_prateek', 'prateek@customer.com', 'password123', 'customer', 'global');
+('bob', 'bob@rider.com', 'password123', 'agent', 'north'),
+('alice', 'alice@rider.com', 'password123', 'agent', 'south'),
+('ahana', 'ahana@customer.com', 'password123', 'customer', 'global'),
+('prateek', 'prateek@customer.com', 'password123', 'customer', 'global')
+ON CONFLICT (username) DO NOTHING;
 
 INSERT INTO packages (tracking_number, contents, status, sender_id, receiver_id, agent_id, location_lat, location_lng) VALUES
-('TRK001', 'MacBook Air - Repairs', 'in_transit', 4, 1, 2, 40.7128, -74.0060),
+('TRK001', 'MacBook Air - Repairs', 'in_transit', 1, 2, 2, 40.7128, -74.0060),
 ('TRK002', 'Headphones - Order #123', 'pending', 1, 5, NULL, 34.0522, -118.2437),
-('TRK003', 'Gaming Mouse', 'delivered', 4, 5, 3, 51.5074, -0.1278);
+('TRK003', 'Gaming Mouse', 'delivered', 4, 5, 3, 51.5074, -0.1278)
+ON CONFLICT (tracking_number) DO NOTHING;
 
 INSERT INTO package_logs (package_id, status, note) VALUES
 (1, 'pending', 'Order received'),
 (1, 'picked_up', 'Picked up by Rider Bob'),
-(1, 'in_transit', 'Departed sorting facility');
+(1, 'in_transit', 'Departed sorting facility')
+ON CONFLICT DO NOTHING;

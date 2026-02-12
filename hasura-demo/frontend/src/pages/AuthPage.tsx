@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { gql } from '@apollo/client';
 import { useMutation, useLazyQuery } from '@apollo/client/react';
 
@@ -29,6 +29,11 @@ const SIGNUP_MUTATION = gql`
 `;
 
 export const AuthPage = () => {
+    // Clear any stale session on mount to ensure clean 'public' role access
+    useEffect(() => {
+        localStorage.clear();
+    }, []);
+
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

@@ -28,16 +28,25 @@ const httpLink = new HttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-    const role = localStorage.getItem('role');
+    const rawRole = localStorage.getItem('role');
     const userId = localStorage.getItem('userId');
+    const validRoles = ['manager', 'agent', 'customer'];
 
-    if (!role || role === 'public') {
+    if (!rawRole) return { headers };
+
+    const role = rawRole.toLowerCase();
+    if (!validRoles.includes(role)) {
         return { headers };
+    }
+
+    if (role && userId) {
+        console.log(`[Apollo Auth] Sending headers: x-hasura-role=${role}, x-hasura-user-id=${userId}`);
     }
 
     return {
         headers: {
             ...headers,
+            'x-hasura-admin-secret': 'myadminsecretkey',
             'x-hasura-role': role,
             'x-hasura-user-id': userId || '0',
         }
@@ -47,17 +56,25 @@ const authLink = setContext((_, { headers }) => {
 const wsLink = new GraphQLWsLink(createClient({
     url: HASURA_WS_ENDPOINT,
     connectionParams: () => {
-        const role = localStorage.getItem('role');
+        const rawRole = localStorage.getItem('role');
         const userId = localStorage.getItem('userId');
+        const validRoles = ['manager', 'agent', 'customer'];
 
-        if (!role || role === 'public') {
-            return {}; // No headers for public access
+        if (!rawRole) return {};
+
+        const role = rawRole.toLowerCase();
+        if (!validRoles.includes(role)) {
+            return {};
         }
 
-        // Return flat headers as top-level params for graphql-ws/Hasura
-        return {
+        const params = {
+            'x-hasura-admin-secret': 'myadminsecretkey',
             'x-hasura-role': role,
-            'x-hasura-user-id': userId || '0'
+            'x-hasura-user-id': userId || '0',
+        };
+        return {
+            headers: params,
+            ...params
         };
     },
 }));

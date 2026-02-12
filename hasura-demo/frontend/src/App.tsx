@@ -14,6 +14,15 @@ function App() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
   const role = currentUser?.role;
 
+  //  SECURITY ENFORCEMENT: If role is 'admin' (legacy) or missing, force a reset
+  const validRoles = ['manager', 'agent', 'customer'];
+  if (currentUser && (!role || !validRoles.includes(role.toLowerCase()))) {
+    console.warn(' Invalid or Legacy Role detected. Resetting session...');
+    localStorage.clear();
+    window.location.reload();
+    return null;
+  }
+
   if (!currentUser) {
     return (
       <ApolloProvider client={client}>

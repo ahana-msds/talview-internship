@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { gql } from '@apollo/client';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client/react';
 
 const GET_USERS = gql`
   query GetUsers {
@@ -8,6 +8,15 @@ const GET_USERS = gql`
       id
       username
       role
+    }
+  }
+`;
+
+const CALCULATE_QUOTE = gql`
+  query CalculateQuote($input: ShippingInput!) {
+    calculate_quote(input: $input) {
+      cost
+      eta
     }
   }
 `;
@@ -60,9 +69,21 @@ export const NewShipmentModal: React.FC<NewShipmentModalProps> = ({ onClose }) =
     const [receiverPhone, setReceiverPhone] = useState('');
     const [receiverAddress, setReceiverAddress] = useState('');
 
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    // Calculator State
+    const [weight, setWeight] = useState<number>(0);
+    const [distance, setDistance] = useState<number>(0);
+    const [isExpress, setIsExpress] = useState<boolean>(false);
 
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const { data: userData } = useQuery<any>(GET_USERS);
+
+    // Calculator Action
+    const [getQuote, { data: quoteData, loading: calculating, error: quoteError }] = useLazyQuery<any>(CALCULATE_QUOTE, {
+        fetchPolicy: 'network-only'
+    });
+
+    const quote = quoteData?.calculate_quote;
+
     const [insertPackage, { loading, error }] = useMutation<any>(INSERT_PACKAGE, {
         onCompleted: (data) => {
             alert(`Shipment Created! Tracking ID: ${data.insert_packages_one.tracking_number}`);
@@ -82,7 +103,7 @@ export const NewShipmentModal: React.FC<NewShipmentModalProps> = ({ onClose }) =
             variables: {
                 contents,
                 receiver_id: Number(receiverId),
-                sender_id: currentUser.id,
+                sender_id: Number(currentUser.id || 0),
                 sender_name: senderName,
                 sender_phone: senderPhone,
                 sender_address: senderAddress,
@@ -110,6 +131,55 @@ export const NewShipmentModal: React.FC<NewShipmentModalProps> = ({ onClose }) =
                 <h2 style={{ marginBottom: '1.5rem' }}>Book New Shipment</h2>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+                    {/* Shipping Calculator Section */}
+                    <div style={{ padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+                        <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem', color: '#0369a1' }}>Smart Shipping Calculator 🧮</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '0.75rem', alignItems: 'end' }}>
+                            <div>
+                                <label style={{ fontSize: '0.75rem', fontWeight: 600 }}>Weight (kg)</label>
+                                <input type="number" value={weight} onChange={e => setWeight(Number(e.target.value))} style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '0.75rem', fontWeight: 600 }}>Distance (km)</label>
+                                <input type="number" value={distance} onChange={e => setDistance(Number(e.target.value))} style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={isExpress} onChange={e => setIsExpress(e.target.checked)} />
+                                    Express ⚡
+                                </label>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => getQuote({ variables: { input: { weight, distance, express: isExpress } } })}
+                                disabled={calculating}
+                                style={{ padding: '0.5rem 1rem', borderRadius: '6px', backgroundColor: '#0284c7', color: 'white', border: 'none', cursor: 'pointer', height: '38px' }}
+                            >
+                                {calculating ? '...' : 'Get Quote'}
+                            </button>
+                        </div>
+
+                        {quoteError && (
+                            <div style={{ marginTop: '0.75rem', padding: '0.5rem', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                ⚠️ {quoteError.message} (Try weight &lt; 50kg)
+                            </div>
+                        )}
+
+                        {quote && (
+                            <div style={{ marginTop: '0.75rem', display: 'flex', gap: '1.5rem', paddingTop: '0.75rem', borderTop: '1px dashed #bae6fd' }}>
+                                <div>
+                                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>ESTIMATED COST</span>
+                                    <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#0369a1' }}>${quote.cost}</p>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>ESTIMATED DELIVERY</span>
+                                    <p style={{ margin: 0, fontWeight: 700, fontSize: '1.25rem', color: '#0369a1' }}>{quote.eta}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div>
                         <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600 }}>Package Contents</label>
                         <input
