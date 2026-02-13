@@ -1,111 +1,115 @@
-#  Logistics Command Center: Secure Real-time Fleet Management
+# Logistics Command Center: Secure Real-time Fleet Management
 
-A cutting-edge, real-time **Logistics & Package tracking system** powered by the **Hasura GraphQL Engine** and **React**. This project demonstrates a production-grade implementation of Role-Based Access Control (RBAC), real-time data synchronization, and automated metadata configuration.
-
----
-
-##  Technical Architecture
-
-- **Engine**: [Hasura v2.40.0](https://hasura.io/) — Instant GraphQL over Postgres with fine-grained security.
-- **Frontend**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/) — Lighting fast UI development.
-- **Client**: [Apollo Client](https://www.apollographql.com/docs/react/) — Robust state management for GraphQL.
-- **Database**: [PostgreSQL 15](https://www.postgresql.org/) — Relational data store for users and packages.
-- **Config**: [Node.js Setup Script](./frontend/scripts/setup-hasura.js) — Automated tracking and permission injection.
+A cutting-edge, real-time **Logistics & Package tracking system** powered by the **Hasura GraphQL Engine**, **PostgreSQL**, and **React**. This project demonstrates a production-grade implementation of Role-Based Access Control (RBAC), real-time data synchronization, serverless function integration, and automated metadata configuration.
 
 ---
 
-##  Role-Based Access Control (RBAC)
-
-The system utilizes a secure, multi-tenant permission model. To avoid security conflicts with Hasura's reserved "admin" role, we utilize a **"Manager"** role for administrative actions.
-
-| Role | Access Level | Description |
-| :--- | :--- | :--- |
-| ** Manager** | **Full Admin** | View all metrics, reassign riders to packages, and create new shipments. |
-| ** Agent** | **Assigned Only** | Can accept unassigned packages and update the status of deliveries they own. |
-| ** Customer** | **Personal** | Can only track packages they sent or are receiving. |
-| ** Public** | **Schema Only** | Unauthenticated access for Login/Signup and generic schema visibility. |
-
----
-
-##  Key Features
-
-### 1. Smart Signup System
-An intelligent authentication flow that auto-generates corporate emails (e.g., `name@customer.com`) based on the selected role, streamlining the onboarding process.
-
-### 2. Real-time Dashboard Metrics
-Utilizes **GraphQL Aggregations** to show live counts of total, in-transit, and delivered shipments.
-> **Note**: Permissions are configured for the `Public` role to ensure these metrics are visible in the schema even during initial load, preventing UI crashes.
-
-### 3. Live WebSocket Tracking
-The `PackageTracker` utilizes `GraphQLWsLink` for true real-time updates. When a manager reassigns a rider, or a rider updates a status, the entire fleet sees it instantly without a refresh.
-
----
-
-##  Project Structure
+##  Project Structure & File Information
 
 ```bash
 hasura-demo/
-├── docker-compose.yml    # Orchestrates Postgres and Hasura services
-├── init.sql              # Database schema and seed data (Manager, Agent, etc.)
-└── frontend/
+├── docker-compose.yml       # Orchestrates Postgres, Hasura, and Functions services
+├── init.sql                 # Database schema and seed data (Idempotent script)
+├── .gitignore               # Ignores node_modules and local postgres-data
+├── postgres-data/           # Local persistent storage for Database files (Host-mounted)
+├── functions/               # Node.js "Lambda" Service
+│   ├── Dockerfile           # Docker config for the functions service
+│   ├── package.json         # Dependencies for the backend logic
+│   ├── server.js            # Express server wrapping the handler
+│   └── handler.js           # Business Logic (Shipping Calculator)
+└── frontend/                # React Application
+    ├── package.json         # Dependencies and Scripts
+    ├── vite.config.ts       # Build configuration
     ├── scripts/
-    │   └── setup-hasura.js # 🚀 THE MAGIC: Auto-tracks tables, sets RLS
-    ├── src/
-    │   ├── apollo/
-    │   │   └── client.ts   # Configures HTTP & WebSocket links with header logic
-    │   ├── components/     # UI Components (Tracker, Modal, Layout)
-    │   └── pages/          # Core views (Dashboard, AuthPage)
-    └── package.json        # Unified scripts (npm run dev includes setup)
+    │   └── setup-hasura.js  # AUTOMATION: Tracks tables, sets permissions, configures Actions
+    └── src/
+        ├── apollo/
+        │   └── client.ts    # Apollo Client with HTTP/WebSocket links & Auth Headers
+        ├── components/      # UI Components (NewShipmentModal, PackageTracker, etc.)
+        └── pages/           # Core Views (Dashboard, AuthPage)
 ```
 
 ---
 
-##  Execution Flow & Setup
+##  Configuration Details
 
-Follow these steps in order to get the system running perfectly:
+These are the critical environment variables and connection strings used in `docker-compose.yml` and `setup-hasura.js`.
 
-### 1. Launch the Backend
-Ensure Docker Desktop is running, then start the engine and database:
+###  Security Credentials
+- **Hasura General Secret**: `myadminsecretkey`
+  - Used as `x-hasura-admin-secret` header to gain root access to Hasura.
+  - *Required for the setup script and admin console.*
+
+###  Database Connections
+- **PostgreSQL Database URL**:
+  ```
+  postgres://postgres:postgrespassword@postgres:5432/hasura_demo_db
+  ```
+  - **Host**: `postgres` (Docker service name)
+  - **Port**: `5432`
+  - **User**: `postgres`
+  - **Password**: `postgrespassword`
+  - **DB Name**: `hasura_demo_db`
+
+- **Mounting Hasura to Postgres**:
+  The `HASURA_GRAPHQL_METADATA_DATABASE_URL` and `PG_DATABASE_URL` in `docker-compose.yml` use the string above to connect the engine to the data layer.
+
+---
+
+##  How to Run the Project
+
+Follow these steps to launch the entire stack with persistence and automation.
+
+### 1. Start the Infrastructure (Docker)
+This command starts **Postgres**, **Hasura Engine**, and the **Functions Service**.
 ```bash
-docker-compose up -d
+# In the root 'hasura-demo' directory
+docker-compose up -d --build
 ```
-*This starts Hasura at [http://localhost:8080](http://localhost:8080) and Postgres at port 5432.*
+- **Hasura Console**: [http://localhost:8080](http://localhost:8080) (Password: `myadminsecretkey`)
+- **Functions API**: [http://localhost:3000](http://localhost:3000)
 
-### 2. Prepare the Frontend
-Install the required dependencies:
+### 2. Install Frontend Dependencies
 ```bash
 cd frontend
 npm install
 ```
 
-### 3. Run Automated Configuration & Dev
-The `npm run dev` command is optimized to automatically sync Hasura metadata before starting Vite:
+### 3. Initialize & Start App
+Run the development command. This **automatically runs the setup script** to configure Hasura before starting the UI.
 ```bash
 npm run dev
 ```
-**What this script does:**
-- Waits for Hasura to be ready.
-- Tracks `users`, `packages`, and `package_logs` tables.
-- Establishes relational links (e.g., `packages.agent_id` -> `users.id`).
-- Injects 15+ permission rules for RBAC across all roles.
-
-### 4. Authentication Flow
-- **Log in** at [http://localhost:5173](http://localhost:5173).
-- **Admin account**: `admin@cargo.com` / `password123` (Automatically assigned **Manager** role).
-- **Rider account**: `bob@rider.com` / `password123`.
+**What happens automatically:**
+1.  Connects Hasura to the `default` Data Source.
+2.  Tracks `users`, `packages`, `package_logs`.
+3.  Sets up Relationships (e.g., `package.sender`).
+4.  Applies **RBAC Permissions** for Manager, Agent, Customer.
+5.  Configures the **Smart Shipping Calculator** Action.
 
 ---
 
-##  Technical Deep Dive
+##  User Accounts (RBAC)
 
-### Reserved Role & Security (Admin -> Manager)
-We intentionally transitioned from the `admin` role to `manager`. In Hasura, the `admin` role is special and often requires a secret key. Since we have securely removed all `x-hasura-admin-secret` references from our React code, we use `manager` to exercise full table permissions without triggering key requirements.
+Login at [http://localhost:5173](http://localhost:5173) with these credentials:
 
-### Headerless Fallback
-The `apollo/client.ts` is configured to send **no headers** when a user is not logged in. This triggers Hasura's `HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public` setting (in `docker-compose.yml`), enabling a secure signup and login experience without exposure.
-
-### WebSocket Flattening
-For real-time subscriptions, connection parameters are flattened to ensure compatibility with the `graphql-ws` protocol and Hasura's session recognition.
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Manager** | `admin@cargo.com` | `password123` | **Full Access**: Create shipments, assign riders, view all data. |
+| **Agent** | `bob@rider.com` | `password123` | **Restricted**: Only view/update assigned packages. |
+| **Customer**| `ahana@customer.com`| `password123` | **Personal**: Only view own shipments. |
 
 ---
+##  Key Features Under the Hood
 
+### 1. Data Persistence 
+Data is mapped to `./postgres-data` on your host machine.
+- **Benefit**: You can run `docker-compose down` and your data **will remain safe**.
+
+### 2. Smart Shipping Calculator 
+- **Architecture**: Hasura Action (`Query`) -> `http://functions:3000` -> Node.js Handler.
+- **Logic**: Calculates cost based on weight/distance/express. Throws error if > 50kg.
+
+### 3. Real-time Updates 
+- **Technology**: GraphQL Subscriptions over WebSockets (`graphql-ws`).
+- **Effect**: Updates to package status are instantly pushed to all connected clients.

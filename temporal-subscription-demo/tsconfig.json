@@ -1,0 +1,23 @@
+{
+    "extends": "@tsconfig/node16/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "outDir": "./build",
+        "rootDirs": [
+            "./src"
+        ],
+        "module": "commonjs",
+        "target": "es2019",
+        "lib": [
+            "esnext",
+            "dom"
+        ],
+        "sourceMap": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

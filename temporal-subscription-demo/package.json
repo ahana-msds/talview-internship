@@ -1,0 +1,38 @@
+{
+    "name": "temporal-subscription-demo",
+    "version": "1.0.0",
+    "description": "Temporal Subscription Management Demo",
+    "main": "src/index.ts",
+    "scripts": {
+        "build": "tsc",
+        "start": "ts-node src/worker.ts",
+        "start:worker": "ts-node src/worker.ts",
+        "start:api": "ts-node src/api-server.ts",
+        "start:client": "ts-node src/client.ts",
+        "start:client-long": "ts-node src/client-long.ts",
+        "lint": "eslint ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@temporalio/activity": "^1.8.0",
+        "@temporalio/client": "^1.8.0",
+        "@temporalio/worker": "^1.8.0",
+        "@temporalio/workflow": "^1.8.0",
+        "cors": "^2.8.6",
+        "express": "^5.2.1",
+        "nanoid": "^3.3.4",
+        "nodemailer": "^8.0.1"
+    },
+    "devDependencies": {
+        "@tsconfig/node16": "^1.0.0",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/node": "^16.11.0",
+        "@types/nodemailer": "^7.0.9",
+        "nodemon": "^2.0.0",
+        "ts-node": "^10.9.0",
+        "typescript": "^4.9.0"
+    }
+}
