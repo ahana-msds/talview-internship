@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  temporal:
+    container_name: temporal
+    image: temporalio/admin-tools:latest
+    ports:
+      - "7233:7233"
+      - "8080:8080"
+    command: temporal server start-dev --ip 0.0.0.0

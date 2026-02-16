@@ -1,0 +1,21 @@
+{
+  "name": "temporal-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:temporal": "docker-compose up -d",
+    "start:worker": "cd worker && npm run dev",
+    "start:api": "cd api && npm run dev",
+    "start:ui": "cd ui && npm run dev",
+    "dev": "concurrently \"npm run start:worker\" \"npm run start:api\" \"npm run start:ui\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
