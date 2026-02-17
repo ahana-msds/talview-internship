@@ -1,161 +1,236 @@
-// React and utility imports
+import {
+    useGetTodoListsQuery,
+    useGetTodosQuery,
+    useAddTodoMutation,
+    useUpdateTodoMutation,
+    useDeleteTodoMutation,
+    useCreateListMutation,
+    type Todo,
+    type TodoList as TodoListType
+} from './todo/todoApi';
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
 import styles from './TodoList.module.css';
 
-/**
- * Interface representing a task item.
- */
-interface Todo {
-    id: number;
-    text: string;
-    completed: boolean;
-}
-
-/**
- * TodoList: Main component for managing personal tasks.
- * Includes features like add, edit, delete, and marking as complete.
- */
 export const TodoList = () => {
-    const { user } = useAuth();
-    // Task list state
-    const [todos, setTodos] = useState<Todo[]>([]);
-    // Input state for new tasks
+    const { data: lists, isLoading: isLoadingLists } = useGetTodoListsQuery();
+    const [selectedListId, setSelectedListId] = useState<string | null>(null);
+    const { data: todos, isLoading: isLoadingTodos } = useGetTodosQuery(selectedListId || '', { skip: !selectedListId });
+    const [createList] = useCreateListMutation();
+    const [addTodo] = useAddTodoMutation();
+    const [updateTodo] = useUpdateTodoMutation();
+    const [deleteTodo] = useDeleteTodoMutation();
+
+    const [isCreating, setIsCreating] = useState(false);
+    const [newListName, setNewListName] = useState('');
+    const [email1, setEmail1] = useState('');
+    const [email2, setEmail2] = useState('');
+
     const [inputValue, setInputValue] = useState('');
-    // State for tracking which task is currently being edited
-    const [editingId, setEditingId] = useState<number | null>(null);
-    const [editValue, setEditValue] = useState('');
+    const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
+    const [editingText, setEditingText] = useState('');
 
-    // Guest users have a limit of 2 tasks
-    const isGuest = user?.provider === 'guest';
-    const canAddMore = !isGuest || todos.length < 2;
+    const activeList = lists?.find((l: TodoListType) => l.id === selectedListId);
+    // General Tasks is accessible to everyone. Check name (case-insensitive) or fixed ID.
+    const isGeneral = activeList?.name?.toLowerCase() === 'general tasks' || activeList?.id === 'list-1';
+    const canEdit = isGeneral || activeList?.role === 'owner' || activeList?.role === 'editor';
 
-    /**
-     * handleAdd: Adds a new task to the list if validation passes.
-     */
-    const handleAdd = () => {
-        if (!inputValue.trim()) return;
-        if (!canAddMore) return;
-
-        setTodos([...todos, { id: Date.now(), text: inputValue, completed: false }]);
-        setInputValue('');
-    };
-
-    /**
-     * handleDelete: Removes a task by ID.
-     */
-    const handleDelete = (id: number) => {
-        setTodos(todos.filter(t => t.id !== id));
-    };
-
-    /**
-     * toggleComplete: Updates the completion status of a task.
-     */
-    const toggleComplete = (id: number) => {
-        setTodos(todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-    };
-
-    /**
-     * startEdit: Enters edit mode for a specific task.
-     */
-    const startEdit = (todo: Todo) => {
-        setEditingId(todo.id);
-        setEditValue(todo.text);
-    };
-
-    /**
-     * saveEdit: Commits the changes made during editing.
-     */
-    const saveEdit = () => {
-        if (editingId !== null && editValue.trim()) {
-            setTodos(todos.map(t => t.id === editingId ? { ...t, text: editValue } : t));
-            setEditingId(null);
-            setEditValue('');
+    const handleCreateList = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newListName) return;
+        try {
+            await createList({ name: newListName, emails: [email1, email2].filter(Boolean) }).unwrap();
+            setNewListName('');
+            setEmail1('');
+            setEmail2('');
+            setIsCreating(false);
+        } catch (err) {
+            console.error('Failed to create list:', err);
+            alert('Failed to create list. Is the backend running?');
         }
     };
 
+    const handleAddTodo = async () => {
+        if (!inputValue.trim() || !selectedListId) return;
+        try {
+            await addTodo({ listId: selectedListId, text: inputValue }).unwrap();
+            setInputValue('');
+        } catch (err) {
+            console.error('Failed to add todo:', err);
+            alert('Failed to add task. Check if the backend is running.');
+        }
+    };
+
+    const handleToggleComplete = async (todo: Todo) => {
+        if (!canEdit) return;
+        try {
+            await updateTodo({ listId: selectedListId!, todoId: todo.id, completed: !todo.completed }).unwrap();
+        } catch (err) {
+            console.error('Failed to update status:', err);
+            alert('Failed to update task status.');
+        }
+    };
+
+    const handleStartEdit = (todo: Todo) => {
+        setEditingTodoId(todo.id);
+        setEditingText(todo.text);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editingTodoId || !selectedListId) return;
+        try {
+            await updateTodo({ listId: selectedListId, todoId: editingTodoId, text: editingText }).unwrap();
+            setEditingTodoId(null);
+        } catch (err) {
+            console.error('Failed to save edit:', err);
+            alert('Failed to save edits.');
+        }
+    };
+
+    const handleDelete = async (todoId: string) => {
+        if (!canEdit || !selectedListId) return;
+        if (window.confirm('Delete this task?')) {
+            try {
+                await deleteTodo({ listId: selectedListId, todoId }).unwrap();
+            } catch (err) {
+                console.error('Failed to delete todo:', err);
+                alert('Failed to delete task.');
+            }
+        }
+    };
+
+    if (isLoadingLists) return <div className="card">Loading lists...</div>;
+
     return (
         <div className={`card ${styles.featureCard}`}>
-            <h3 className={styles.header}>
-                Task Manager
-            </h3>
+            <h3 className={styles.header}>Task Manager</h3>
 
-            <div className={styles.inputGroup}>
-                <input
-                    className="input"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Add a task..."
-                    onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                    disabled={!canAddMore}
-                />
-                <button
-                    onClick={handleAdd}
-                    className={`btn ${styles.addBtn}`}
-                    disabled={!canAddMore}
-                >
-                    Add
-                </button>
-            </div>
-
-            {isGuest && todos.length >= 2 && (
-                <div style={{
-                    padding: '1rem',
-                    marginBottom: '1rem',
-                    background: 'rgba(255, 165, 0, 0.1)',
-                    borderRadius: '8px',
-                    textAlign: 'center'
-                }}>
-                    <p style={{ marginBottom: '0.5rem', fontWeight: '500', fontSize: '0.85rem' }}>
-                        Guest users are limited to 2 tasks.
-                    </p>
-                    <Link
-                        to="/login"
-                        className="btn btn-secondary"
-                        style={{ fontSize: '0.8rem' }}
-                    >
-                        Login for unlimited tasks
-                    </Link>
+            {!isCreating ? (
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                    <div className={styles.listSelector} style={{ flex: 1, marginBottom: 0 }}>
+                        <select
+                            value={selectedListId || ''}
+                            onChange={(e) => setSelectedListId(e.target.value)}
+                            className="input"
+                            style={{ width: '100%' }}
+                        >
+                            <option value="">Select a List</option>
+                            {lists?.map((list: TodoListType) => (
+                                <option key={list.id} value={list.id}>
+                                    {list.name} {list.name === 'General Tasks' ? '(Public)' : `(${list.role})`}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={() => setIsCreating(true)} className="btn btn-secondary" style={{ fontSize: '0.8rem' }}>CREATE NEW LIST</button>
                 </div>
+            ) : (
+                <form onSubmit={handleCreateList} className={styles.createForm} style={{ background: 'var(--color-bg-alt)', padding: '15px', borderRadius: 'var(--radius)', marginBottom: '20px' }}>
+                    <h4 style={{ marginTop: 0 }}>Create New List</h4>
+                    <input
+                        className="input"
+                        value={newListName}
+                        onChange={(e) => setNewListName(e.target.value)}
+                        placeholder="List Name (e.g. Shopping)"
+                        style={{ marginBottom: '10px', width: '100%' }}
+                        required
+                    />
+                    <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>Share with up to 2 users (emails):</p>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <input
+                            className="input"
+                            value={email1}
+                            onChange={(e) => setEmail1(e.target.value)}
+                            placeholder="Email 1"
+                            style={{ flex: 1 }}
+                        />
+                        <input
+                            className="input"
+                            value={email2}
+                            onChange={(e) => setEmail2(e.target.value)}
+                            placeholder="Email 2"
+                            style={{ flex: 1 }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button type="submit" className="btn" style={{ flex: 1 }}>CREATE</button>
+                        <button type="button" onClick={() => setIsCreating(false)} className="btn btn-secondary" style={{ flex: 1 }}>CANCEL</button>
+                    </div>
+                </form>
             )}
 
-            <ul className={styles.list}>
-                {todos.length === 0 && <li className={styles.emptyState}>No tasks yet.</li>}
+            {selectedListId && (
+                <>
+                    <div className={styles.inputGroup} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                        <input
+                            className="input"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder="Add a task..."
+                            disabled={!canEdit}
+                            style={{ flex: 1 }}
+                        />
+                        <button onClick={handleAddTodo} className="btn" disabled={!canEdit}>ADD</button>
+                    </div>
 
-                {todos.map(todo => (
-                    <li key={todo.id} className={`${styles.item} ${todo.completed ? styles.completed : ''}`}>
-                        {editingId === todo.id ? (
-                            <div className={styles.editGroup}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {isLoadingTodos && <p>Loading tasks...</p>}
+                        {todos?.map((todo: Todo) => (
+                            <div key={todo.id} className={`${styles.item} ${todo.completed ? styles.completed : ''}`} style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '12px',
+                                background: 'var(--color-bg-alt)',
+                                borderRadius: 'var(--radius)',
+                                border: '1px solid var(--color-border)'
+                            }}>
                                 <input
-                                    className={`input ${styles.editInput}`}
-                                    value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
-                                    autoFocus
+                                    type="checkbox"
+                                    className={styles.checkbox}
+                                    checked={todo.completed}
+                                    onChange={() => handleToggleComplete(todo)}
+                                    disabled={!canEdit}
                                 />
-                                <button onClick={saveEdit} className={`btn ${styles.saveBtn}`}>Save</button>
-                                <button onClick={() => setEditingId(null)} className={`btn btn-secondary ${styles.actionBtn}`}>Cancel</button>
+
+                                {editingTodoId === todo.id ? (
+                                    <div style={{ display: 'flex', flex: 1, gap: '8px' }}>
+                                        <input
+                                            className="input"
+                                            value={editingText}
+                                            onChange={(e) => setEditingText(e.target.value)}
+                                            autoFocus
+                                            style={{ flex: 1, padding: '4px 8px' }}
+                                        />
+                                        <button onClick={handleSaveEdit} className="btn btn-secondary" style={{ padding: '4px 12px' }}>Save</button>
+                                        <button onClick={() => setEditingTodoId(null)} className="btn btn-secondary" style={{ padding: '4px 12px' }}>X</button>
+                                    </div>
+                                ) : (
+                                    <span
+                                        className={styles.text}
+                                        onClick={() => canEdit && handleToggleComplete(todo)}
+                                        style={{
+                                            flex: 1,
+                                            textDecoration: todo.completed ? 'line-through' : 'none',
+                                            opacity: todo.completed ? 0.6 : 1,
+                                            color: todo.completed ? 'var(--color-primary)' : 'var(--color-text)',
+                                            cursor: canEdit ? 'pointer' : 'default',
+                                            fontWeight: todo.completed ? 'normal' : '500'
+                                        }}
+                                    >
+                                        {todo.text}
+                                    </span>
+                                )}
+                                {!editingTodoId && canEdit && (
+                                    <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+                                        <button onClick={(e) => { e.stopPropagation(); handleStartEdit(todo); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}>✏️</button>
+                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(todo.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}>🗑️</button>
+                                    </div>
+                                )}
                             </div>
-                        ) : (
-                            <>
-                                <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                                    <input
-                                        type="checkbox"
-                                        className={styles.checkbox}
-                                        checked={todo.completed}
-                                        onChange={() => toggleComplete(todo.id)}
-                                    />
-                                    <span className={styles.text}>{todo.text}</span>
-                                </div>
-                                <div className={styles.actions}>
-                                    <button onClick={() => startEdit(todo)} className={`btn btn-secondary ${styles.actionBtn}`}>Edit</button>
-                                    <button onClick={() => handleDelete(todo.id)} className={`btn btn-secondary ${styles.deleteBtn}`}>Delete</button>
-                                </div>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
     );
 };

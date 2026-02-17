@@ -1,10 +1,10 @@
 import { Worker } from '@temporalio/worker';
-import * as activities from './activities';
-import { TASK_QUEUE } from '../../shared/interfaces';
+import * as activities from './activities.js';
+import { TASK_QUEUE } from '../../shared/interfaces.js';
 
 async function run() {
     const worker = await Worker.create({
-        workflowsPath: require.resolve('./workflows'),
+        workflowsPath: new URL('./workflows/index.ts', import.meta.url).pathname,
         activities,
         taskQueue: TASK_QUEUE,
     });

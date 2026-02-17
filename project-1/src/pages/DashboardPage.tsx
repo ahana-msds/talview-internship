@@ -66,6 +66,15 @@ export const DashboardPage = () => {
                             onClick={() => openInNewTab('/github')}
                         />
                     )}
+
+                    {user?.email === 'admin@talview.com' && (
+                        <FeatureCard
+                            emoji="🔐"
+                            title="Admin Dashboard"
+                            description="Monitor live orders, manage requests, and control Temporal workflows."
+                            onClick={() => openInNewTab('/admin')}
+                        />
+                    )}
                 </div>
             </div>
         </div>

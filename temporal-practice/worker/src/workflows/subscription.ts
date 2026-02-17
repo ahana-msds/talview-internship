@@ -8,8 +8,8 @@ import {
     continueAsNew,
     workflowInfo,
 } from '@temporalio/workflow';
-import { SubscriptionStatus, SubscriptionState, StartSubscriptionParams } from '../../../shared/interfaces';
-import type * as activities from '../activities';
+import { SubscriptionStatus, SubscriptionState, StartSubscriptionParams } from '../../../shared/interfaces.js';
+import type * as activities from '../activities.js';
 
 const { processPayment, sendEmail } = proxyActivities<typeof activities>({
     startToCloseTimeout: '1 minute',
@@ -31,7 +31,7 @@ export const getStatusQuery = defineQuery<SubscriptionState>('getStatus');
 
 export async function subscriptionWorkflow(params: StartSubscriptionParams): Promise<string> {
     const info = workflowInfo();
-    let status = SubscriptionStatus.ACTIVE;
+    let status: SubscriptionStatus = SubscriptionStatus.ACTIVE;
     let iteration = 1;
     const orders: any[] = [];
 

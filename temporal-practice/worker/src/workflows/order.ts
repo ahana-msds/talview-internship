@@ -1,6 +1,6 @@
 import { proxyActivities, patched, workflowInfo } from '@temporalio/workflow';
-import { OrderDetails } from '../../../shared/interfaces';
-import type * as activities from '../activities';
+import { OrderDetails } from '../../../shared/interfaces.js';
+import type * as activities from '../activities.js';
 
 const { shipOrder } = proxyActivities<typeof activities>({
     startToCloseTimeout: '5 minutes',
@@ -20,8 +20,8 @@ export async function orderWorkflow(details: OrderDetails): Promise<OrderDetails
         details.status = 'Shipping (Standard)';
     }
 
-    // Demonstrate isReplaying (for logging or other side effects that shouldn't happen during replay)
-    if (!isReplaying()) {
+    // Demonstrate workflowInfo().unsafe.isReplaying (for logging or other side effects that shouldn't happen during replay)
+    if (!workflowInfo().unsafe.isReplaying) {
         console.log('[Child Workflow] This is a new execution, not a replay.');
     }
 

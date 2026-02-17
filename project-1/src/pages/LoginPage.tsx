@@ -113,6 +113,11 @@ export const LoginPage = () => {
                     <div className={styles.footer}>
                         Need an account? <Link to="/signup" className={styles.link}>Sign Up</Link>
                     </div>
+                    {email === 'admin@talview.com' && (
+                        <div style={{ marginTop: '10px', fontSize: '0.8rem', color: 'var(--color-primary)', textAlign: 'center' }}>
+                            Tip: If this is your first time, please <b>Sign Up</b> as admin@talview.com with password 'Admin@123' first.
+                        </div>
+                    )}
                 </div>
             </div>
         </>

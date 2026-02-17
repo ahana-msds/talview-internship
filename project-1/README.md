@@ -1,117 +1,85 @@
 # react dashboard project
 
-a comprehensive single page application (spa) built with react, typescript, vite, and redux toolkit. this project demonstrates modern web development practices including authentication, global state management, validation, testing, and component-driven ui development.
+a comprehensive single page application (spa) built with react, typescript, vite, and redux toolkit. this project demonstrates modern web development practices including authentication, global state management, distributed workflows with temporal, and advanced monitoring with sentry.
 
 ## features
 
 ### 1. authentication system
 - **multiple providers**: supports google, github, and email/password login via firebase authentication.
 - **guest access**: simulated guest login for quick access.
-- **protected routes**: dashboard and other protected pages are inaccessible without logging in.
-- **global state**: managed via `authcontext` to persist user sessions.
-- **enhanced validation**: enforced complex password requirements (uppercase, lowercase, numbers) using zod.
+- **protected routes**: dashboard and admin pages are inaccessible without logging in.
+- **admin role**: specialized `/admin` route for system controllers (restricted to admin@talview.com).
+- **login tips**: dynamic helpful hints for first-time admin registration.
 
-### 2. global state management (redux toolkit)
-- **client state (cart)**:
-  - managed using redux slices.
-  - supports adding items, updating quantities, and removing items.
-  - persistent cart state across the application session.
-- **server state (products)**:
-  - managed using rtk query.
-  - efficient caching and fetching from dummyjson api.
-  - handles loading and error states automatically.
+### 2. resilient checkout with temporal (hitl)
+- **grace period**: order workflows include a 5-minute window for user corrections.
+- **signal support**: users can update shipping addresses in real-time during the grace period.
+- **human-in-the-loop**: admins can override workflow states or force-cancel tasks from the control center.
+- **distributed reliability**: managed via a standalone temporal server for high consistency.
 
-### 3. error tracking & monitoring (sentry)
-- **centralized reporting**: automatic capture of api failures and runtime crashes.
-- **real-time alerts**: integrated with sentry dashboard for immediate feedback.
-- **smart filtering**: automatically ignores common 404 search errors to reduce noise.
-- **pii enabled**: captures user context and device info for easier debugging.
+### 3. multi-user task engine (rbac)
+- **multi-tenant lists**: create independent task lists with role-based access.
+- **email sharing**: share lists with up to two external users via email.
+- **universal access**: "general tasks" list is globally editable by all users.
+- **rich functionality**: support for task editing, deletion, and completion (with strikethrough styling).
 
-### 4. validation & type safety
-- **zod**: centralized schemas for form validation and login logic.
-- **typebox**: schema validation for api response data.
-- **path aliases**: configured `@/` mapping for clean imports.
+### 4. global flagging & monitoring (sentry)
+- **persistent feedback**: floating "🚩 flag issue" button available on all pages.
+- **user feedback loops**: integrated sentry dialogs for reporting bugs with technical context.
+- **advanced tracking**: captures backend exceptions and worker-level transport errors.
 
-### 5. testing & quality assurance
-- **vitest**: standard test runner for unit and integration tests.
-- **react testing library**: used for verifying component behaviors.
-- **coverage**: unit tests for validation logic and password complexity.
-
-### 6. Product Detail View
-- **Single Product Fetch**: Detailed view for individual items with full description and high-res images.
-- **Dynamic Quantity**: Select desired quantity before adding to the cart.
-- **Window Isolation**: Product details open in a new window/tab for focus, with auto-close support when navigating back.
-- **Quick Purchase**: "Buy Now" button for immediate checkout flow.
-
-### 7. Account & Profile Management
-- **Profile Dropdown**: Interactive user menu in the Navbar.
-- **Personal Information**: Update display name (Firebase) and Birthday (LocalStorage).
-- **Security Check**: Password change feature requiring re-authentication with current credentials.
-- **Address Book**: Manage multiple shipping addresses with a clean form-based interface.
-
-### 8. UI Development & Theme
-- **Storybook**: Component library developed in isolation with interactive stories.
-- **Theme Persistence**: Saves selected theme (Ocean, Forest, Default) to LocalStorage.
-- **Redesigned Dashboard**: Modern grid layout with feature-specific icons.
-- **User Greeting**: Interactive "Hi, User" greeting with dropdown functionality.
+### 5. product catalog & dashboard
+- **optimized grid**: 4-column layout displaying 12 products per page with rtk query pagination.
+- **feature cards**: modern dashboard layout with role-sensitive cards (e.g., admin dashboard link).
+- **quick buy**: integrated checkout flow triggering temporal workflows.
 
 ## tech stack
-- **core**: react 19, typescript, vite
-- **state management**: redux toolkit, rtk query, context api
-- **error handling**: sentry sdk
-- **validation**: zod, typebox
-- **testing**: vitest, react testing library
-- **ui/docs**: storybook 8
-- **styling**: css modules + theme variables
-- **backend/auth**: firebase v12
+- **frontend**: react 19, typescript, vite, redux toolkit, rtk query
+- **backend**: node.js, express, temporal sdk, sentry sdk
+- **infrastructure**: docker (temporal, cassandra, temporal ui)
+- **auth**: firebase v12
+- **testing**: vitest (unit & workflow logic)
 
 ## setup instructions
 
-1. **clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd <project-folder>
-   ```
+### 1. clone & install
+```bash
+git clone <repository-url>
+npm install
+cd project-1/backend && npm install
+```
 
-2. **install dependencies**
-   ```bash
-   npm install
-   ```
+### 2. environment variables
+- create `.env` in the root for firebase keys.
+- create `project-1/backend/.env` for backend port (default 4002) and temporal address.
 
-3. **configure environment variables**
-   - create `.env` in the root directory.
-   - add your firebase config keys (see `.env.example`).
+### 3. run temporal (docker)
+```bash
+cd project-1/backend
+docker compose up -d
+# wait ~1 min for cassandra to initialize
+```
 
-4. **run development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **run tests**
-   ```bash
-   npm test
-   ```
-
-6. **run storybook**
-   ```bash
-   npm run storybook
-   ```
+### 4. run services (multi-terminal)
+- **frontend**: `npm run dev`
+- **backend api**: `cd backend && npm start`
+- **backend worker**: `cd backend && npm run worker`
 
 ## project structure
 ```text
 /
-├── src/
-│   ├── app/                  # redux store configuration
-│   ├── components/           # reusable ui components
+├── src/                      # frontend source
+│   ├── app/                  # redux store
+│   ├── components/           # reusable ui (navbar, flagissue)
 │   ├── contexts/             # react contexts (auth, theme)
-│   ├── features/             # redux features (slices & apis)
-│   │   ├── cart/             # cart logic & ui
-│   │   ├── products/         # product api logic & ui
-│   ├── lib/                  # utilities (validation schemas)
-│   ├── pages/                # main application pages
-│   ├── stories/              # storybook stories (*.stories.tsx)
-│   └── tests/                # global test setup
-├── .storybook/               # storybook configuration
-├── vitest.config.ts          # test runner config
-└── vite.config.ts            # bundler config
+│   ├── features/             # feature logic (todo, products, admin)
+│   ├── pages/                # pages (dashboard, admindashboard)
+├── backend/                  # backend source
+│   ├── src/
+│   │   ├── workflows/        # temporal workflows (order.ts)
+│   │   ├── activities/       # temporal activities
+│   │   ├── index.ts          # express api
+│   │   ├── worker.ts         # temporal worker
+│   ├── docker-compose.yml    # independent infrastructure
+├── stories/                  # storybook documentation
 ```

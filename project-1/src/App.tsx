@@ -17,14 +17,30 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AddressPage } from './pages/AddressPage';
 
+// Feature pages wrapped in appropriate route guards
+import AdminDashboard from './pages/AdminDashboard';
+import { GlobalFlagIssue } from './components/GlobalFlagIssue';
+
 /**
  * ProtectedRoute: Wraps components that require authentication.
- * Redirects to /login if the user is not authenticated.
  */
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
+
+/**
+ * AdminRoute: Restricts access to users with the 'admin' role.
+ */
+const AdminRoute = ({ children }: { children: React.ReactElement }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.email !== 'admin@talview.com') {
+    return <Navigate to="/dashboard" replace />;
+  }
   return children;
 };
 
@@ -40,7 +56,6 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactElement }) => {
 
 /**
  * RootRedirect: Handles the logic for the initial root (/) route.
- * Redirects to /dashboard if logged in, otherwise to /login.
  */
 const RootRedirect = () => {
   const { user, loading } = useAuth();
@@ -67,6 +82,14 @@ function App() {
                 <AuthenticatedRoute>
                   <DashboardPage />
                 </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
               }
             />
             <Route
@@ -126,6 +149,7 @@ function App() {
               }
             />
           </Routes>
+          <GlobalFlagIssue />
         </Router>
       </AuthProvider>
     </ThemeProvider>

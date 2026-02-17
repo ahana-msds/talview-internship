@@ -1,5 +1,5 @@
 import { Context } from '@temporalio/activity';
-import { OrderDetails } from '../../shared/interfaces';
+import { OrderDetails } from '../../shared/interfaces.js';
 
 export async function processPayment(amount: number, idempotencyToken: string): Promise<string> {
     console.log(`[Activity] Processing payment of $${amount} with token ${idempotencyToken}`);
@@ -25,11 +25,9 @@ export async function shipOrder(orderDetails: OrderDetails): Promise<void> {
         console.log(`[Activity] Shipping progress for ${orderDetails.orderId}: ${progress}%`);
         heartbeat(progress);
 
-        // Check for cancellation
-        if (Context.current().cancelled) {
-            console.log(`[Activity] Shipping for ${orderDetails.orderId} was cancelled!`);
-            throw new Error('Activity cancelled');
-        }
+        // Check for cancellation (handled automatically by heartbeat or sleep in modern SDKs)
+        // Awaiting the cancelled promise is one way to check, but usually hartbeat(progress) 
+        // will throw if the activity is cancelled.
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
     }

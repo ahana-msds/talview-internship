@@ -2,7 +2,7 @@
 
 This project provides a full-functioning demonstration of **Temporal's Distributed Workflow Orchestration** concepts. It uses a "Coffee Subscription" scenario to illustrate long-running, reliable, and deterministic processes.
 
-## 🚀 How to Run
+##  How to Run
 
 1.  **Start Temporal Server**:
     ```bash
@@ -24,7 +24,7 @@ This project provides a full-functioning demonstration of **Temporal's Distribut
 
 ---
 
-## 🧠 Concepts Demonstrated
+##  Concepts Demonstrated
 
 ### 1. Workflows vs Activities
 - **Workflows** (`worker/src/workflows/subscription.ts`): Orchestrate state and decisions. Must be deterministic.

@@ -51,7 +51,9 @@ function App() {
       const res = await axios.get(`${API_BASE}/history/${workflowId}`);
       setHistory(res.data);
     } catch (err) {
-      setError('Failed to fetch history');
+      console.error('History fetch error:', err);
+      const msg = err.response?.data?.error || err.message;
+      setError(`Failed to fetch history: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -88,7 +90,7 @@ function App() {
 
   return (
     <div className="dashboard">
-      <h1>Temporal Mastery: Coffee Subscription</h1>
+      <h1>Temporal Practice: Coffee Subscription</h1>
 
       {/* Control Panel */}
       <div className="card">
@@ -211,7 +213,7 @@ function App() {
                   <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Event ID: {event.eventId}</span>
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.25rem' }}>
-                  {JSON.stringify(event.workflowExecutionStartedEventAttributes || event.activityTaskScheduledEventAttributes || event.timerStartedEventAttributes || {}).substring(0, 100)}...
+                  {JSON.stringify(event.attributes || {}).substring(0, 100)}...
                 </div>
               </div>
             ))}

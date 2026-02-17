@@ -44,6 +44,7 @@ export interface User {
     email: string | null;
     photoURL: string | null;
     provider: AuthProviderType;
+    role?: 'user' | 'admin' | 'guest';
 }
 
 /**
@@ -94,7 +95,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             displayName: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
             email: fbUser.email,
             photoURL: fbUser.photoURL,
-            provider: provider
+            provider: provider,
+            role: fbUser.email === 'admin@talview.com' ? 'admin' : 'user'
         };
     };
 
