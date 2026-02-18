@@ -58,7 +58,7 @@ graph TD
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```text
 frontend/
@@ -78,25 +78,25 @@ frontend/
 
 ---
 
-## ✨ Key Features & Logic
+##  Key Features & Logic
 
-### 1. The Persistence Strategy 💾
+### 1. The Persistence Strategy 
 The frontend ensures your data is never lost:
 *   **Cart Hydration:** On app startup, a `hydrateCart` thunk is dispatched. It checks the backend first. If the backend is unreachable (offline or server down), it silently loads the latest state from **IndexedDB**.
 *   **Fire-and-Forget Sync:** Every cart action (Add, Update, Remove) updates the Redux store *immediately* and then attempts a background sync to the backend API.
 
-### 2. High-Fidelity Theming 🌗
+### 2. High-Fidelity Theming 
 The app uses a curated dark palette (Rich Blacks and Vibrant Primary colors) managed via CSS Variables.
 *   **Reactive Switching:** Changing the theme in settings updates the values on `:root`, instantly transforming the entire app without a reload.
 *   **Glassmorphism:** Cards and Modals use backdrop-blur and semi-transparent borders to create a layered, premium feel.
 
-### 3. Smart Checkout Flow 💳
+### 3. Smart Checkout Flow 
 *   **Address Management:** Forms include real-time validation for common fields (Phone, Pincode).
 *   **Concurrency Feedback:** The checkout page listens for `409 Conflict` errors from the backend. If an item sells out while you're on the page, the UI transforms to show exactly which items are gone, allowing you to remove them and proceed without losing your entire order.
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 1.  **Install dependencies:**
     ```bash
@@ -115,8 +115,6 @@ The app uses a curated dark palette (Rich Blacks and Vibrant Primary colors) man
 
 ---
 
-## 🚧 Roadmap & Improvements
-*   **Skeleton Loading:** Implement Shimmer effects for product lists.
-*   **PWA Support:** Full service-worker integration for complete offline usage.
+##  Roadmap & Improvements
 *   **Advanced Filtering:** Multi-select category filters and price range sliders.
 *   **Vitals Tracking:** Integrating Sentry browser profiling to measure page load and TTI.
