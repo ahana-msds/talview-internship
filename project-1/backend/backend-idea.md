@@ -1,13 +1,13 @@
-# Backend Project Idea: The Resilient E-Commerce & Task Engine
+# Backend Project Idea:
 
-## 🎯 Overview
+##  Overview
 This document captures the core technical philosophy and roadmap for the `project-1` backend. The project is designed as a learning-centric "Skeleton Architecture" that demonstrates high-reliability patterns for e-commerce and collaborative tools.
 
 Rather than just a simple API, this backend serves as a showcase for **Durable Execution**, **Durable State**, and **Human-in-the-Loop** systems.
 
 ---
 
-## 🏗️ Scenario 1: Resilient Checkout with "Human-in-the-Loop"
+##  Scenario 1: Resilient Checkout with "Human-in-the-Loop"
 
 We treat the order pipeline not as a series of instant database updates, but as a long-running, resilient process with a built-in "Correction Window."
 
@@ -20,7 +20,7 @@ We treat the order pipeline not as a series of instant database updates, but as 
 
 ---
 
-## 🏗️ Scenario 2: Multi-User Task Engine with RBAC
+##  Scenario 2: Multi-User Task Engine with RBAC
 
 Moving beyond private lists to a **Permission-Based Collaboration** system enforced at the data layer.
 
@@ -35,7 +35,7 @@ Moving beyond private lists to a **Permission-Based Collaboration** system enfor
 
 ---
 
-## 🏗️ Scenario 3: Admin Request & Control Center
+##  Scenario 3: Admin Request & Control Center
 
 A unified "Internal Flagging" system that bridges the gap between Frontend UI issues and Backend data fixes.
 
@@ -47,7 +47,7 @@ A unified "Internal Flagging" system that bridges the gap between Frontend UI is
 
 ---
 
-## 🛠️ Technical Integration Stack
+##  Technical Integration Stack
 
 ### Backend Structure (/backend)
 *   **Hasura (GraphQL Layer):**
@@ -62,7 +62,7 @@ A unified "Internal Flagging" system that bridges the gap between Frontend UI is
 
 ---
 
-## 🚧 Status & Open Ends
+##  Status & Open Ends
 This document serves as the **Vision**. While core parts (Stock Reservation, Temporal Workflows, Cart Persistence) are implemented, the following are "Ideas-in-Progress" to be integrated as the learning journey continues:
 *   Real-time Hasura subscriptions for the Admin dashboard.
 *   Full Sentry-to-DB mapping for bug tracking.
