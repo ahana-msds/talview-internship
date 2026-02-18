@@ -60,6 +60,61 @@ A unified "Internal Flagging" system that bridges the gap between Frontend UI is
     *   Serving as the "Starter" for workflows.
     *   Managing logic that doesn't fit into pure RLS or pure Workflow functions.
 
+## 🏗️ Core Backend Modules & Responsibilities
+
+### 1. Product Management
+*   Provide high-performance product listing and detail APIs.
+*   Handle complex filtering, search, and pagination on the server.
+*   Ensure data consistency and schema validation for all product entries.
+
+### 2. Cart Management
+*   Securely store cart data in PostgreSQL for cross-device persistence.
+*   Handle CRUD operations (Add, Remove, Update) for cart items.
+*   Validate product existence and requested quantity against real-time stock.
+*   Calculate totals (subtotal, tax, discounts) securely on the server side.
+
+### 3. Inventory System
+*   Track real-time stock levels per product.
+*   **Prevent overselling** during concurrent requests using database locks.
+*   Reduce stock immediately upon reservation to protect inventory.
+*   Ensure all inventory updates are atomic database operations.
+
+### 4. Reserve Inventory Flow
+*   Create short-lived reservations with a configurable expiration time (e.g., 10-15 mins).
+*   Lock stock temporarily to "hold" it for the user.
+*   Start a **Temporal workflow** for precise timeout handling.
+*   Release stock automatically if payment fails or the session times out.
+
+### 5. Payment Processing
+*   Create secure payment sessions (Stripe/Razorpay).
+*   Verify payment completion via **authenticated webhooks**.
+*   Update order status and confirm stock only after verified payment.
+*   Implement server-side verification to prevent common fraud patterns.
+
+### 6. Order Management
+*   Convert temporary reservations into confirmed, permanent orders.
+*   Store detailed order snapshots (price, title) to ensure historical accuracy.
+*   Link Users, Payments, and Inventory records in a relational model.
+*   Maintain and track the complete order lifecycle (Pending -> Paid -> Shipped).
+
+### 7. Workflow Management (Temporal)
+*   Manage long-running, asynchronous processes with durable state.
+*   Handle transient failures (e.g., API timeouts) with automatic retries.
+*   Maintain **Idempotency** for all operations to prevent duplicate orders.
+*   Orchestrate complex logic like reservation expiration and cleanup.
+
+### 8. Database Management
+*   Manage relational schemas for Users, Products, Inventory, Orders, and Payments.
+*   Enforce data integrity through Foreign Keys and Constraints.
+*   Implement performance optimizations via indexing and query tuning.
+
+---
+
+## 🏛️ Core Backend Principles
+*   **Frontend handles UI/UX**: Focus on presentation, user interaction, and optimistic states.
+*   **Backend handles Truth**: All business logic, security enforcement, and data persistence reside on the server.
+*   **Server-Side Validation**: Never trust client-side data; all critical operations (price, stock, roles) MUST be validated on the server.
+
 ---
 
 ##  Status & Open Ends
