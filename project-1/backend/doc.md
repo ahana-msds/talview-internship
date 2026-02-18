@@ -126,13 +126,13 @@ Access to Todo Lists is governed by a **Role-Based Access Control (RBAC)** syste
 ### 3. Graceful Address Changes
 The Temporal workflow can be extended to include a "grace period" signal. Before the order status moves to "Shipped", the workflow can wait for a `change-address` signal. If received within the grace window, the invoice and shipping labels are re-generated automatically.
 
-### 4. Admin Powers & System Oversight 👑
+### 4. Admin Powers & System Oversight 
 The system provides multi-layered administrative control:
 *   **Hasura Console (:8080):** Admins can directly manage data, adjust stock levels, or update order statuses via a web UI.
 *   **Temporal Web UI (:8233):** Provides real-time visibility into every order workflow. Admins can manually "Signal" a workflow (e.g., forcing a payment confirmation) or "Reset" a failed workflow to a previous step.
 *   **Sentry Logging:** All backend errors and performance bottlenecks are captured and reported automatically for administrative review.
 
-### 5. Email & Notifications 📧
+### 5. Email & Notifications 
 *   **Current State:** To simplify development and avoid dependencies on external API keys, all notifications (Order Confirmation, Invoices) are **simulated**.
 *   **Observability:** Instead of sending a real mail to a Gmail account, the system logs the full email payload (including recipient email and HTML body) to the backend logs.
 *   **Production Path:** The architecture is ready for a real provider (like SendGrid or AWS SES). You would simply update the `order-notification` activity in `order-activities.ts` to call the external mail API.
