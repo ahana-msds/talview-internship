@@ -5,17 +5,27 @@ import {
     useUpdateTodoMutation,
     useDeleteTodoMutation,
     useCreateListMutation,
+    useDeleteTodoListMutation,
     type Todo,
     type TodoList as TodoListType
 } from './todo/todoApi';
 import { useState } from 'react';
 import styles from './TodoList.module.css';
+import { useAuth } from '../contexts/AuthContext';
 
 export const TodoList = () => {
-    const { data: lists, isLoading: isLoadingLists } = useGetTodoListsQuery();
+    const { user, loading: authLoading } = useAuth();
+    // Ensure localStorage is in sync BEFORE any query fires
+    const userEmail = user?.email || undefined;
+    if (userEmail) {
+        localStorage.setItem('user_email', userEmail);
+    }
+    // Pass userEmail as cache key — RTK Query auto-refetches when it changes
+    const { data: lists, isLoading: isLoadingLists } = useGetTodoListsQuery(userEmail);
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
     const { data: todos, isLoading: isLoadingTodos } = useGetTodosQuery(selectedListId || '', { skip: !selectedListId });
     const [createList] = useCreateListMutation();
+    const [deleteTodoList] = useDeleteTodoListMutation();
     const [addTodo] = useAddTodoMutation();
     const [updateTodo] = useUpdateTodoMutation();
     const [deleteTodo] = useDeleteTodoMutation();
@@ -98,6 +108,19 @@ export const TodoList = () => {
         }
     };
 
+    const handleDeleteList = async () => {
+        if (!selectedListId || selectedListId === 'list-1') return;
+        if (window.confirm('Delete this list and all its tasks?')) {
+            try {
+                await deleteTodoList(selectedListId).unwrap();
+                setSelectedListId(null);
+            } catch (err) {
+                console.error('Failed to delete list:', err);
+                alert('Failed to delete list.');
+            }
+        }
+    };
+
     if (isLoadingLists) return <div className="card">Loading lists...</div>;
 
     return (
@@ -105,7 +128,7 @@ export const TodoList = () => {
             <h3 className={styles.header}>Task Manager</h3>
 
             {!isCreating ? (
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
                     <div className={styles.listSelector} style={{ flex: 1, marginBottom: 0 }}>
                         <select
                             value={selectedListId || ''}
@@ -121,7 +144,10 @@ export const TodoList = () => {
                             ))}
                         </select>
                     </div>
-                    <button onClick={() => setIsCreating(true)} className="btn btn-secondary" style={{ fontSize: '0.8rem' }}>CREATE NEW LIST</button>
+                    {selectedListId && selectedListId !== 'list-1' && activeList?.role === 'owner' && (
+                        <button onClick={handleDeleteList} className="btn" style={{ background: 'var(--color-bg-alt)', color: 'red', border: '1px solid currentColor', fontSize: '1.2rem', padding: '5px 10px', height: '40px' }} title="Delete List">🗑️</button>
+                    )}
+                    <button onClick={() => setIsCreating(true)} className="btn btn-secondary" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>CREATE NEW LIST</button>
                 </div>
             ) : (
                 <form onSubmit={handleCreateList} className={styles.createForm} style={{ background: 'var(--color-bg-alt)', padding: '15px', borderRadius: 'var(--radius)', marginBottom: '20px' }}>
@@ -138,16 +164,22 @@ export const TodoList = () => {
                     <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                         <input
                             className="input"
+                            type="email"
                             value={email1}
                             onChange={(e) => setEmail1(e.target.value)}
-                            placeholder="Email 1"
+                            placeholder="user@example.com"
+                            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                            title="Enter a valid email address"
                             style={{ flex: 1 }}
                         />
                         <input
                             className="input"
+                            type="email"
                             value={email2}
                             onChange={(e) => setEmail2(e.target.value)}
-                            placeholder="Email 2"
+                            placeholder="user@example.com"
+                            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                            title="Enter a valid email address"
                             style={{ flex: 1 }}
                         />
                     </div>

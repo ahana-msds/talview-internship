@@ -14,6 +14,10 @@ import App from './App.tsx'
 // Redux configuration for state management
 import { Provider } from 'react-redux'
 import { store } from './app/store'
+import { hydrateCart } from './features/cart/cartSlice'
+
+// Hydrate cart from backend (or IndexedDB fallback) on startup
+store.dispatch(hydrateCart());
 
 // Initialize Sentry for centralized error handling
 Sentry.init({

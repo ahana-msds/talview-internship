@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/react";
 
 /**
  * Interface for Product data.
+ * Now includes stock, brand, category, rating, and images from PostgreSQL.
  */
 export interface Product {
     id: number;
@@ -11,6 +12,11 @@ export interface Product {
     thumbnail: string;
     description: string;
     discountPercentage: number;
+    rating: number;
+    stock: number;
+    brand: string;
+    category: string;
+    images: string[];
 }
 
 /**
@@ -25,8 +31,9 @@ interface ProductResponse {
 
 /**
  * Custom base query wrapper that reports errors to Sentry.
+ * Now points to our own backend (PostgreSQL-backed) instead of DummyJSON directly.
  */
-const baseQuery = fetchBaseQuery({ baseUrl: 'https://dummyjson.com/' });
+const baseQuery = fetchBaseQuery({ baseUrl: 'http://localhost:4002/api/' });
 const baseQueryWithSentry: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
     args,
     api,
@@ -39,7 +46,6 @@ const baseQueryWithSentry: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
             console.log("Sentry: Explicitly capturing API Error:", result.error);
 
             // Wrap the plain RTK Query error object in a real Error instance
-            // This prevents malformed "envelope" requests (Sentry 400 errors)
             const errorMsg = (result.error as any).error || `API Error ${result.error.status}`;
             Sentry.captureException(new Error(`API_FAILURE: ${errorMsg}`), {
                 extra: { endpoint: api.endpoint, status: result.error.status }
@@ -59,7 +65,22 @@ export const productsApi = createApi({
         getProductById: builder.query<Product, string | number>({
             query: (id) => `products/${id}`,
         }),
+        getCategories: builder.query<{ slug: string; name: string; url: string }[], void>({
+            query: () => 'products/categories',
+        }),
+        searchProducts: builder.query<ProductResponse, { q: string; limit: number; skip: number }>({
+            query: ({ q, limit, skip }) => `products/search?q=${encodeURIComponent(q)}&limit=${limit}&skip=${skip}`,
+        }),
+        getProductsByCategory: builder.query<ProductResponse, { category: string; limit: number; skip: number }>({
+            query: ({ category, limit, skip }) => `products/category/${category}?limit=${limit}&skip=${skip}`,
+        }),
     }),
 });
 
-export const { useGetProductsQuery, useGetProductByIdQuery } = productsApi;
+export const {
+    useGetProductsQuery,
+    useGetProductByIdQuery,
+    useGetCategoriesQuery,
+    useSearchProductsQuery,
+    useGetProductsByCategoryQuery,
+} = productsApi;

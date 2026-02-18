@@ -1,43 +1,107 @@
--- 1. Orders Table
-CREATE TABLE IF NOT EXISTS orders (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'PENDING',
-    address TEXT NOT NULL,
-    items JSONB NOT NULL,
-    workflow_id TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- ============================================
+-- Talview Project-1: PostgreSQL Schema
+-- ============================================
 
--- 2. Todo Lists Table
+-- 1. Todo Lists Table
 CREATE TABLE IF NOT EXISTS todo_lists (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     owner_id TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. Todo Permissions Table (RBAC)
+-- 2. Todo Permissions Table (RBAC - sharing)
 CREATE TABLE IF NOT EXISTS todo_permissions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id SERIAL PRIMARY KEY,
     user_id TEXT NOT NULL,
-    list_id UUID REFERENCES todo_lists(id) ON DELETE CASCADE,
+    list_id TEXT REFERENCES todo_lists(id) ON DELETE CASCADE,
     role TEXT NOT NULL CHECK (role IN ('viewer', 'editor')),
     UNIQUE(user_id, list_id)
 );
 
--- 4. Admin Requests Table
+-- 3. Todos Table
+CREATE TABLE IF NOT EXISTS todos (
+    id TEXT PRIMARY KEY,
+    text TEXT NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT false,
+    list_id TEXT REFERENCES todo_lists(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 4. Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT,
+    user_email TEXT NOT NULL DEFAULT 'guest',
+    address TEXT NOT NULL,
+    items JSONB NOT NULL DEFAULT '[]',
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 5. Admin Requests Table
 CREATE TABLE IF NOT EXISTS admin_requests (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id SERIAL PRIMARY KEY,
     user_id TEXT NOT NULL,
     description TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'OPEN',
     sentry_id TEXT,
-    order_id UUID REFERENCES orders(id),
+    order_id TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Hasura RLS Simulation (Logic to be applied in Hasura Console)
--- For todo_lists/todos:
--- Role: user
--- Query: { "_or": [ { "owner_id": { "_eq": "X-Hasura-User-Id" } }, { "todo_permissions": { "user_id": { "_eq": "X-Hasura-User-Id" } } } ] }
+-- 6. Products Table (seeded from DummyJSON)
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    discount_percentage DECIMAL(5,2) DEFAULT 0,
+    rating DECIMAL(3,2) DEFAULT 0,
+    stock INTEGER NOT NULL DEFAULT 0,
+    brand TEXT,
+    category TEXT,
+    thumbnail TEXT,
+    images JSONB DEFAULT '[]',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 7. Cart Items Table (per-user persistence)
+CREATE TABLE IF NOT EXISTS cart_items (
+    id TEXT PRIMARY KEY,
+    user_email TEXT NOT NULL,
+    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    thumbnail TEXT,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_email, product_id)
+);
+
+-- 8. Stock Reservations Table (temporary holds during checkout)
+CREATE TABLE IF NOT EXISTS stock_reservations (
+    id TEXT PRIMARY KEY,
+    order_id TEXT REFERENCES orders(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    user_email TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'HELD'
+        CHECK (status IN ('HELD', 'CONFIRMED', 'RELEASED')),
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- Seed Data
+-- ============================================
+
+-- Default "General Tasks" list (accessible to everyone)
+INSERT INTO todo_lists (id, name, owner_id) VALUES ('list-1', 'General Tasks', 'guest')
+ON CONFLICT (id) DO NOTHING;
+
+-- Sample todos for General Tasks
+INSERT INTO todos (id, text, completed, list_id) VALUES ('1', 'Task 1', false, 'list-1')
+ON CONFLICT (id) DO NOTHING;
+INSERT INTO todos (id, text, completed, list_id) VALUES ('2', 'Task 2', true, 'list-1')
+ON CONFLICT (id) DO NOTHING;

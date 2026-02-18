@@ -6,18 +6,38 @@ export interface Order {
     address: string;
     items: any[];
     workflow_id: string;
+    userEmail?: string;
+    createdAt?: string;
 }
 
 export const adminApi = createApi({
     reducerPath: 'adminApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:4002/api/' }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: 'http://localhost:4002/api/',
+        prepareHeaders: (headers) => {
+            const user = localStorage.getItem('auth-user');
+            if (user) {
+                try {
+                    const parsed = JSON.parse(user);
+                    if (parsed.email) {
+                        headers.set('X-User-Email', parsed.email);
+                    }
+                } catch (e) {
+                    // ignore invalid json
+                }
+            }
+            return headers;
+        },
+    }),
     tagTypes: ['Orders', 'Requests'],
     endpoints: (builder) => ({
         getOrders: builder.query<Order[], void>({
-            // In a real app, this would be a Hasura subscription or query
-            // For now, we'll fetch from our Node.js backend which can proxy Hasura
             query: () => 'orders',
             providesTags: ['Orders'],
+        }),
+        getOrder: builder.query<Order, string>({
+            query: (id) => `orders/${id}`,
+            providesTags: (_result, _error, id) => [{ type: 'Orders', id }],
         }),
         startOrder: builder.mutation<{ workflowId: string }, { orderId: string; address: string; items: any[] }>({
             query: (body) => ({
@@ -48,6 +68,7 @@ export const adminApi = createApi({
 
 export const {
     useGetOrdersQuery,
+    useGetOrderQuery,
     useStartOrderMutation,
     useSignalOrderMutation,
     useFlagIssueMutation

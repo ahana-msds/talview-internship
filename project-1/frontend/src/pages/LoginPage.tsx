@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import * as Sentry from "@sentry/react";
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import styles from './Auth.module.css';
 
@@ -14,6 +14,8 @@ import { loginSchema } from '../lib/validation';
 export const LoginPage = () => {
     const { loginWithEmail, loginWithGoogle, loginWithGithub, loginAsGuest } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const redirectTo = (location.state as any)?.from || '/dashboard';
 
     // Local state for form inputs and loading status
     const [email, setEmail] = useState('');
@@ -40,7 +42,7 @@ export const LoginPage = () => {
 
         try {
             await loginWithEmail(email, pass);
-            navigate('/dashboard');
+            navigate(redirectTo);
         } catch (err: any) {
             Sentry.captureException(err);
             setError(err.message || 'Failed to login');
@@ -60,7 +62,7 @@ export const LoginPage = () => {
             if (method === 'google') await loginWithGoogle();
             if (method === 'github') await loginWithGithub();
             if (method === 'guest') await loginAsGuest();
-            navigate('/dashboard');
+            navigate(redirectTo);
         } catch (err) {
             Sentry.captureException(err);
             setError('Login failed. Please try again.');

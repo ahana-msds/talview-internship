@@ -1,5 +1,6 @@
 // Redux hooks and actions for cart management
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { removeFromCart, updateQuantity, selectCartItems, selectCartTotal } from './cartSlice';
 
 /**
@@ -11,6 +12,7 @@ const Cart = () => {
     const items = useSelector(selectCartItems);
     const total = useSelector(selectCartTotal);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     return (
         <div style={{ padding: '20px', borderTop: '2px solid #333', marginTop: '20px' }}>
@@ -40,6 +42,13 @@ const Cart = () => {
                     </ul>
                     {/* Grand total calculation displayed below the list */}
                     <h3>Total: ${total.toFixed(2)}</h3>
+                    <button
+                        onClick={() => navigate('/checkout')}
+                        className="btn"
+                        style={{ width: '100%', marginTop: '1rem', fontSize: '1.1rem', padding: '12px' }}
+                    >
+                        Proceed to Checkout →
+                    </button>
                 </>
             )}
         </div>

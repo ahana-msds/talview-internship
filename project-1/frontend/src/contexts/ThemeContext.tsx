@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 // Supported themes in the application
-type Theme = 'default' | 'ocean' | 'forest';
+type Theme = 'light' | 'dark';
 
 /**
  * Interface for Theme Context.
@@ -19,10 +19,10 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
  * ThemeProvider: Manages and persists the application's visual theme.
  */
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-    // Initialize theme from localStorage if exists, default to 'default'
+    // Initialize theme from localStorage if exists, default to 'light'
     const [theme, setTheme] = useState<Theme>(() => {
         const savedTheme = localStorage.getItem('app-theme');
-        return (savedTheme as Theme) || 'default';
+        return (savedTheme === 'dark' ? 'dark' : 'light');
     });
 
     // Effect to apply theme classes and persist selection
@@ -31,13 +31,11 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('app-theme', theme);
 
         // Remove all previous theme classes from body
-        document.body.classList.remove('theme-ocean', 'theme-forest');
+        document.body.classList.remove('theme-dark');
 
-        // Apply selected theme class if it's not the default minimal theme
-        if (theme === 'ocean') {
-            document.body.classList.add('theme-ocean');
-        } else if (theme === 'forest') {
-            document.body.classList.add('theme-forest');
+        // Apply dark theme class
+        if (theme === 'dark') {
+            document.body.classList.add('theme-dark');
         }
     }, [theme]);
 

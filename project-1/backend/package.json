@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node --loader ts-node/esm src/index.ts",
     "worker": "node --loader ts-node/esm src/worker.ts",
+    "seed": "node --loader ts-node/esm src/seed-products.ts",
     "test": "vitest"
   },
   "keywords": [],
@@ -21,6 +22,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "pg": "^8.18.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -28,6 +30,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.2.3",
+    "@types/pg": "^8.16.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"

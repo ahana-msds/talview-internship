@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import * as Sentry from "@sentry/react";
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { useGetProductsQuery } from './productsApi';
-import { useStartOrderMutation } from '../admin/adminApi';
+import { addToCart } from '../cart/cartSlice';
 import type { Product } from './productsApi';
 
 interface ProductListProps {
     products?: Product[];
+    sortBy?: string;
 }
 
-const ProductList = ({ products: injectedProducts }: ProductListProps) => {
+const ProductList = ({ products: injectedProducts, sortBy }: ProductListProps) => {
     const [page, setPage] = useState(0);
     const LIMIT = 12;
     const { data, error, isLoading, isFetching } = useGetProductsQuery(
@@ -16,27 +18,32 @@ const ProductList = ({ products: injectedProducts }: ProductListProps) => {
         { skip: !!injectedProducts }
     );
 
-    const [startOrder] = useStartOrderMutation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const products = injectedProducts || data?.products;
+    let products = injectedProducts || data?.products;
     const total = data?.total || 0;
     const hasNextPage = (page + 1) * LIMIT < total;
 
-    const handleBuyNow = async (product: Product) => {
-        try {
-            const orderId = Math.random().toString(36).substring(7);
-            const address = "123 Default Street, Tech City"; // Placeholder
-            await startOrder({ orderId, address, items: [product] }).unwrap();
-            alert(`Order ${orderId} placed! You have a 5-minute grace period to change the address in your profile.`);
-        } catch (err) {
-            console.error('Failed to buy:', err);
-            Sentry.captureException(err);
-        }
-    };
+    // Client-side sorting
+    if (products && sortBy) {
+        products = [...products].sort((a, b) => {
+            if (sortBy === 'price-asc') return a.price - b.price;
+            if (sortBy === 'price-desc') return b.price - a.price;
+            if (sortBy === 'name-asc') return a.title.localeCompare(b.title);
+            return 0;
+        });
+    }
 
-    const handleFlagIssue = (product: Product) => {
-        const eventId = Sentry.captureMessage(`Issue flagged for product: ${product.title}`);
-        Sentry.showReportDialog({ eventId });
+    const handleBuyNow = (product: Product) => {
+        dispatch(addToCart({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            thumbnail: product.thumbnail,
+            quantity: 1
+        }));
+        navigate('/checkout');
     };
 
     if (!injectedProducts && isLoading) return <p>Loading products...</p>;
@@ -61,9 +68,8 @@ const ProductList = ({ products: injectedProducts }: ProductListProps) => {
                         <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{product.title}</h3>
                         <p style={{ fontWeight: 'bold', color: 'var(--color-primary)', marginBottom: '1rem' }}>${product.price}</p>
                         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <button onClick={() => handleBuyNow(product)} className="btn" style={{ width: '100%' }}>Buy Now (Temporal)</button>
-                            <button onClick={() => handleFlagIssue(product)} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.8rem' }}>Flag Issue (Sentry)</button>
-                            <button onClick={() => window.open(`/product/${product.id}`, '_blank')} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.8rem' }}>View Details</button>
+                            <button onClick={() => handleBuyNow(product)} className="btn" style={{ width: '100%' }}>Buy Now</button>
+                            <button onClick={() => navigate(`/product/${product.id}`)} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.8rem' }}>View Details</button>
                         </div>
                     </div>
                 ))}

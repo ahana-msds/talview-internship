@@ -16,6 +16,8 @@ import { GitHubPage } from './pages/GitHubPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AddressPage } from './pages/AddressPage';
+import { CheckoutPage } from './pages/CheckoutPage';
+import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 
 // Feature pages wrapped in appropriate route guards
 import AdminDashboard from './pages/AdminDashboard';
@@ -137,6 +139,22 @@ function App() {
               element={
                 <AuthenticatedRoute>
                   <AddressPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <AuthenticatedRoute>
+                  <CheckoutPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/order-confirmation/:orderId"
+              element={
+                <AuthenticatedRoute>
+                  <OrderConfirmationPage />
                 </AuthenticatedRoute>
               }
             />

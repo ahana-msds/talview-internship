@@ -19,6 +19,9 @@ export const ProductDetailPage = () => {
     // Fetch product details using RTK Query
     const { data: product, isLoading, error } = useGetProductByIdQuery(id || '');
 
+    const outOfStock = product?.stock !== undefined && product.stock <= 0;
+    const maxQty = product?.stock ?? 99;
+
     if (isLoading) return <div className="container">Loading product details...</div>;
     if (error || !product) return <div className="container">Error: Product not found</div>;
 
@@ -47,7 +50,7 @@ export const ProductDetailPage = () => {
             thumbnail: product.thumbnail,
             quantity: quantity
         }));
-        navigate('/cart');
+        navigate('/checkout');
     };
 
     return (
@@ -88,13 +91,31 @@ export const ProductDetailPage = () => {
                             )}
                         </div>
 
-                        <div style={{ marginBottom: '2rem' }}>
+                        {/* Stock indicator */}
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            {outOfStock ? (
+                                <span style={{
+                                    display: 'inline-block', background: '#e74c3c', color: '#fff',
+                                    padding: '6px 16px', borderRadius: '6px', fontWeight: 'bold',
+                                    fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px',
+                                }}>Out of Stock</span>
+                            ) : product?.stock !== undefined ? (
+                                <span style={{
+                                    display: 'inline-block', background: product.stock < 10 ? '#f39c12' : '#27ae60',
+                                    color: '#fff', padding: '6px 16px', borderRadius: '6px',
+                                    fontWeight: 'bold', fontSize: '0.85rem',
+                                }}>{product.stock} left in stock</span>
+                            ) : null}
+                        </div>
+
+                        <div style={{ marginBottom: '2rem', opacity: outOfStock ? 0.4 : 1 }}>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Quantity:</label>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                 <button
                                     className="btn btn-secondary"
                                     style={{ padding: '5px 15px', minWidth: '40px' }}
                                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                    disabled={outOfStock}
                                 >-</button>
                                 <span style={{ fontSize: '1.2rem', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>
                                     {quantity}
@@ -102,7 +123,8 @@ export const ProductDetailPage = () => {
                                 <button
                                     className="btn btn-secondary"
                                     style={{ padding: '5px 15px', minWidth: '40px' }}
-                                    onClick={() => setQuantity(q => q + 1)}
+                                    onClick={() => setQuantity(q => Math.min(maxQty, q + 1))}
+                                    disabled={outOfStock || quantity >= maxQty}
                                 >+</button>
                             </div>
                         </div>
@@ -111,13 +133,15 @@ export const ProductDetailPage = () => {
                             <button
                                 onClick={handleAddToCart}
                                 className="btn"
-                                style={{ flex: 1 }}
+                                style={{ flex: 1, ...(outOfStock ? { opacity: 0.4, cursor: 'not-allowed' } : {}) }}
+                                disabled={outOfStock}
                             >
-                                Add to Cart
+                                {outOfStock ? 'Out of Stock' : 'Add to Cart'}
                             </button>
                             <button
                                 onClick={handleBuyNow}
                                 className="btn"
+                                disabled={outOfStock}
                                 style={{ flex: 1, backgroundColor: 'var(--color-accent)' }}
                             >
                                 Buy Now

@@ -114,6 +114,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
+    // Persistence for API headers
+    useEffect(() => {
+        if (user?.email) {
+            localStorage.setItem('user_email', user.email);
+        } else if (user?.provider === 'guest') {
+            localStorage.setItem('user_email', 'guest@talview.com');
+        } else {
+            localStorage.removeItem('user_email');
+        }
+    }, [user]);
+
     // Monitor Auth State changes from Firebase
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (fbUser) => {

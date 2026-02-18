@@ -19,14 +19,17 @@ export const todoApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:4002/api/', // Proxy to Hasura or direct Hasura
         prepareHeaders: (headers) => {
-            // In a real app, we'd get this from AuthContext
+            const email = localStorage.getItem('user_email');
+            if (email) {
+                headers.set('X-User-Email', email);
+            }
             headers.set('X-Hasura-Role', 'user');
             return headers;
         }
     }),
     tagTypes: ['TodoLists', 'Todos'],
     endpoints: (builder) => ({
-        getTodoLists: builder.query<TodoList[], void>({
+        getTodoLists: builder.query<TodoList[], string | undefined>({
             query: () => 'todo-lists',
             providesTags: ['TodoLists'],
         }),
@@ -65,6 +68,13 @@ export const todoApi = createApi({
             }),
             invalidatesTags: ['TodoLists'],
         }),
+        deleteTodoList: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `todo-lists/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['TodoLists'],
+        }),
         shareList: builder.mutation<void, { listId: string; userId: string; role: 'viewer' | 'editor' }>({
             query: (body) => ({
                 url: `todo-lists/${body.listId}/share`,
@@ -83,5 +93,6 @@ export const {
     useUpdateTodoMutation,
     useDeleteTodoMutation,
     useCreateListMutation,
+    useDeleteTodoListMutation,
     useShareListMutation
 } = todoApi;

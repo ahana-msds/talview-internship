@@ -6,7 +6,7 @@ interface NavbarThemeSelectorProps {
 }
 
 /**
- * NavbarThemeSelector: Dropdown component for choosing the application's theme.
+ * NavbarThemeSelector: Toggle between Light and Dark themes.
  */
 export const NavbarThemeSelector = ({ theme, onThemeChange }: NavbarThemeSelectorProps) => {
     return (
@@ -15,10 +15,8 @@ export const NavbarThemeSelector = ({ theme, onThemeChange }: NavbarThemeSelecto
             onChange={(e) => onThemeChange(e.target.value)}
             className={styles.themeSelect}
         >
-            {/* Theme options with descriptive emojis */}
-            <option value="default">✨ Minimal</option>
-            <option value="ocean">🌊 Ocean</option>
-            <option value="forest">🌲 Forest</option>
+            <option value="light">☀️ Light</option>
+            <option value="dark">🌙 Dark</option>
         </select>
     );
 };
