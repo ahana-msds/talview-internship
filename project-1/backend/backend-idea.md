@@ -1,13 +1,21 @@
 # Backend Project Idea:
 
+<<<<<<< HEAD
 ##  Overview
+=======
+## Overview
+>>>>>>> 77657c2 (docs: refine backend vision to be more project-specific and implementation-focused)
 This document captures the core technical philosophy and roadmap for the `project-1` backend. The project is designed as a learning-centric "Skeleton Architecture" that demonstrates high-reliability patterns for e-commerce and collaborative tools.
 
 Rather than just a simple API, this backend serves as a showcase for **Durable Execution**, **Durable State**, and **Human-in-the-Loop** systems.
 
 ---
 
+<<<<<<< HEAD
 ##  Scenario 1: Resilient Checkout with "Human-in-the-Loop"
+=======
+## Scenario 1: Resilient Checkout with "Human-in-the-Loop"
+>>>>>>> 77657c2 (docs: refine backend vision to be more project-specific and implementation-focused)
 
 We treat the order pipeline not as a series of instant database updates, but as a long-running, resilient process with a built-in "Correction Window."
 
@@ -20,7 +28,11 @@ We treat the order pipeline not as a series of instant database updates, but as 
 
 ---
 
+<<<<<<< HEAD
 ##  Scenario 2: Multi-User Task Engine with RBAC
+=======
+## Scenario 2: Multi-User Task Engine with RBAC
+>>>>>>> 77657c2 (docs: refine backend vision to be more project-specific and implementation-focused)
 
 Moving beyond private lists to a **Permission-Based Collaboration** system enforced at the data layer.
 
@@ -35,7 +47,11 @@ Moving beyond private lists to a **Permission-Based Collaboration** system enfor
 
 ---
 
+<<<<<<< HEAD
 ##  Scenario 3: Admin Request & Control Center
+=======
+## Scenario 3: Admin Request & Control Center
+>>>>>>> 77657c2 (docs: refine backend vision to be more project-specific and implementation-focused)
 
 A unified "Internal Flagging" system that bridges the gap between Frontend UI issues and Backend data fixes.
 
@@ -47,7 +63,11 @@ A unified "Internal Flagging" system that bridges the gap between Frontend UI is
 
 ---
 
+<<<<<<< HEAD
 ##  Technical Integration Stack
+=======
+## Technical Integration Stack
+>>>>>>> 77657c2 (docs: refine backend vision to be more project-specific and implementation-focused)
 
 ### Backend Structure (/backend)
 *   **Hasura (GraphQL Layer):**
@@ -60,64 +80,42 @@ A unified "Internal Flagging" system that bridges the gap between Frontend UI is
     *   Serving as the "Starter" for workflows.
     *   Managing logic that doesn't fit into pure RLS or pure Workflow functions.
 
-## 🏗️ Core Backend Modules & Responsibilities
+## The Technical Pillars of Project-1
 
-### 1. Product Management
-*   Provide high-performance product listing and detail APIs.
-*   Handle complex filtering, search, and pagination on the server.
-*   Ensure data consistency and schema validation for all product entries.
+Instead of a standard CRUD API, the backend for Project-1 is built on three core pillars that ensure it can handle real-world e-commerce edge cases:
 
-### 2. Cart Management
-*   Securely store cart data in PostgreSQL for cross-device persistence.
-*   Handle CRUD operations (Add, Remove, Update) for cart items.
-*   Validate product existence and requested quantity against real-time stock.
-*   Calculate totals (subtotal, tax, discounts) securely on the server side.
+### Pillar 1: Durable Life-Cycles (The Order Engine)
+Orders in this project aren't just static rows in a database; they are **Live Workflows**.
+*   **Context**: Using Temporal.io, we ensure that an order "lives" as a persistent state machine.
+*   **Execution**: From the moment a user clicks "Buy Now," the backend initiates a 10-minute lifecycle. This lifecycle manages everything from checking the "DummyJSON" product stock to generating invoices and eventually cleaning up expired holds.
+*   **Reliability**: If the server crashes, the workflow engine resumes exactly where it left off, ensuring no customer is ever left in a "Paid but Unconfirmed" state.
 
-### 3. Inventory System
-*   Track real-time stock levels per product.
-*   **Prevent overselling** during concurrent requests using database locks.
-*   Reduce stock immediately upon reservation to protect inventory.
-*   Ensure all inventory updates are atomic database operations.
+### Pillar 2: Atomic Guardrails (The Inventory Logic)
+We prevent the "Overselling" problem at the database level rather than the application level.
+*   **Context**: High-concurrency environments often suffer from race conditions where two users buy the last item.
+*   **Execution**: We use PostgreSQL **Row-Level Locking** (`SELECT FOR UPDATE`). This locks the specific product row during the reservation phase, forcing the database to process requests sequentially.
+*   **Feedback**: The system is designed to return a `409 Conflict` immediately if a lock cannot be acquired or if stock has dropped to zero, providing the frontend with clear, actionable error data.
 
-### 4. Reserve Inventory Flow
-*   Create short-lived reservations with a configurable expiration time (e.g., 10-15 mins).
-*   Lock stock temporarily to "hold" it for the user.
-*   Start a **Temporal workflow** for precise timeout handling.
-*   Release stock automatically if payment fails or the session times out.
-
-### 5. Payment Processing
-*   Create secure payment sessions (Stripe/Razorpay).
-*   Verify payment completion via **authenticated webhooks**.
-*   Update order status and confirm stock only after verified payment.
-*   Implement server-side verification to prevent common fraud patterns.
-
-### 6. Order Management
-*   Convert temporary reservations into confirmed, permanent orders.
-*   Store detailed order snapshots (price, title) to ensure historical accuracy.
-*   Link Users, Payments, and Inventory records in a relational model.
-*   Maintain and track the complete order lifecycle (Pending -> Paid -> Shipped).
-
-### 7. Workflow Management (Temporal)
-*   Manage long-running, asynchronous processes with durable state.
-*   Handle transient failures (e.g., API timeouts) with automatic retries.
-*   Maintain **Idempotency** for all operations to prevent duplicate orders.
-*   Orchestrate complex logic like reservation expiration and cleanup.
-
-### 8. Database Management
-*   Manage relational schemas for Users, Products, Inventory, Orders, and Payments.
-*   Enforce data integrity through Foreign Keys and Constraints.
-*   Implement performance optimizations via indexing and query tuning.
+### Pillar 3: Collaborative RBAC (The Permission Registry)
+Access control is managed via a shared junction table strategy that integrates deeply with Hasura's security layer.
+*   **Context**: Moving beyond simple "My Tasks" to "shared Team Tasks."
+*   **Execution**: Every Todo list is governed by a `todo_permissions` record. We verify identity via the `X-User-Email` header, cross-referencing it against the permissions registry for every read or write operation.
+*   **Visibility**: Owners have full destructive rights, while Editors are limited to task management—all enforced by backend middleware.
 
 ---
 
-## 🏛️ Core Backend Principles
-*   **Frontend handles UI/UX**: Focus on presentation, user interaction, and optimistic states.
-*   **Backend handles Truth**: All business logic, security enforcement, and data persistence reside on the server.
-*   **Server-Side Validation**: Never trust client-side data; all critical operations (price, stock, roles) MUST be validated on the server.
+## Core Backend Philosophy
+*   **Simulated Resilience**: Notifications (Emails/Invoices) are currently simulated via structured logging. This keeps the project decoupled from external API keys while maintaining a "Production-Ready" logic flow.
+*   **Progressive Persistence**: The backend acts as the authoritative source for the Cart, but allows the UI to stay snappy via optimistic Redux state, syncing data in the background only after validation.
+*   **Fail-Fast Security**: Prices, discount logic, and stock availability are never trusted from the client. The backend re-validates every line item from its own PostgreSQL truth.
 
 ---
 
+<<<<<<< HEAD
 ##  Status & Open Ends
+=======
+## Status & Open Ends
+>>>>>>> 77657c2 (docs: refine backend vision to be more project-specific and implementation-focused)
 This document serves as the **Vision**. While core parts (Stock Reservation, Temporal Workflows, Cart Persistence) are implemented, the following are "Ideas-in-Progress" to be integrated as the learning journey continues:
 *   Real-time Hasura subscriptions for the Admin dashboard.
 *   Full Sentry-to-DB mapping for bug tracking.
