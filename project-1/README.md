@@ -6,13 +6,13 @@ A comprehensive Full-Stack application demonstrating modern web development prac
 *   **Durable Workflows**: Temporal.io
 *   **Monitoring**: Sentry
 
-## 📚 Documentation
+##  Documentation
 For a deep dive into each layer, please see:
 *   [**Frontend Documentation**](./frontend/doc.md) — UI logic, Cart persistence, state management.
 *   [**Backend Documentation**](./backend/doc.md) — Architecture, Stock locking logic, API specs.
 *   [**System Walkthrough**](file:///Users/ahanadas/.gemini/antigravity/brain/01e3612c-0c27-47d8-b231-1a404aa1974a/walkthrough.md) — Global overview and setup guide.
 
-## 🚀 Quick Setup
+##  Quick Setup
 
 ### 1. Infrastructure (Docker)
 Ensure Docker is running, then start the database and workflow engine:
@@ -38,7 +38,7 @@ npm install
 npm run dev    # UI on port 5173
 ```
 
-## 🏗️ Project Structure
+##  Project Structure
 ```text
 project-1/
 ├── frontend/             # React + Vite application
