@@ -1,0 +1,9 @@
+info:
+  name: admin
+  type: folder
+  seq: 1
+
+request:
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJhZG1pbkB0YWx2aWV3LmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MTU3Nzg2OCwiZXhwIjoxNzcxNTgxNDY4fQ.ub-cRxwZQU3TmL-z0BiEVpiBggjI0afCj1mYmRiWbdc

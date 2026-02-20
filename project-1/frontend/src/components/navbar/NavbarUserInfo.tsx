@@ -54,6 +54,12 @@ export const NavbarUserInfo = ({ displayName }: NavbarUserInfoProps) => {
                     >
                         📍 Addresses
                     </div>
+                    <div
+                        className={styles.dropdownItem}
+                        onClick={() => handleNavigate('/orders')}
+                    >
+                        📦 My Orders
+                    </div>
                 </div>
             )}
         </div>

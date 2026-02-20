@@ -1,0 +1,9 @@
+info:
+  name: user - anika
+  type: folder
+  seq: 1
+
+request:
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJhbmlrYUB0YWx2aWV3LmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcxNTkzNTY2LCJleHAiOjE3NzE1OTcxNjZ9.UotjgTD-NTm0gEPROEY71-4c52sGZorh126kevglRmA

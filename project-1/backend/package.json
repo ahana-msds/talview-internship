@@ -7,7 +7,8 @@
     "start": "node --loader ts-node/esm src/index.ts",
     "worker": "node --loader ts-node/esm src/worker.ts",
     "seed": "node --loader ts-node/esm src/seed-products.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +20,13 @@
     "@temporalio/client": "^1.14.1",
     "@temporalio/worker": "^1.14.1",
     "@temporalio/workflow": "^1.14.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.18.0",
     "zod": "^4.3.6"
   },

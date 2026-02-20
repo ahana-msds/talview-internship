@@ -1,0 +1,17 @@
+info:
+  name: get todo list ahana
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:4002/api/todo-lists
+  auth:
+    type: bearer
+    token: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

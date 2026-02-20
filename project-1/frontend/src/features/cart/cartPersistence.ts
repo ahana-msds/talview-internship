@@ -73,20 +73,18 @@ export async function loadCartFromIndexedDB(): Promise<CartItemData[]> {
 // Backend API Helpers
 // ============================================
 
-function getUserEmail(): string {
-    try {
-        const authData = localStorage.getItem('auth-user');
-        if (authData) {
-            const parsed = JSON.parse(authData);
-            return parsed.email || 'guest';
-        }
-    } catch { }
-    return 'guest';
+function getAuthHeaders(): Record<string, string> {
+    const token = localStorage.getItem('jwt_token');
+    const headers: Record<string, string> = {};
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
 }
 
 export async function fetchCartFromBackend(): Promise<CartItemData[]> {
     const response = await fetch(BACKEND_URL, {
-        headers: { 'X-User-Email': getUserEmail() },
+        headers: getAuthHeaders(),
     });
     if (!response.ok) throw new Error(`Backend cart fetch failed: ${response.status}`);
     return response.json();
@@ -97,7 +95,7 @@ export async function syncAddToBackend(item: CartItemData): Promise<void> {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-User-Email': getUserEmail(),
+            ...getAuthHeaders(),
         },
         body: JSON.stringify(item),
     });
@@ -108,7 +106,7 @@ export async function syncUpdateToBackend(productId: number, quantity: number): 
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'X-User-Email': getUserEmail(),
+            ...getAuthHeaders(),
         },
         body: JSON.stringify({ quantity }),
     });
@@ -117,14 +115,14 @@ export async function syncUpdateToBackend(productId: number, quantity: number): 
 export async function syncRemoveFromBackend(productId: number): Promise<void> {
     await fetch(`${BACKEND_URL}/${productId}`, {
         method: 'DELETE',
-        headers: { 'X-User-Email': getUserEmail() },
+        headers: getAuthHeaders(),
     });
 }
 
 export async function syncClearBackend(): Promise<void> {
     await fetch(BACKEND_URL, {
         method: 'DELETE',
-        headers: { 'X-User-Email': getUserEmail() },
+        headers: getAuthHeaders(),
     });
 }
 

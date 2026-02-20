@@ -50,23 +50,41 @@ const AdminDashboard: React.FC = () => {
                                 <p><strong>Workflow:</strong> {order.workflow_id}</p>
                             </div>
                             <div className={styles.actions}>
-                                <div className={styles.inputGroup}>
+                                <div className={styles.inputGroup} style={{ marginBottom: '10px' }}>
                                     <select
                                         value={overrideStatus[order.id] || ''}
                                         onChange={(e) => setOverrideStatus({ ...overrideStatus, [order.id]: e.target.value })}
                                         className={styles.select}
                                     >
-                                        <option value="">Select Override</option>
-                                        <option value="SHIPPED">Force Ship</option>
-                                        <option value="CANCELLED">Cancel Order</option>
-                                        <option value="CONFIRMED">Force Confirm</option>
+                                        <option value="">Status Signal</option>
+                                        <option value="shipment-confirm">Confirm Shipment</option>
+                                        <option value="shipped">Mark Shipped</option>
+                                        <option value="delivered">Mark Delivered</option>
+                                        <option value="cancelOrder">Cancel Order</option>
                                     </select>
                                     <button
-                                        onClick={() => handleSignal(order.id, 'adminOverride', overrideStatus[order.id])}
+                                        onClick={() => handleSignal(order.id, overrideStatus[order.id])}
                                         disabled={!overrideStatus[order.id]}
                                         className={styles.signalBtn}
                                     >
-                                        Send Override
+                                        Send Signal
+                                    </button>
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <input
+                                        type="text"
+                                        placeholder="Update Address"
+                                        className={styles.select}
+                                        id={`addr-${order.id}`}
+                                    />
+                                    <button
+                                        className={styles.signalBtn}
+                                        onClick={() => {
+                                            const val = (document.getElementById(`addr-${order.id}`) as HTMLInputElement)?.value;
+                                            if (val) handleSignal(order.id, 'updateAddress', val);
+                                        }}
+                                    >
+                                        Update
                                     </button>
                                 </div>
                             </div>

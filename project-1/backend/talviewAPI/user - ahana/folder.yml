@@ -1,0 +1,9 @@
+info:
+  name: user - ahana
+  type: folder
+  seq: 1
+
+request:
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJhaGFuYUB0YWx2aWV3LmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcxNTkzNDQ2LCJleHAiOjE3NzE1OTcwNDZ9.m5NzHXXU0uHzCl78dyPCmBdec8m5OkpaZv9AOTvlWs8

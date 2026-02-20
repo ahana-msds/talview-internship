@@ -46,8 +46,15 @@ export const AddressPage = () => {
      */
     const handleSaveAddress = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Custom Validation
+        if (!formData.phone.startsWith('+91') || formData.phone.length !== 13) {
+            alert('Phone number must start with +91 and be followed by 10 digits.');
+            return;
+        }
+
         const newAddress: Address = {
-            id: Date.now().toString(),
+            id: `ADDR-${Date.now()}`,
             ...formData
         };
 
@@ -140,6 +147,9 @@ export const AddressPage = () => {
                                         className="input"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        placeholder="+91..."
+                                        pattern="\+91[0-9]{10}"
+                                        title="+91 followed by 10 digits"
                                         required
                                     />
                                 </div>

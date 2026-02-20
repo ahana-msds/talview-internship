@@ -7,6 +7,16 @@ CREATE TABLE IF NOT EXISTS todo_lists (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     owner_id TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 1.1 Users Table (for JWT Auth)
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user', -- 'admin', 'user'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

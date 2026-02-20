@@ -14,7 +14,7 @@ import styles from './TodoList.module.css';
 import { useAuth } from '../contexts/AuthContext';
 
 export const TodoList = () => {
-    const { user, loading: authLoading } = useAuth();
+    const { user } = useAuth();
     // Ensure localStorage is in sync BEFORE any query fires
     const userEmail = user?.email || undefined;
     if (userEmail) {
@@ -128,8 +128,8 @@ export const TodoList = () => {
             <h3 className={styles.header}>Task Manager</h3>
 
             {!isCreating ? (
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
-                    <div className={styles.listSelector} style={{ flex: 1, marginBottom: 0 }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className={styles.listSelector} style={{ flex: 1, marginBottom: 0, minWidth: '200px' }}>
                         <select
                             value={selectedListId || ''}
                             onChange={(e) => setSelectedListId(e.target.value)}
@@ -144,6 +144,11 @@ export const TodoList = () => {
                             ))}
                         </select>
                     </div>
+                    {selectedListId && activeList?.updated_at && (
+                        <div style={{ fontSize: '0.8rem', opacity: 0.7, whiteSpace: 'nowrap' }}>
+                            Last changed: {new Date(activeList.updated_at).toLocaleString()}
+                        </div>
+                    )}
                     {selectedListId && selectedListId !== 'list-1' && activeList?.role === 'owner' && (
                         <button onClick={handleDeleteList} className="btn" style={{ background: 'var(--color-bg-alt)', color: 'red', border: '1px solid currentColor', fontSize: '1.2rem', padding: '5px 10px', height: '40px' }} title="Delete List">🗑️</button>
                     )}

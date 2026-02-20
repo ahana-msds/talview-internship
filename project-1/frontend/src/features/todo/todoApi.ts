@@ -12,6 +12,7 @@ export interface TodoList {
     name: string;
     owner_id: string;
     role?: string; // Derived from permissions
+    updated_at?: string;
 }
 
 export const todoApi = createApi({
@@ -19,11 +20,10 @@ export const todoApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:4002/api/', // Proxy to Hasura or direct Hasura
         prepareHeaders: (headers) => {
-            const email = localStorage.getItem('user_email');
-            if (email) {
-                headers.set('X-User-Email', email);
+            const token = localStorage.getItem('jwt_token');
+            if (token) {
+                headers.set('Authorization', `Bearer ${token}`);
             }
-            headers.set('X-Hasura-Role', 'user');
             return headers;
         }
     }),
@@ -43,7 +43,7 @@ export const todoApi = createApi({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }],
+            invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }, 'TodoLists'],
         }),
         updateTodo: builder.mutation<Todo, { listId: string; todoId: string; text?: string; completed?: boolean }>({
             query: ({ listId, todoId, ...body }) => ({
@@ -51,14 +51,14 @@ export const todoApi = createApi({
                 method: 'PATCH',
                 body,
             }),
-            invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }],
+            invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }, 'TodoLists'],
         }),
         deleteTodo: builder.mutation<void, { listId: string; todoId: string }>({
             query: ({ listId, todoId }) => ({
                 url: `todo-lists/${listId}/todos/${todoId}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }],
+            invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }, 'TodoLists'],
         }),
         createList: builder.mutation<TodoList, { name: string; emails: string[] }>({
             query: (body) => ({

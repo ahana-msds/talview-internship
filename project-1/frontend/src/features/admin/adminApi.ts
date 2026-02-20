@@ -15,16 +15,9 @@ export const adminApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:4002/api/',
         prepareHeaders: (headers) => {
-            const user = localStorage.getItem('auth-user');
-            if (user) {
-                try {
-                    const parsed = JSON.parse(user);
-                    if (parsed.email) {
-                        headers.set('X-User-Email', parsed.email);
-                    }
-                } catch (e) {
-                    // ignore invalid json
-                }
+            const token = localStorage.getItem('jwt_token');
+            if (token) {
+                headers.set('Authorization', `Bearer ${token}`);
             }
             return headers;
         },

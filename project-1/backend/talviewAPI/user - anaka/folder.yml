@@ -1,0 +1,9 @@
+info:
+  name: user - anaka
+  type: folder
+  seq: 1
+
+request:
+  auth:
+    type: bearer
+    token: yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJhbmFrYUB0YWx2aWV3LmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcxNTkzNDk5LCJleHAiOjE3NzE1OTcwOTl9.cGQijbxNVQ7dqoVbGcinbr7926Gy4FAAefPbhru2ncY

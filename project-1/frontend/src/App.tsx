@@ -18,6 +18,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { AddressPage } from './pages/AddressPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
+import { OrdersPage } from './pages/OrdersPage';
 
 // Feature pages wrapped in appropriate route guards
 import AdminDashboard from './pages/AdminDashboard';
@@ -155,6 +156,14 @@ function App() {
               element={
                 <AuthenticatedRoute>
                   <OrderConfirmationPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <AuthenticatedRoute>
+                  <OrdersPage />
                 </AuthenticatedRoute>
               }
             />

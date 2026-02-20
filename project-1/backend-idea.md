@@ -1,6 +1,6 @@
 # Backend Project Idea:
 ##  Overview
-This document captures the core technical philosophy and roadmap for the `project-1` backend. The project is designed as a learning-centric "Skeleton Architecture" that demonstrates high-reliability patterns for e-commerce and collaborative tools.
+This document captures the core technical philosophy and roadmap for the `project-1` backend. The project is designed as a learning-centric architecture that demonstrates high-reliability patterns for e-commerce and collaborative tools.
 Rather than just a simple API, this backend serves as a showcase for **Durable Execution**, **Durable State**, and **Human-in-the-Loop** systems.
 ---
 ##  Scenario 1: Resilient Checkout with "Human-in-the-Loop"

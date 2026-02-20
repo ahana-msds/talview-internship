@@ -32,13 +32,26 @@ export const CheckoutPage = () => {
 
     const handlePlaceOrder = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (items.length === 0) return;
+
+        if (items.length === 0) {
+            alert('Cart is empty.');
+            return;
+        }
+
+        // Custom Validation
+        if (!address.phone.startsWith('+91') || address.phone.length !== 13) {
+            alert('Phone number must start with +91 and be followed by 10 digits.');
+            return;
+        }
+
         setIsSubmitting(true);
         setStockError([]);
 
         try {
-            const orderId = Math.random().toString(36).substring(2, 8);
+            // Readable Order ID: ORD-{timestamp}-{random}
+            const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
             const fullAddress = `${address.name}, ${address.street}, ${address.city}, ${address.state} - ${address.pincode}, Phone: ${address.phone}`;
+
             const result = await startOrder({
                 orderId,
                 address: fullAddress,
@@ -158,7 +171,7 @@ export const CheckoutPage = () => {
                                 </div>
                                 <div style={{ display: 'flex', gap: '10px' }}>
                                     <input name="pincode" value={address.pincode} onChange={handleChange} placeholder="Pincode" required pattern="[0-9]{5,6}" title="5-6 digit pincode" style={{ ...inputStyle, flex: 1 }} />
-                                    <input name="phone" value={address.phone} onChange={handleChange} placeholder="Phone Number" required pattern="[0-9]{10}" title="10-digit phone" style={{ ...inputStyle, flex: 1 }} />
+                                    <input name="phone" value={address.phone} onChange={handleChange} placeholder="Phone (+91...)" required pattern="\+91[0-9]{10}" title="+91 followed by 10 digits" style={{ ...inputStyle, flex: 1 }} />
                                 </div>
                             </div>
 

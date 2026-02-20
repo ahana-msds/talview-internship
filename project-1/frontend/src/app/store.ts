@@ -6,6 +6,7 @@ import cartReducer from '../features/cart/cartSlice';
 import { productsApi } from '../features/products/productsApi';
 import { adminApi } from '../features/admin/adminApi';
 import { todoApi } from '../features/todo/todoApi';
+import { authApi } from '../features/auth/authApi';
 
 /**
  * configureStore: Sets up the global application state.
@@ -21,10 +22,12 @@ export const store = configureStore({
         [adminApi.reducerPath]: adminApi.reducer,
         // Todo API state
         [todoApi.reducerPath]: todoApi.reducer,
+        // Auth API state
+        [authApi.reducerPath]: authApi.reducer,
     },
     // Adding the middleware for RTK Query features (caching, invalidation, etc.)
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(productsApi.middleware, adminApi.middleware, todoApi.middleware),
+        getDefaultMiddleware().concat(productsApi.middleware, adminApi.middleware, todoApi.middleware, authApi.middleware),
 });
 
 // TypeScript types derived from the store for application usage

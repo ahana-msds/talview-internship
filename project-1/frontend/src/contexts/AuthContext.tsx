@@ -16,6 +16,7 @@ import {
     EmailAuthProvider,
     type User as FirebaseUser
 } from "firebase/auth";
+import { useLoginMutation, useRegisterMutation } from '../features/auth/authApi';
 
 // Firebase Configuration using Environment Variables
 const firebaseConfig = {
@@ -45,6 +46,7 @@ export interface User {
     photoURL: string | null;
     provider: AuthProviderType;
     role?: 'user' | 'admin' | 'guest';
+    token?: string;
 }
 
 /**
@@ -76,6 +78,8 @@ const GUEST_USER_KEY = 'guest_user_session';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [loginMutation] = useLoginMutation();
+    const [registerMutation] = useRegisterMutation();
 
     /**
      * mapUser: Normalizes a Firebase User object into our custom User format.
@@ -100,22 +104,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
     };
 
-    // Check for guest session on mount
+    // Persistence for JWT and API headers
     useEffect(() => {
-        const guestData = sessionStorage.getItem(GUEST_USER_KEY);
-        if (guestData) {
-            try {
-                const guestUser = JSON.parse(guestData);
-                setUser(guestUser);
-                setLoading(false);
-            } catch (e) {
-                sessionStorage.removeItem(GUEST_USER_KEY);
-            }
+        if (user?.token) {
+            localStorage.setItem('jwt_token', user.token);
+        } else {
+            localStorage.removeItem('jwt_token');
         }
-    }, []);
 
-    // Persistence for API headers
-    useEffect(() => {
         if (user?.email) {
             localStorage.setItem('user_email', user.email);
         } else if (user?.provider === 'guest') {
@@ -131,11 +127,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (fbUser) {
                 // Clear any guest session when real user logs in
                 sessionStorage.removeItem(GUEST_USER_KEY);
-                setUser(mapUser(fbUser));
+                const baseUser = mapUser(fbUser);
+
+                // On mount or state change, check if there's a stored token
+                const storedToken = localStorage.getItem('jwt_token');
+                if (storedToken) {
+                    setUser({ ...baseUser, token: storedToken });
+                } else {
+                    setUser(baseUser);
+                }
             } else {
                 // Check if there's a guest session to maintain persistence for guests
                 const guestData = sessionStorage.getItem(GUEST_USER_KEY);
-                if (!guestData) {
+                if (guestData) {
+                    try {
+                        const guestUser = JSON.parse(guestData);
+                        setUser(guestUser);
+                    } catch (e) {
+                        sessionStorage.removeItem(GUEST_USER_KEY);
+                        setUser(null);
+                    }
+                } else {
                     setUser(null);
                 }
             }
@@ -146,24 +158,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     /**
-     * loginWithEmail: Logs in using Firebase authentication service.
+     * loginWithEmail: Logs in using Firebase authentication service and our backend.
      */
     const loginWithEmail = async (email: string, pass: string) => {
         // Clear guest session
         sessionStorage.removeItem(GUEST_USER_KEY);
+
+        // 1. Firebase Login
         await signInWithEmailAndPassword(auth, email, pass);
+
+        // 2. Backend Login (JWT)
+        try {
+            const result = await loginMutation({ email, password: pass }).unwrap();
+            setUser(prev => prev ? { ...prev, token: result.token, role: result.user.role } : null);
+        } catch (err) {
+            console.error('Backend sync failed:', err);
+        }
     };
 
     /**
-     * signupWithEmail: Creates a new account in Firebase.
+     * signupWithEmail: Creates a new account in Firebase and our backend.
      */
     const signupWithEmail = async (name: string, email: string, pass: string) => {
         // Clear guest session
         sessionStorage.removeItem(GUEST_USER_KEY);
-        // 1. Create User
+        // 1. Firebase Create
         await createUserWithEmailAndPassword(auth, email, pass);
+        // 2. Backend Register
+        try {
+            await registerMutation({ email, password: pass }).unwrap();
+        } catch (err) {
+            console.error('Backend registration failed:', err);
+        }
         console.log("Signing up user:", name);
-        // 2. Sign out immediately after signup (requiring manual login)
+        // 3. Sign out immediately after signup (requiring manual login)
         await signOut(auth);
     };
 
@@ -196,7 +224,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             displayName: 'Guest User',
             email: null,
             photoURL: null,
-            provider: 'guest'
+            provider: 'guest',
+            role: 'guest'
         };
 
         // Store in sessionStorage to persist across page navigation
@@ -210,6 +239,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = async () => {
         // Clear guest session
         sessionStorage.removeItem(GUEST_USER_KEY);
+        localStorage.removeItem('jwt_token');
         await signOut(auth);
         setUser(null);
     };
