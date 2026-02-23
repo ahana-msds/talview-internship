@@ -106,6 +106,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Persistence for JWT and API headers
     useEffect(() => {
+        // CRITICAL: Do not wipe localStorage while Firebase is still determining auth state
+        if (loading) return;
+
         if (user?.token) {
             localStorage.setItem('jwt_token', user.token);
         } else {
@@ -119,7 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
             localStorage.removeItem('user_email');
         }
-    }, [user]);
+    }, [user, loading]);
 
     // Monitor Auth State changes from Firebase
     useEffect(() => {
@@ -170,6 +173,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // 2. Backend Login (JWT)
         try {
             const result = await loginMutation({ email, password: pass }).unwrap();
+
+            // 🔥 CRITICAL FIX: Synchronously save to localStorage immediately
+            // This prevents onAuthStateChanged from reading null before React state flushes
+            localStorage.setItem('jwt_token', result.token);
+
             setUser(prev => prev ? { ...prev, token: result.token, role: result.user.role } : null);
         } catch (err) {
             console.error('Backend sync failed:', err);

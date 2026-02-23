@@ -56,7 +56,7 @@ export const getTodoLists = async (req: AuthRequest, res: Response) => {
             id: r.id,
             name: r.name,
             owner_id: r.owner_id,
-            role: r.id === LIST_1_ID ? 'owner' : (r.owner_id === email ? 'owner' : 'editor'),
+            role: (r.id === LIST_1_ID || isAdmin || r.owner_id === email) ? 'owner' : 'editor',
             updated_at: r.updated_at
         }));
         res.json(lists);
@@ -67,23 +67,25 @@ export const getTodoLists = async (req: AuthRequest, res: Response) => {
 
 export const createTodoList = async (req: AuthRequest, res: Response) => {
     try {
-        const email = req.user?.email || 'guest';
-        const { name, emails } = req.body;
-        // Readable ID: LIST-{timestamp}
-        const listId = `LIST-${Date.now()}`;
+        const { name, users } = req.body;
+        const email = req.user?.email || 'unknown';
 
-        await db.query(
-            'INSERT INTO todo_lists (id, name, owner_id) VALUES ($1, $2, $3)',
-            [listId, name, email]
+        // Create the list
+        const idResult = await db.query(
+            'INSERT INTO todo_lists (name, owner_id) VALUES ($1, $2) RETURNING id',
+            [name, email]
         );
+        const listId = idResult.rows[0].id;
 
-        // Add shared users as editors
-        if (emails && emails.length > 0) {
-            for (const sharedEmail of emails.filter(Boolean)) {
-                await db.query(
-                    'INSERT INTO todo_permissions (user_id, list_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
-                    [sharedEmail, listId, 'editor']
-                );
+        // Add shared users
+        if (users && users.length > 0) {
+            for (const u of users) {
+                if (u.email && u.role) {
+                    await db.query(
+                        'INSERT INTO todo_permissions (user_id, list_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+                        [u.email, listId, u.role]
+                    );
+                }
             }
         }
 
@@ -261,6 +263,40 @@ export const unshareTodoList = async (req: AuthRequest, res: Response) => {
             [listId, userId]
         );
         res.json({ success: true });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const getTodoListUsers = async (req: AuthRequest, res: Response) => {
+    try {
+        const { id } = req.params as unknown as TodoParams;
+        const listId = id;
+
+        // Verify Access
+        const userRole = await getUserRole(listId, req.user);
+        if (userRole === 'none') {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        // Get owner
+        const listResult = await db.query('SELECT owner_id FROM todo_lists WHERE id = $1', [listId]);
+        if (listResult.rows.length === 0) return res.status(404).json({ error: 'List not found' });
+
+        const ownerEmail = listResult.rows[0].owner_id;
+
+        // Get shared users
+        const permResult = await db.query('SELECT user_id, role FROM todo_permissions WHERE list_id = $1', [listId]);
+
+        const users = [
+            { email: ownerEmail, role: 'owner' },
+            ...permResult.rows.map(r => ({ email: r.user_id, role: r.role }))
+        ];
+
+        // Deduplicate in case owner is also in permissions somehow
+        const uniqueUsers = Array.from(new Map(users.map(u => [u.email, u])).values());
+
+        res.json(uniqueUsers);
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }

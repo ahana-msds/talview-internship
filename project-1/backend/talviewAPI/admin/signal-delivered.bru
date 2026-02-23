@@ -1,0 +1,17 @@
+meta {
+  name: Set to Delivered
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseURL}}/orders/order-123/signal/delivered
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "payload": {}
+  }
+}

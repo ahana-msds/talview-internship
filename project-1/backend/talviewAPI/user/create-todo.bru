@@ -1,0 +1,17 @@
+meta {
+  name: Create Todo List
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseURL}}/todos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "My New List"
+  }
+}

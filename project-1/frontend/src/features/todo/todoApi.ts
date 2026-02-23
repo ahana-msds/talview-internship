@@ -15,19 +15,25 @@ export interface TodoList {
     updated_at?: string;
 }
 
+export interface ListUser {
+    email: string;
+    role: string;
+}
+
 export const todoApi = createApi({
     reducerPath: 'todoApi',
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:4002/api/', // Proxy to Hasura or direct Hasura
         prepareHeaders: (headers) => {
             const token = localStorage.getItem('jwt_token');
+            console.log('[todoApi] prepareHeaders running! Token starts with:', token ? token.substring(0, 10) + '...' : 'NULL');
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`);
             }
             return headers;
         }
     }),
-    tagTypes: ['TodoLists', 'Todos'],
+    tagTypes: ['TodoLists', 'Todos', 'ListUsers'],
     endpoints: (builder) => ({
         getTodoLists: builder.query<TodoList[], string | undefined>({
             query: () => 'todo-lists',
@@ -36,6 +42,10 @@ export const todoApi = createApi({
         getTodos: builder.query<Todo[], string>({
             query: (listId) => `todo-lists/${listId}/todos`,
             providesTags: (_result, _error, listId) => [{ type: 'Todos', id: listId }],
+        }),
+        getListUsers: builder.query<ListUser[], string>({
+            query: (listId) => `todo-lists/${listId}/users`,
+            providesTags: (_result, _error, listId) => [{ type: 'ListUsers', id: listId }],
         }),
         addTodo: builder.mutation<Todo, { listId: string; text: string }>({
             query: (body) => ({
@@ -60,7 +70,7 @@ export const todoApi = createApi({
             }),
             invalidatesTags: (_result, _error, { listId }) => [{ type: 'Todos', id: listId }, 'TodoLists'],
         }),
-        createList: builder.mutation<TodoList, { name: string; emails: string[] }>({
+        createList: builder.mutation<TodoList, { name: string; users: { email: string; role: string }[] }>({
             query: (body) => ({
                 url: 'todo-lists',
                 method: 'POST',
@@ -81,7 +91,15 @@ export const todoApi = createApi({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: ['TodoLists'],
+            invalidatesTags: (_result, _error, { listId }) => ['TodoLists', { type: 'ListUsers', id: listId }],
+        }),
+        unshareList: builder.mutation<void, { listId: string; userId: string }>({
+            query: (body) => ({
+                url: `todo-lists/${body.listId}/unshare`,
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: (_result, _error, { listId }) => ['TodoLists', { type: 'ListUsers', id: listId }],
         }),
     }),
 });
@@ -89,10 +107,12 @@ export const todoApi = createApi({
 export const {
     useGetTodoListsQuery,
     useGetTodosQuery,
+    useGetListUsersQuery,
     useAddTodoMutation,
     useUpdateTodoMutation,
     useDeleteTodoMutation,
     useCreateListMutation,
     useDeleteTodoListMutation,
-    useShareListMutation
+    useShareListMutation,
+    useUnshareListMutation
 } = todoApi;

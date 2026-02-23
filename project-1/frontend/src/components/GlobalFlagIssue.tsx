@@ -1,18 +1,30 @@
 import { useState } from 'react';
-import * as Sentry from '@sentry/react';
+import { useFlagIssueMutation } from '../features/admin/adminApi';
 
 export const GlobalFlagIssue = () => {
+    const [flagIssue, { isLoading }] = useFlagIssueMutation();
     const [isOpen, setIsOpen] = useState(false);
     const [issueType, setIssueType] = useState('bug');
     const [description, setDescription] = useState('');
+    const [orderId, setOrderId] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const eventId = Sentry.captureMessage(`[${issueType.toUpperCase()}] ${description}`);
-        Sentry.showReportDialog({ eventId });
-        setIsOpen(false);
-        setDescription('');
-        alert('Thank you for your feedback! Admin has been notified.');
+        try {
+            await flagIssue({
+                orderId: orderId || 'N/A',
+                description: `[${issueType.toUpperCase()}] ${description}`,
+                sentryId: 'manual-flag'
+            }).unwrap();
+
+            setIsOpen(false);
+            setDescription('');
+            setOrderId('');
+            alert('Thank you for your feedback! Admin has been notified.');
+        } catch (err) {
+            console.error('Failed to submit issue:', err);
+            alert('Failed to submit issue. Please try again later.');
+        }
     };
 
     return (
@@ -46,6 +58,16 @@ export const GlobalFlagIssue = () => {
                                 <option value="other">❓ Other</option>
                             </select>
                         </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '5px' }}>Order ID (Optional)</label>
+                            <input
+                                className="input"
+                                value={orderId}
+                                onChange={(e) => setOrderId(e.target.value)}
+                                placeholder="e.g. 12345"
+                                style={{ width: '100%' }}
+                            />
+                        </div>
                         <div style={{ marginBottom: '15px' }}>
                             <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '5px' }}>Description</label>
                             <textarea
@@ -57,7 +79,9 @@ export const GlobalFlagIssue = () => {
                                 required
                             />
                         </div>
-                        <button type="submit" className="btn" style={{ width: '100%' }}>Submit Report</button>
+                        <button type="submit" disabled={isLoading} className="btn" style={{ width: '100%' }}>
+                            {isLoading ? 'Submitting...' : 'Submit Report'}
+                        </button>
                     </form>
                 </div>
             )}

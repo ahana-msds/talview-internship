@@ -6,8 +6,12 @@ import {
     useDeleteTodoMutation,
     useCreateListMutation,
     useDeleteTodoListMutation,
+    useGetListUsersQuery,
+    useShareListMutation,
+    useUnshareListMutation,
     type Todo,
-    type TodoList as TodoListType
+    type TodoList as TodoListType,
+    type ListUser
 } from './todo/todoApi';
 import { useState } from 'react';
 import styles from './TodoList.module.css';
@@ -33,11 +37,25 @@ export const TodoList = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [newListName, setNewListName] = useState('');
     const [email1, setEmail1] = useState('');
+    const [role1, setRole1] = useState<'viewer' | 'editor'>('editor');
     const [email2, setEmail2] = useState('');
+    const [role2, setRole2] = useState<'viewer' | 'editor'>('editor');
 
     const [inputValue, setInputValue] = useState('');
     const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState('');
+
+    const [isManagingUsers, setIsManagingUsers] = useState(false);
+    const [newAccessEmail, setNewAccessEmail] = useState('');
+    const [newAccessRole, setNewAccessRole] = useState<'viewer' | 'editor'>('editor');
+
+    const [editingUserEmail, setEditingUserEmail] = useState<string | null>(null);
+    const [editAccessEmail, setEditAccessEmail] = useState('');
+    const [editAccessRole, setEditAccessRole] = useState<'viewer' | 'editor'>('editor');
+
+    const { data: listUsers, isLoading: isLoadingUsers, error: errorUsers } = useGetListUsersQuery(selectedListId || '', { skip: !selectedListId || !isManagingUsers });
+    const [shareList] = useShareListMutation();
+    const [unshareList] = useUnshareListMutation();
 
     const activeList = lists?.find((l: TodoListType) => l.id === selectedListId);
     // General Tasks is accessible to everyone. Check name (case-insensitive) or fixed ID.
@@ -48,10 +66,15 @@ export const TodoList = () => {
         e.preventDefault();
         if (!newListName) return;
         try {
-            await createList({ name: newListName, emails: [email1, email2].filter(Boolean) }).unwrap();
+            const users = [];
+            if (email1) users.push({ email: email1, role: role1 });
+            if (email2) users.push({ email: email2, role: role2 });
+            await createList({ name: newListName, users }).unwrap();
             setNewListName('');
             setEmail1('');
+            setRole1('editor');
             setEmail2('');
+            setRole2('editor');
             setIsCreating(false);
         } catch (err) {
             console.error('Failed to create list:', err);
@@ -121,6 +144,49 @@ export const TodoList = () => {
         }
     };
 
+    const handleShare = async () => {
+        if (!selectedListId || !newAccessEmail) return;
+        try {
+            await shareList({ listId: selectedListId, userId: newAccessEmail, role: newAccessRole }).unwrap();
+            setNewAccessEmail('');
+        } catch (err) {
+            console.error('Failed to share:', err);
+            alert('Failed to share list.');
+        }
+    };
+
+    const handleStartEditUser = (u: ListUser) => {
+        setEditingUserEmail(u.email);
+        setEditAccessEmail(u.email);
+        setEditAccessRole(u.role as 'viewer' | 'editor');
+    };
+
+    const handleSaveEditUser = async () => {
+        if (!selectedListId || !editingUserEmail || !editAccessEmail) return;
+        try {
+            if (editingUserEmail !== editAccessEmail) {
+                await unshareList({ listId: selectedListId, userId: editingUserEmail }).unwrap();
+            }
+            await shareList({ listId: selectedListId, userId: editAccessEmail, role: editAccessRole }).unwrap();
+            setEditingUserEmail(null);
+        } catch (err) {
+            console.error('Failed to update user:', err);
+            alert('Failed to update user.');
+        }
+    };
+
+    const handleUnshare = async (userId: string) => {
+        if (!selectedListId) return;
+        if (window.confirm(`Revoke access for ${userId}?`)) {
+            try {
+                await unshareList({ listId: selectedListId, userId }).unwrap();
+            } catch (err) {
+                console.error('Failed to remove user:', err);
+                alert('Failed to remove user.');
+            }
+        }
+    };
+
     if (isLoadingLists) return <div className="card">Loading lists...</div>;
 
     return (
@@ -136,10 +202,10 @@ export const TodoList = () => {
                             className="input"
                             style={{ width: '100%' }}
                         >
-                            <option value="">Select a List</option>
+                            <option value="">Select a List...</option>
                             {lists?.map((list: TodoListType) => (
                                 <option key={list.id} value={list.id}>
-                                    {list.name} {list.name === 'General Tasks' ? '(Public)' : `(${list.role})`}
+                                    {list.name} {list.name === 'General Tasks' ? '(Public)' : `(${user?.role === 'admin' ? 'admin' : list.role})`}
                                 </option>
                             ))}
                         </select>
@@ -149,10 +215,21 @@ export const TodoList = () => {
                             Last changed: {new Date(activeList.updated_at).toLocaleString()}
                         </div>
                     )}
-                    {selectedListId && selectedListId !== 'list-1' && activeList?.role === 'owner' && (
-                        <button onClick={handleDeleteList} className="btn" style={{ background: 'var(--color-bg-alt)', color: 'red', border: '1px solid currentColor', fontSize: '1.2rem', padding: '5px 10px', height: '40px' }} title="Delete List">🗑️</button>
+                    {selectedListId && selectedListId !== 'list-1' && (
+                        <>
+                            {user?.role === 'admin' && (
+                                <button onClick={() => setIsManagingUsers(!isManagingUsers)} className="btn btn-secondary" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                                    {isManagingUsers ? 'DONE MANAGING' : '👥 MANAGE USERS'}
+                                </button>
+                            )}
+                            {(activeList?.role === 'owner' || user?.role === 'admin') && (
+                                <button onClick={handleDeleteList} className="btn" style={{ background: 'var(--color-bg-alt)', color: 'red', border: '1px solid currentColor', fontSize: '1.2rem', padding: '5px 10px', height: '40px' }} title="Delete List">🗑️</button>
+                            )}
+                        </>
                     )}
-                    <button onClick={() => setIsCreating(true)} className="btn btn-secondary" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>CREATE NEW LIST</button>
+                    {!selectedListId && (
+                        <button onClick={() => setIsCreating(true)} className="btn btn-secondary" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>CREATE NEW LIST</button>
+                    )}
                 </div>
             ) : (
                 <form onSubmit={handleCreateList} className={styles.createForm} style={{ background: 'var(--color-bg-alt)', padding: '15px', borderRadius: 'var(--radius)', marginBottom: '20px' }}>
@@ -166,27 +243,45 @@ export const TodoList = () => {
                         required
                     />
                     <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>Share with up to 2 users (emails):</p>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                        <input
-                            className="input"
-                            type="email"
-                            value={email1}
-                            onChange={(e) => setEmail1(e.target.value)}
-                            placeholder="user@example.com"
-                            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
-                            title="Enter a valid email address"
-                            style={{ flex: 1 }}
-                        />
-                        <input
-                            className="input"
-                            type="email"
-                            value={email2}
-                            onChange={(e) => setEmail2(e.target.value)}
-                            placeholder="user@example.com"
-                            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
-                            title="Enter a valid email address"
-                            style={{ flex: 1 }}
-                        />
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'nowrap' }}>
+                        <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
+                            <label style={{ fontSize: '0.7rem', opacity: 0.7, marginBottom: '2px' }}>Email</label>
+                            <input
+                                className="input"
+                                type="email"
+                                value={email1}
+                                onChange={(e) => setEmail1(e.target.value)}
+                                placeholder="Co-worker 1"
+                                pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                                style={{ width: '100%', padding: '8px' }}
+                            />
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <label style={{ fontSize: '0.7rem', opacity: 0.7, marginBottom: '2px' }}>Role</label>
+                            <select className="input" value={role1} onChange={e => setRole1(e.target.value as 'viewer' | 'editor')} style={{ width: '100%', padding: '8px' }}>
+                                <option value="editor">Editor</option>
+                                <option value="viewer">Viewer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'nowrap' }}>
+                        <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
+                            <input
+                                className="input"
+                                type="email"
+                                value={email2}
+                                onChange={(e) => setEmail2(e.target.value)}
+                                placeholder="Co-worker 2"
+                                pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                                style={{ width: '100%', padding: '8px' }}
+                            />
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <select className="input" value={role2} onChange={e => setRole2(e.target.value as 'viewer' | 'editor')} style={{ width: '100%', padding: '8px' }}>
+                                <option value="editor">Editor</option>
+                                <option value="viewer">Viewer</option>
+                            </select>
+                        </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button type="submit" className="btn" style={{ flex: 1 }}>CREATE</button>
@@ -197,6 +292,62 @@ export const TodoList = () => {
 
             {selectedListId && (
                 <>
+                    {isManagingUsers && user?.role === 'admin' && (
+                        <div style={{ background: 'var(--color-bg-alt)', padding: '15px', borderRadius: 'var(--radius)', marginBottom: '20px', border: '1px solid var(--color-border)' }}>
+                            <h4 style={{ margin: '0 0 10px 0' }}>List Access</h4>
+                            {isLoadingUsers ? <p>Loading users...</p> : errorUsers ? <p style={{ color: 'red' }}>Error loading users: {JSON.stringify(errorUsers)}</p> : (
+                                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 15px 0' }}>
+                                    {listUsers?.map((u: ListUser) => (
+                                        <li key={u.email} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--color-border)' }}>
+                                            {editingUserEmail === u.email ? (
+                                                <div style={{ display: 'flex', gap: '5px', flex: 1, marginRight: '10px' }}>
+                                                    <input className="input" value={editAccessEmail} onChange={e => setEditAccessEmail(e.target.value)} style={{ padding: '4px 8px', flex: 1 }} />
+                                                    <select className="input" value={editAccessRole} onChange={e => setEditAccessRole(e.target.value as 'viewer' | 'editor')} style={{ padding: '4px' }}>
+                                                        <option value="editor">Editor</option>
+                                                        <option value="viewer">Viewer</option>
+                                                    </select>
+                                                    <button onClick={handleSaveEditUser} className="btn" style={{ padding: '4px 8px' }}>Save</button>
+                                                    <button onClick={() => setEditingUserEmail(null)} className="btn btn-secondary" style={{ padding: '4px 8px' }}>X</button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <span><strong>{u.email}</strong> <span style={{ opacity: 0.7, fontSize: '0.9rem' }}>({u.role})</span></span>
+                                                    {u.role !== 'owner' && (
+                                                        <div>
+                                                            <button onClick={() => handleStartEditUser(u)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', marginRight: '5px' }}>✏️</button>
+                                                            <button onClick={() => handleUnshare(u.email)} style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>❌</button>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginTop: '10px', padding: '5px', borderTop: '1px solid var(--color-border)' }}>
+                                <input
+                                    className="input"
+                                    placeholder="Add user email..."
+                                    value={newAccessEmail}
+                                    onChange={e => setNewAccessEmail(e.target.value)}
+                                    style={{ flex: 3, padding: '6px' }}
+                                />
+                                <select className="input" value={newAccessRole} onChange={e => setNewAccessRole(e.target.value as 'viewer' | 'editor')} style={{ flex: 1, padding: '6px' }}>
+                                    <option value="editor">Editor</option>
+                                    <option value="viewer">Viewer</option>
+                                </select>
+                                <button
+                                    onClick={handleShare}
+                                    className="btn"
+                                    disabled={!newAccessEmail}
+                                    style={{ padding: '6px 12px', background: 'var(--color-primary)', fontSize: '0.8rem' }}
+                                >
+                                    ADD
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <div className={styles.inputGroup} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                         <input
                             className="input"

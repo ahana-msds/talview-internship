@@ -186,6 +186,20 @@ export const signalOrder = async (req: AuthRequest, res: Response) => {
             await db.query('UPDATE orders SET address = $1 WHERE id = $2', [payload, id]);
         }
 
+        // 3. Cancel Order Logic
+        if (signalName === 'cancelOrder') {
+            const orderResult = await db.query('SELECT status, user_email FROM orders WHERE id = $1', [id]);
+            if (orderResult.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
+
+            const order = orderResult.rows[0];
+            if (!isAdmin && order.user_email !== req.user?.email) {
+                return res.status(403).json({ error: 'Not your order' });
+            }
+            if (['SHIPPED', 'DELIVERED', 'CANCELLED'].includes(order.status)) {
+                return res.status(409).json({ error: `Cannot cancel order in ${order.status} state` });
+            }
+        }
+
         const handle = client.workflow.getHandle(id);
         await handle.signal(signalName, payload);
 

@@ -53,10 +53,18 @@ app.use(express.json());
 
 // Request logging middleware
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    if (['POST', 'PATCH', 'PUT'].includes(req.method)) {
-        // console.log('Body:', JSON.stringify(req.body, null, 2));
-    }
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`);
+        if (res.statusCode === 401 || res.statusCode === 403) {
+            console.log('  Headers:', JSON.stringify({
+                authorization: req.headers.authorization ? 'Present' : 'Missing',
+                origin: req.headers.origin,
+            }, null, 2));
+            console.log('  JWT_SECRET matches env:', process.env.JWT_SECRET === 'your-secret-key' ? 'DEFAULT' : 'LOADED');
+        }
+    });
     next();
 });
 

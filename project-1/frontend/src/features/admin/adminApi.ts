@@ -10,6 +10,17 @@ export interface Order {
     createdAt?: string;
 }
 
+export interface RequestIssue {
+    id: number;
+    user_id: string;
+    description: string;
+    sentry_id: string;
+    order_id: string;
+    status: string;
+    created_at: string;
+    resolved_at: string | null;
+}
+
 export const adminApi = createApi({
     reducerPath: 'adminApi',
     baseQuery: fetchBaseQuery({
@@ -31,6 +42,10 @@ export const adminApi = createApi({
         getOrder: builder.query<Order, string>({
             query: (id) => `orders/${id}`,
             providesTags: (_result, _error, id) => [{ type: 'Orders', id }],
+        }),
+        getRequests: builder.query<RequestIssue[], void>({
+            query: () => 'requests',
+            providesTags: ['Requests'],
         }),
         startOrder: builder.mutation<{ workflowId: string }, { orderId: string; address: string; items: any[] }>({
             query: (body) => ({
@@ -62,6 +77,7 @@ export const adminApi = createApi({
 export const {
     useGetOrdersQuery,
     useGetOrderQuery,
+    useGetRequestsQuery,
     useStartOrderMutation,
     useSignalOrderMutation,
     useFlagIssueMutation

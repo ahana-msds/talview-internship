@@ -13,7 +13,14 @@ export const OrderConfirmationPage = () => {
 
     const [timeLeft, setTimeLeft] = useState<number>(GRACE_PERIOD_MS);
     const [showAddressForm, setShowAddressForm] = useState(false);
-    const [newAddress, setNewAddress] = useState('');
+    const [newAddress, setNewAddress] = useState({
+        name: '',
+        street: '',
+        city: '',
+        state: '',
+        pincode: '',
+        phone: '',
+    });
     const [isSignaling, setIsSignaling] = useState(false);
 
     // Countdown timer
@@ -36,13 +43,27 @@ export const OrderConfirmationPage = () => {
     const minutes = Math.floor(timeLeft / 60000);
     const seconds = Math.floor((timeLeft % 60000) / 1000);
 
-    const handleChangeAddress = async () => {
-        if (!newAddress.trim() || !orderId) return;
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewAddress({ ...newAddress, [e.target.name]: e.target.value });
+    };
+
+    const handleChangeAddress = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Validation
+        if (!newAddress.phone.startsWith('+91') || newAddress.phone.length !== 13) {
+            alert('Phone number must start with +91 and be followed by 10 digits.');
+            return;
+        }
+
+        const fullAddress = `${newAddress.name}, ${newAddress.street}, ${newAddress.city}, ${newAddress.state} - ${newAddress.pincode}, Phone: ${newAddress.phone}`;
+
+        if (!fullAddress.trim() || !orderId) return;
         setIsSignaling(true);
         try {
-            await signalOrder({ id: orderId, signal: 'updateAddress', payload: newAddress }).unwrap();
+            await signalOrder({ id: orderId, signal: 'updateAddress', payload: fullAddress }).unwrap();
             setShowAddressForm(false);
-            setNewAddress('');
+            setNewAddress({ name: '', street: '', city: '', state: '', pincode: '', phone: '' });
             refetch();
             alert('Address updated successfully!');
         } catch (err) {
@@ -50,6 +71,33 @@ export const OrderConfirmationPage = () => {
             alert('Failed to update address. The grace period may have expired.');
         }
         setIsSignaling(false);
+    };
+
+    const handleCancelOrder = async () => {
+        if (!orderId) return;
+        if (window.confirm('Are you sure you want to cancel this order?')) {
+            setIsSignaling(true);
+            try {
+                await signalOrder({ id: orderId, signal: 'cancelOrder' }).unwrap();
+                refetch();
+                alert('Order cancelled successfully!');
+            } catch (err) {
+                console.error('Failed to cancel order:', err);
+                alert('Failed to cancel order. It may have already shipped.');
+            }
+            setIsSignaling(false);
+        }
+    };
+
+    const inputStyle: React.CSSProperties = {
+        width: '100%',
+        padding: '10px 14px',
+        borderRadius: 'var(--radius)',
+        border: '1px solid var(--color-border)',
+        fontSize: '1rem',
+        background: 'var(--color-bg)',
+        color: 'var(--color-text)',
+        marginBottom: '10px'
     };
 
     if (isLoading) {
@@ -136,30 +184,46 @@ export const OrderConfirmationPage = () => {
                         </span>
                     </div>
 
-                    {/* Change Address */}
-                    {!graceExpired && (
+                    {/* Change Address & Cancel Actions */}
+                    {!['SHIPPED', 'DELIVERED', 'CANCELLED'].includes(order.status) && (
                         <div style={{ marginTop: '1.5rem', textAlign: 'left' }}>
-                            {!showAddressForm ? (
-                                <button onClick={() => setShowAddressForm(true)} className="btn btn-secondary" style={{ width: '100%' }}>
-                                    ✏️ Change Delivery Address
-                                </button>
-                            ) : (
-                                <div style={{ background: 'var(--color-bg-alt)', padding: '1rem', borderRadius: 'var(--radius)' }}>
-                                    <h4 style={{ marginTop: 0 }}>New Address</h4>
-                                    <textarea
-                                        value={newAddress}
-                                        onChange={(e) => setNewAddress(e.target.value)}
-                                        placeholder="Enter new full address..."
-                                        style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius)', border: '1px solid var(--color-border)', minHeight: '80px', fontSize: '1rem', resize: 'vertical', background: 'var(--color-bg)', color: 'var(--color-text)' }}
-                                    />
-                                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                        <button onClick={handleChangeAddress} disabled={isSignaling} className="btn" style={{ flex: 1 }}>
-                                            {isSignaling ? 'Updating...' : 'Update Address'}
+                            {!graceExpired && (
+                                <>
+                                    {!showAddressForm ? (
+                                        <button onClick={() => setShowAddressForm(true)} className="btn btn-secondary" style={{ width: '100%', marginBottom: '10px' }}>
+                                            ✏️ Change Delivery Address
                                         </button>
-                                        <button onClick={() => setShowAddressForm(false)} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
-                                    </div>
-                                </div>
+                                    ) : (
+                                        <form onSubmit={handleChangeAddress} style={{ background: 'var(--color-bg-alt)', padding: '1rem', borderRadius: 'var(--radius)', marginBottom: '10px' }}>
+                                            <h4 style={{ marginTop: 0, marginBottom: '1rem' }}>New Address</h4>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <input name="name" value={newAddress.name} onChange={handleAddressChange} placeholder="Full Name" required style={{ ...inputStyle, marginBottom: '8px' }} />
+                                                <input name="street" value={newAddress.street} onChange={handleAddressChange} placeholder="Street Address" required style={{ ...inputStyle, marginBottom: '8px' }} />
+                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                                                    <input name="city" value={newAddress.city} onChange={handleAddressChange} placeholder="City" required style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                                                    <input name="state" value={newAddress.state} onChange={handleAddressChange} placeholder="State" required style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <input name="pincode" value={newAddress.pincode} onChange={handleAddressChange} placeholder="Pincode" required pattern="[0-9]{5,6}" title="5-6 digit pincode" style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                                                    <input name="phone" value={newAddress.phone} onChange={handleAddressChange} placeholder="Phone (+91...)" required pattern="\+91[0-9]{10}" title="+91 followed by 10 digits" style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                                <button type="submit" disabled={isSignaling} className="btn" style={{ flex: 1 }}>
+                                                    {isSignaling ? 'Updating...' : 'Update Address'}
+                                                </button>
+                                                <button type="button" onClick={() => setShowAddressForm(false)} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
+                                            </div>
+                                        </form>
+                                    )}
+                                </>
                             )}
+
+                            <button onClick={handleCancelOrder} disabled={isSignaling} className="btn" style={{ width: '100%', background: 'transparent', border: '1px solid var(--color-error)', color: 'var(--color-error)' }}>
+                                🛑 Cancel Order
+                            </button>
                         </div>
                     )}
 

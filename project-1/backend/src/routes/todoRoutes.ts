@@ -8,7 +8,8 @@ import {
     deleteTodo,
     deleteTodoList,
     shareTodoList,
-    unshareTodoList
+    unshareTodoList,
+    getTodoListUsers
 } from '../controllers/todoController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
@@ -22,6 +23,7 @@ router.post('/:id/todos', authenticateToken, addTodo);
 router.patch('/:listId/todos/:todoId', authenticateToken, updateTodo);
 router.delete('/:listId/todos/:todoId', authenticateToken, deleteTodo);
 router.delete('/:id', authenticateToken, deleteTodoList);
+router.get('/:id/users', authenticateToken, getTodoListUsers);
 router.post('/:id/share', authenticateToken, shareTodoList);
 router.post('/:id/unshare', authenticateToken, unshareTodoList);
 

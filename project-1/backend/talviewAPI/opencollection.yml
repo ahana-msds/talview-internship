@@ -2,6 +2,72 @@ opencollection: 1.0.0
 
 info:
   name: talviewAPI
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: bearer
+    token: "{{jwt_token}}"
+  scripts:
+    - type: before-request
+      code: |-
+        // Clean environment variables (remove literal quotes)
+        const clean = (val) => (val || "").replace(/^"|"$/g, '').trim();
+
+        const email = clean(bru.getEnvVar("test_email"));
+        const password = clean(bru.getEnvVar("test_password"));
+
+        // GET BASE URL (with fallback if the variable is missing)
+        let baseUrl = clean(bru.getEnvVar("baseURL"));
+        if (!baseUrl) {
+          console.log("WARNING: 'baseURL' variable missing. Falling back to local default.");
+          baseUrl = "http://localhost:4002/api";
+        }
+
+        baseUrl = baseUrl.replace(/\/+$/, "");
+        const loginUrl = `${baseUrl}/auth/login`;
+
+        console.log(`Script attempting login: ${loginUrl} for ${email}`);
+
+        async function performLogin() {
+          try {
+            const res = await axios.post(loginUrl, { email, password });
+            if (res.data && res.data.token) {
+              bru.setEnvVar("jwt_token", res.data.token);
+              console.log("SUCCESS: Logged in and token updated.");
+              return true;
+            }
+          } catch (err) {
+            return false;
+          }
+        }
+
+        console.log(`Checking account: ${email}`);
+
+        // 1. Try to login
+        let loggedIn = await performLogin();
+
+        // 2. If login fails, try to register then login again
+        if (!loggedIn) {
+          console.log("User not found or invalid credentials. Attempting auto-registration...");
+          try {
+            await axios.post(`${baseUrl}/auth/register`, { email, password });
+            console.log("Registration successful! Logging in now...");
+            await performLogin();
+          } catch (regErr) {
+            console.error("Auto-registration failed:", regErr.response ? JSON.stringify(regErr.response.data) : regErr.message);
+          }
+        }
 bundled: false
 extensions:
   bruno:

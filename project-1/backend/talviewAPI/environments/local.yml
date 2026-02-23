@@ -1,0 +1,10 @@
+name: local
+variables:
+  - name: test_email
+    value: admin@talview.com
+  - name: test_password
+    value: Admin@123
+  - name: jwt_token
+    value: ""
+  - name: baseURL
+    value: http://localhost:4002/api

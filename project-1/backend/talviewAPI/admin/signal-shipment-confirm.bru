@@ -1,0 +1,17 @@
+meta {
+  name: Confirm Shipment
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseURL}}/orders/order-123/signal/shipment-confirm
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "payload": {}
+  }
+}
