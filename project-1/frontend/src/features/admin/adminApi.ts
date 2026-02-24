@@ -11,7 +11,7 @@ export interface Order {
 }
 
 export interface RequestIssue {
-    id: number;
+    id: string;
     user_id: string;
     description: string;
     sentry_id: string;
@@ -35,8 +35,12 @@ export const adminApi = createApi({
     }),
     tagTypes: ['Orders', 'Requests'],
     endpoints: (builder) => ({
-        getOrders: builder.query<Order[], void>({
-            query: () => 'orders',
+        getOrders: builder.query<Order[], { limit?: number; skip?: number } | void>({
+            query: (params) => {
+                const limit = params && 'limit' in params ? params.limit : 10;
+                const skip = params && 'skip' in params ? params.skip : 0;
+                return `orders?limit=${limit}&skip=${skip}`;
+            },
             providesTags: ['Orders'],
         }),
         getOrder: builder.query<Order, string>({
@@ -47,7 +51,7 @@ export const adminApi = createApi({
             query: () => 'requests',
             providesTags: ['Requests'],
         }),
-        startOrder: builder.mutation<{ workflowId: string }, { orderId: string; address: string; items: any[] }>({
+        startOrder: builder.mutation<{ workflowId: string; orderId: string }, { address: string; items: any[] }>({
             query: (body) => ({
                 url: 'orders/start',
                 method: 'POST',

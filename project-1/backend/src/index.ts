@@ -12,6 +12,7 @@ import todoRoutes from './routes/todoRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
+import { runInventoryAnalytics } from './lambdas/inventory-analytics.js';
 
 dotenv.config();
 
@@ -49,6 +50,9 @@ if (process.env.SENTRY_DSN) {
 }
 
 app.use(cors());
+
+// --- REPLACED STRIPE WEBHOOK ---
+
 app.use(express.json());
 
 // Request logging middleware
@@ -115,6 +119,10 @@ async function releaseExpiredReservations() {
 
 // Run reservation cleanup every 60 seconds
 setInterval(releaseExpiredReservations, 60_000);
+
+// Run analytics lambda once on start and then every 12 hours
+runInventoryAnalytics();
+setInterval(runInventoryAnalytics, 12 * 60 * 60 * 1000);
 
 // ============================================
 // ERROR HANDLING & SERVER START

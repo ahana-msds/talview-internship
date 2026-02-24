@@ -67,7 +67,7 @@ export const DashboardPage = () => {
                         />
                     )}
 
-                    {user?.email === 'admin@talview.com' && (
+                    {user?.email === 'admin@example.com' && (
                         <FeatureCard
                             emoji="🔐"
                             title="Admin Dashboard"

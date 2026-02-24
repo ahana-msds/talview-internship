@@ -13,7 +13,6 @@ export const CheckoutPage = () => {
     const total = useSelector(selectCartTotal);
     const { user } = useAuth();
     const [startOrder] = useStartOrderMutation();
-
     const [address, setAddress] = useState({
         name: user?.displayName || '',
         street: '',
@@ -23,7 +22,6 @@ export const CheckoutPage = () => {
         phone: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const [stockError, setStockError] = useState<string[]>([]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,12 +46,9 @@ export const CheckoutPage = () => {
         setStockError([]);
 
         try {
-            // Readable Order ID: ORD-{timestamp}-{random}
-            const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
             const fullAddress = `${address.name}, ${address.street}, ${address.city}, ${address.state} - ${address.pincode}, Phone: ${address.phone}`;
 
             const result = await startOrder({
-                orderId,
                 address: fullAddress,
                 items: items.map(i => ({ id: i.id, title: i.title, price: i.price, quantity: i.quantity, thumbnail: i.thumbnail })),
             }).unwrap();
@@ -175,12 +170,7 @@ export const CheckoutPage = () => {
                                 </div>
                             </div>
 
-                            <h3 style={{ marginTop: '1.5rem', marginBottom: '0.8rem' }}>💳 Payment Method</h3>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: 'var(--color-bg-alt)', borderRadius: 'var(--radius)', border: '2px solid var(--color-primary)', cursor: 'default' }}>
-                                <input type="radio" checked readOnly />
-                                <span style={{ fontWeight: 'bold' }}>Cash on Delivery (COD)</span>
-                            </label>
-                            <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '6px' }}>More payment options coming soon.</p>
+                            <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '8px' }}>Payment will be collected upon delivery (COD).</p>
                         </div>
                     </form>
 
@@ -208,7 +198,7 @@ export const CheckoutPage = () => {
                             disabled={isSubmitting}
                             style={{ width: '100%', marginTop: '1.5rem', padding: '14px', fontSize: '1.1rem' }}
                         >
-                            {isSubmitting ? 'Placing Order...' : '🛍️ Place Order (COD)'}
+                            {isSubmitting ? 'Processing...' : '🛍️ Place Order'}
                         </button>
                     </div>
                 </div>

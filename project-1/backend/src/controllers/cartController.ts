@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../db.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
+import { getNextId } from '../utils/idGenerator.js';
 
 function getUserEmail(req: AuthRequest): string {
     return req.user?.email || req.header('X-User-Email') || 'guest';
@@ -29,7 +30,7 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
     try {
         const email = getUserEmail(req);
         const { id, title, price, thumbnail, quantity } = req.body;
-        const cartItemId = `cart-${email}-${id}`;
+        const cartItemId = await getNextId('cart_items', 'cart', title);
 
         await db.query(
             `INSERT INTO cart_items (id, user_email, product_id, title, price, thumbnail, quantity)

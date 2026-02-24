@@ -8,8 +8,9 @@ A modern, reactive e-commerce and task management dashboard built with React and
 *   **Reactive State Management** — Powered by Redux Toolkit and RTK Query. UI updates for cart additions or todo changes happen instantly via optimistic updates, while data fetching is cached and synchronized automatically.
 *   **Hybrid Cart Persistence** — Implements a "Backend-First, IndexedDB Fallback" strategy. Logged-in users' carts are preserved in PostgreSQL, while guests or offline users benefit from local IndexedDB storage.
 *   **Dynamic Design System** — A dark-themed, glassmorphic UI using Vanilla CSS and React Context. Features a global theme switcher and sleek micro-animations for a premium feel.
-*   **Firebase Authentication** — Seamless integration with Firebase for Google, GitHub, and Email/Password flows. The frontend handles the login handshake and passes the ID token to the backend for session establishment.
-*   **Atomic Stock UI** — Real-time stock feedback. If a product is out of stock, it is visually badged and purchasing is disabled. During checkout, if stock is lost to another user, a conflict banner allows the user to quickly refresh their cart.
+*   **Advanced Clean IDs** — All system entities (Orders, Tasks, Lists) use a highly readable, sequential, and descriptive ID naming convention (e.g., `order-1-24022026`), improving accessibility in the dashboard and Hasura.
+*   **Firebase Authentication** — Seamless integration with Firebase for Google, GitHub, and Email/Password flows.
+*   **Atomic Stock UI** — Real-time stock feedback. If a product is out of stock, purchasing is disabled. During checkout, if stock is lost, conflict banners allow for quick cart refreshing.
 *   **Protected Dashboard** — A secure area for managing Todo lists and Order history, accessible only after successful authentication.
 
 ---
@@ -90,9 +91,9 @@ The app uses a curated dark palette (Rich Blacks and Vibrant Primary colors) man
 *   **Reactive Switching:** Changing the theme in settings updates the values on `:root`, instantly transforming the entire app without a reload.
 *   **Glassmorphism:** Cards and Modals use backdrop-blur and semi-transparent borders to create a layered, premium feel.
 
-### 3. Smart Checkout Flow 
-*   **Address Management:** Forms include real-time validation for common fields (Phone, Pincode).
-*   **Concurrency Feedback:** The checkout page listens for `409 Conflict` errors from the backend. If an item sells out while you're on the page, the UI transforms to show exactly which items are gone, allowing you to remove them and proceed without losing your entire order.
+### 3. Integrated Checkout
+*   **Sequential IDs**: The frontend uses backend-generated Sequential IDs (e.g., `order-5-25022026`), ensuring every order has a clean, human-readable identifier.
+*   **Concurrency Feedback**: The checkout page listens for `409 Conflict` errors. If an item sells out, the UI highlights the specific items, allowing for a seamless recovery without losing the entire order.
 
 ---
 
@@ -115,6 +116,5 @@ The app uses a curated dark palette (Rich Blacks and Vibrant Primary colors) man
 
 ---
 
-##  Roadmap & Improvements
 *   **Advanced Filtering:** Multi-select category filters and price range sliders.
-*   **Vitals Tracking:** Integrating Sentry browser profiling to measure page load and TTI.
+*   **Real-time Notifications:** Web-socket or polling support to show order status updates (e.g., "Paid", "Shipped") instantly.

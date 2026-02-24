@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { db } from '../db.js';
+import { getNextId } from '../utils/idGenerator.js';
 // In a real app, use bcrypt to hash passwords
 // import bcrypt from 'bcryptjs';
 
@@ -24,9 +25,12 @@ export const register = async (req: Request, res: Response) => {
         // const hash = await bcrypt.hash(password, 10);
         const hash = password;
 
+        // Advanced ID: user-{count}-{slug}
+        const userId = await getNextId('users', 'user', email.split('@')[0]);
+
         const result = await db.query(
-            'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, role',
-            [email, hash]
+            'INSERT INTO users (id, email, password_hash) VALUES ($1, $2, $3) RETURNING id, email, role',
+            [userId, email, hash]
         );
 
         res.status(201).json(result.rows[0]);

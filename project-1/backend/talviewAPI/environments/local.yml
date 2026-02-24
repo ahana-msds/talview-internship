@@ -1,7 +1,7 @@
 name: local
 variables:
   - name: test_email
-    value: admin@talview.com
+    value: admin@example.com
   - name: test_password
     value: Admin@123
   - name: jwt_token

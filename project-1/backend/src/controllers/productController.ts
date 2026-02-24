@@ -123,3 +123,32 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+export const updateProductStock = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { stock } = req.body;
+        const user = (req as any).user;
+
+        if (!user || user.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can update stock' });
+        }
+
+        if (typeof stock !== 'number' || stock < 0) {
+            return res.status(400).json({ error: 'Valid stock number is required' });
+        }
+
+        const result = await db.query(
+            'UPDATE products SET stock = $1 WHERE id = $2 RETURNING *',
+            [stock, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json(mapProduct(result.rows[0]));
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+};

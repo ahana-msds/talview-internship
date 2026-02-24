@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetProductByIdQuery } from '../features/products/productsApi';
+import { useGetProductByIdQuery, useUpdateProductStockMutation } from '../features/products/productsApi';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../features/cart/cartSlice';
 import { Navbar } from '../components/Navbar';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * ProductDetailPage: Displays detailed information about a single product.
@@ -13,17 +14,36 @@ export const ProductDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'admin';
 
     const [quantity, setQuantity] = useState(1);
+    const [newStock, setNewStock] = useState<number>(0);
 
     // Fetch product details using RTK Query
     const { data: product, isLoading, error } = useGetProductByIdQuery(id || '');
+    const [updateStock, { isLoading: isUpdating }] = useUpdateProductStockMutation();
+
+    useEffect(() => {
+        if (product) {
+            setNewStock(product.stock);
+        }
+    }, [product]);
 
     const outOfStock = product?.stock !== undefined && product.stock <= 0;
     const maxQty = product?.stock ?? 99;
 
     if (isLoading) return <div className="container">Loading product details...</div>;
     if (error || !product) return <div className="container">Error: Product not found</div>;
+
+    const handleUpdateStock = async () => {
+        try {
+            await updateStock({ id: product.id, stock: newStock }).unwrap();
+            alert('Stock updated successfully!');
+        } catch (err: any) {
+            alert(`Failed to update stock: ${err.data?.error || err.message}`);
+        }
+    };
 
     /**
      * Handles adding the product to the Redux cart.
@@ -107,6 +127,40 @@ export const ProductDetailPage = () => {
                                 }}>{product.stock} left in stock</span>
                             ) : null}
                         </div>
+
+                        {/* Admin Stock Management UI */}
+                        {isAdmin && (
+                            <div style={{
+                                marginTop: '1rem',
+                                marginBottom: '2rem',
+                                padding: '1.5rem',
+                                background: 'var(--color-bg-alt)',
+                                border: '2px solid var(--color-primary)',
+                                borderRadius: 'var(--radius)'
+                            }}>
+                                <h3 style={{ marginBottom: '1rem', color: 'var(--color-primary)' }}>🛠 Admin: Manage Inventory</h3>
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', opacity: 0.7 }}>Quantity Available:</label>
+                                        <input
+                                            type="number"
+                                            className="input"
+                                            value={newStock}
+                                            onChange={(e) => setNewStock(parseInt(e.target.value) || 0)}
+                                            style={{ width: '100%' }}
+                                        />
+                                    </div>
+                                    <button
+                                        className="btn"
+                                        onClick={handleUpdateStock}
+                                        disabled={isUpdating}
+                                        style={{ marginTop: '1.5rem', padding: '10px 20px' }}
+                                    >
+                                        {isUpdating ? 'Updating...' : 'Update Stock'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         <div style={{ marginBottom: '2rem', opacity: outOfStock ? 0.4 : 1 }}>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Quantity:</label>

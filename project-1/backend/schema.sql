@@ -2,6 +2,17 @@
 -- Talview Project-1: PostgreSQL Schema
 -- ============================================
 
+-- Drop existing tables to apply schema changes (SERIAL to TEXT)
+DROP TABLE IF EXISTS stock_reservations CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS admin_requests CASCADE;
+DROP TABLE IF EXISTS todos CASCADE;
+DROP TABLE IF EXISTS todo_permissions CASCADE;
+DROP TABLE IF EXISTS todo_lists CASCADE;
+DROP TABLE IF EXISTS cart_items CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+
 -- 1. Todo Lists Table
 CREATE TABLE IF NOT EXISTS todo_lists (
     id TEXT PRIMARY KEY,
@@ -13,7 +24,7 @@ CREATE TABLE IF NOT EXISTS todo_lists (
 
 -- 1.1 Users Table (for JWT Auth)
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'user', -- 'admin', 'user'
@@ -22,7 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- 2. Todo Permissions Table (RBAC - sharing)
 CREATE TABLE IF NOT EXISTS todo_permissions (
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     list_id TEXT REFERENCES todo_lists(id) ON DELETE CASCADE,
     role TEXT NOT NULL CHECK (role IN ('viewer', 'editor')),
@@ -51,7 +62,7 @@ CREATE TABLE IF NOT EXISTS orders (
 
 -- 5. Admin Requests Table
 CREATE TABLE IF NOT EXISTS admin_requests (
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     description TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'OPEN',
@@ -106,12 +117,17 @@ CREATE TABLE IF NOT EXISTS stock_reservations (
 -- Seed Data
 -- ============================================
 
+-- Seed users (Default Admin)
+INSERT INTO users (id, email, password_hash, role) 
+VALUES ('user-0-admin', 'admin@example.com', 'admin123', 'admin')
+ON CONFLICT (id) DO NOTHING;
+
 -- Default "General Tasks" list (accessible to everyone)
 INSERT INTO todo_lists (id, name, owner_id) VALUES ('list-1', 'General Tasks', 'guest')
 ON CONFLICT (id) DO NOTHING;
 
 -- Sample todos for General Tasks
-INSERT INTO todos (id, text, completed, list_id) VALUES ('1', 'Task 1', false, 'list-1')
+INSERT INTO todos (id, text, completed, list_id) VALUES ('task-1-list-1', 'Task 1', false, 'list-1')
 ON CONFLICT (id) DO NOTHING;
-INSERT INTO todos (id, text, completed, list_id) VALUES ('2', 'Task 2', true, 'list-1')
+INSERT INTO todos (id, text, completed, list_id) VALUES ('task-2-list-1', 'Task 2', true, 'list-1')
 ON CONFLICT (id) DO NOTHING;

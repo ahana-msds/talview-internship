@@ -16,6 +16,10 @@ import { Provider } from 'react-redux'
 import { store } from './app/store'
 import { hydrateCart } from './features/cart/cartSlice'
 
+// Apollo Client for subscriptions
+import { ApolloProvider } from '@apollo/client/react'
+import { client } from './app/apolloClient'
+
 // Hydrate cart from backend (or IndexedDB fallback) on startup
 store.dispatch(hydrateCart());
 
@@ -53,9 +57,11 @@ Sentry.init({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-        <App />
-      </Sentry.ErrorBoundary>
+      <ApolloProvider client={client}>
+        <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
+          <App />
+        </Sentry.ErrorBoundary>
+      </ApolloProvider>
     </Provider>
   </StrictMode>,
 )

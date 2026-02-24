@@ -3,6 +3,7 @@ import { db } from '../db.js';
 import * as Sentry from '@sentry/node';
 import { getTemporalClient } from '../temporal-client.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
+import { getNextId, getFormattedDate } from '../utils/idGenerator.js';
 
 // Helper: release reservations
 async function releaseReservationsForOrder(orderId: string) {
@@ -20,7 +21,10 @@ async function releaseReservationsForOrder(orderId: string) {
 export const startOrder = async (req: AuthRequest, res: Response) => {
     const pgClient = await db.getClient();
     try {
-        const { orderId, address, items } = req.body;
+        const { address, items } = req.body;
+        // Advanced ID: order-{count}-{date}
+        const orderIdSuffix = getFormattedDate();
+        const orderId = await getNextId('orders', 'order', orderIdSuffix);
         // USE JWT EMAIL
         const userEmail = req.user?.email || 'guest';
 
@@ -51,7 +55,7 @@ export const startOrder = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        const workflowId = `order-${orderId}`;
+        const workflowId = `workflow-${orderId}`;
         await pgClient.query(
             `INSERT INTO orders (id, workflow_id, user_email, address, items, status)
              VALUES ($1, $2, $3, $4, $5, 'PENDING')`,
@@ -67,7 +71,7 @@ export const startOrder = async (req: AuthRequest, res: Response) => {
             await pgClient.query(
                 `INSERT INTO stock_reservations (id, order_id, product_id, user_email, quantity, status, expires_at)
                  VALUES ($1, $2, $3, $4, $5, 'HELD', NOW() + INTERVAL '10 minutes')`,
-                [`res-${orderId}-${item.id}`, workflowId, item.id, userEmail, qty]
+                [`res-${orderId.split('-')[1]}-${item.id}`, workflowId, item.id, userEmail, qty]
             );
         }
 
@@ -90,7 +94,7 @@ export const startOrder = async (req: AuthRequest, res: Response) => {
 
         await db.query('DELETE FROM cart_items WHERE user_email = $1', [userEmail]);
 
-        res.json({ workflowId });
+        res.json({ workflowId, orderId });
     } catch (err: any) {
         await pgClient.query('ROLLBACK').catch(() => { });
         Sentry.captureException(err);
@@ -104,12 +108,14 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
     try {
         const email = req.user?.email;
         const isAdmin = req.user?.role === 'admin';
+        const limit = parseInt(req.query.limit as string) || 10;
+        const offset = parseInt(req.query.offset as string) || parseInt(req.query.skip as string) || 0;
 
         let result;
         if (isAdmin) {
-            result = await db.query('SELECT * FROM orders ORDER BY created_at DESC');
+            result = await db.query('SELECT * FROM orders ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
         } else {
-            result = await db.query('SELECT * FROM orders WHERE user_email = $1 ORDER BY created_at DESC', [email]);
+            result = await db.query('SELECT * FROM orders WHERE user_email = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3', [email, limit, offset]);
         }
 
         const orders = result.rows.map(r => ({

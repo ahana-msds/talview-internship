@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { startOrder, getOrders, getOrderById, signalOrder } from '../controllers/orderController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
-
 const router = Router();
 
 // Protect order creation and listing

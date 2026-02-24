@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email: fbUser.email,
             photoURL: fbUser.photoURL,
             provider: provider,
-            role: fbUser.email === 'admin@talview.com' ? 'admin' : 'user'
+            role: fbUser.email === 'admin@example.com' ? 'admin' : 'user'
         };
     };
 
@@ -192,6 +192,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         sessionStorage.removeItem(GUEST_USER_KEY);
         // 1. Firebase Create
         await createUserWithEmailAndPassword(auth, email, pass);
+        // 🔥 CRITICAL: Immediately sign out from Firebase to prevent auto-login
+        // This ensures the Navbar/state doesn't flicker to "Hi, User" while backend is still working
+        await signOut(auth);
+
         // 2. Backend Register
         try {
             await registerMutation({ email, password: pass }).unwrap();
@@ -199,8 +203,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.error('Backend registration failed:', err);
         }
         console.log("Signing up user:", name);
-        // 3. Sign out immediately after signup (requiring manual login)
-        await signOut(auth);
     };
 
     /**

@@ -42,8 +42,10 @@ export const SignupPage = () => {
 
         try {
             await signupWithEmail(name, email, pass);
+            console.log('Signup successful, navigating to login...');
             navigate('/login');
         } catch (err: any) {
+            console.error('Signup error caught in SignupPage:', err);
             Sentry.captureException(err);
             setError(err.message || 'Failed to create account');
         } finally {

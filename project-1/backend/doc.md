@@ -9,11 +9,15 @@ This project serves as the backbone for a robust e-commerce and task management 
 *   **Contract-First REST API** — All endpoints are designed around the exact response shape the frontend expects, ensuring a seamless transition from mock data to a real Postgres-backed API.
 *   **Config-Driven Product Layer** — ~200 products seeded from DummyJSON into PostgreSQL, exposed via paginated REST endpoints with atomic inventory tracking.
 *   **Server-Side Cart with IndexedDB Fallback** — Cart items are persisted in PostgreSQL per user for cross-device synchronization, with IndexedDB acting as a silent local fallback if the backend is unreachable.
-*   **Durable Order Placement via Temporal** — Order placement runs as a Temporal workflow. It handles stock reservation, status updates, and cleanup atomically. If a server crashes mid-process, Temporal resumes exactly where it left off.
-*   **Atomic Inventory Reservation** — Using PostgreSQL `SELECT ... FOR UPDATE` row-level locking, we prevent race conditions where multiple users try to buy the last item simultaneously. Stock is "held" during checkout and automatically released if not confirmed within 10 minutes.
-*   **GraphQL via Hasura** — Hasura sits on top of PostgreSQL, auto-generating a full GraphQL API with Row-Level Security (RLS) ensuring users only see their own private data.
+
+---
+
+*   **Durable Order Placement via Temporal** — Order placement runs as a Temporal workflow. It handles stock reservation, status updates, and cleanup atomically.
+*   **Atomic Inventory Reservation** — Using PostgreSQL `SELECT ... FOR UPDATE` row-level locking, we prevent race conditions. Stock is "held" during checkout and automatically released if not confirmed.
+*   **Advanced Clean IDs** — All system entities (Orders, Tasks, Users, etc.) use a highly readable, sequential, and descriptive ID convention (e.g., `user-1-test`, `list-1-shopping`).
+*   **GraphQL via Hasura** — Hasura sits on top of PostgreSQL, auto-generating a full GraphQL API. String IDs facilitate easier debugging and exploration.
 *   **Modular Monolith Architecture** — Clean separation between routes, activities, and workflows. Each module is self-contained and ready to be scaled independently.
-*   **Dockerized Infrastructure** — The entire stack (Postgres, Hasura, Temporal, Express) is orchestrated via Docker Compose for production-parity development environments.
+*   **Dockerized Infrastructure** — The entire stack (Postgres, Hasura, Temporal, Express) is orchestrated via Docker Compose for production-parity.
 
 ---
 
@@ -80,29 +84,29 @@ erDiagram
     TODO_LISTS ||--o{ TODO_PERMISSIONS : "governed_by"
 
     USERS {
-        string email PK
-        string firebase_uid
+        string id PK "e.g. user-1-test"
+        string email UNIQUE
+        string role "admin | user"
+    }
+    ORDERS {
+        string id PK "e.g. order-1-24022026"
+        string workflow_id "e.g. workflow-order-1-..."
+        string status "PENDING | CONFIRMED"
+    }
+    TODO_LISTS {
+        string id PK "e.g. list-1-shopping"
         string name
-        timestamp created_at
     }
     PRODUCTS {
         int id PK
         string title
         int stock
         decimal price
-        string category
     }
     STOCK_RESERVATIONS {
-        string id PK
+        string id PK "e.g. res-1-1"
         string order_id FK
-        int product_id FK
-        string status "HELD | CONFIRMED | RELEASED"
         timestamp expires_at
-    }
-    TODO_PERMISSIONS {
-        string user_id PK
-        string list_id PK
-        string role "owner | editor"
     }
 ```
 
@@ -123,8 +127,12 @@ Access to Todo Lists is governed by a **Role-Based Access Control (RBAC)** syste
 *   **Editor:** Associated with a list via `todo_permissions`. They can add or delete individual tasks but cannot delete the entire list.
 *   **Verification:** Every request to `/api/todo-lists/:id/...` checks the `X-User-Email` header against the `owner_id` or the `todo_permissions` table.
 
-### 3. Graceful Address Changes
-The Temporal workflow can be extended to include a "grace period" signal. Before the order status moves to "Shipped", the workflow can wait for a `change-address` signal. If received within the grace window, the invoice and shipping labels are re-generated automatically.
+### 3. Centralized ID Generation
+The system implements a specialized naming convention to ensure all primary keys are human-readable.
+- **Sequential Counting**: Every entity type keeps a running count (e.g., `list-1`, `list-2`).
+- **Descriptive Suffixes**: Suffixes are added for context (e.g., `list-1-shopping`, `req-1-u-test`).
+- **Implementation**: Handled by `utils/idGenerator.ts`, which atomically queries row counts before insertion.
+
 
 ### 4. Admin Powers & System Oversight 
 The system provides multi-layered administrative control:
@@ -162,10 +170,9 @@ project-1/
 
 ## Open Ends & Future Roadmap
 This is currently a skeleton implementation designed for learning and iteration. Future enhancements include:
-*   **Real Email Integration:** Moving from console logs to SendGrid/SES.
-*   **Payment Gateways:** Integration of Stripe/Razorpay webhooks into Temporal.
-*   **Advanced RLS:** Fine-grained Hasura permissions for sharing specific tasks.
-*   **Refund Workflows:** Automating the inventory return if a user requests a refund after confirmation.
+*   **Real Email Integration**: Moving from console logs to SendGrid/SES.
+*   **Advanced RLS**: Fine-grained Hasura permissions for sharing specific tasks.
+*   **Refund Workflows**: Automating the inventory return if a user requests a refund.
 
 ---
 

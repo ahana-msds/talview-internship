@@ -33,7 +33,17 @@ interface ProductResponse {
  * Custom base query wrapper that reports errors to Sentry.
  * Now points to our own backend (PostgreSQL-backed) instead of DummyJSON directly.
  */
-const baseQuery = fetchBaseQuery({ baseUrl: 'http://localhost:4002/api/' });
+const baseQuery = fetchBaseQuery({
+    baseUrl: 'http://localhost:4002/api/',
+    prepareHeaders: (headers) => {
+        const token = localStorage.getItem('jwt_token');
+        if (token) {
+            headers.set('authorization', `Bearer ${token}`);
+        }
+        return headers;
+    },
+});
+
 const baseQueryWithSentry: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
     args,
     api,
@@ -58,12 +68,18 @@ const baseQueryWithSentry: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const productsApi = createApi({
     reducerPath: 'productsApi',
     baseQuery: baseQueryWithSentry,
+    tagTypes: ['Product'],
     endpoints: (builder) => ({
         getProducts: builder.query<ProductResponse, { limit: number; skip: number }>({
             query: ({ limit, skip }) => `products?limit=${limit}&skip=${skip}`,
+            providesTags: (result) =>
+                result
+                    ? [...result.products.map(({ id }) => ({ type: 'Product' as const, id })), 'Product']
+                    : ['Product'],
         }),
         getProductById: builder.query<Product, string | number>({
             query: (id) => `products/${id}`,
+            providesTags: (_result, _error, id) => [{ type: 'Product', id }],
         }),
         getCategories: builder.query<{ slug: string; name: string; url: string }[], void>({
             query: () => 'products/categories',
@@ -74,6 +90,14 @@ export const productsApi = createApi({
         getProductsByCategory: builder.query<ProductResponse, { category: string; limit: number; skip: number }>({
             query: ({ category, limit, skip }) => `products/category/${category}?limit=${limit}&skip=${skip}`,
         }),
+        updateProductStock: builder.mutation<Product, { id: number | string; stock: number }>({
+            query: ({ id, stock }) => ({
+                url: `products/${id}/stock`,
+                method: 'PUT',
+                body: { stock },
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: 'Product', id }, 'Product'],
+        }),
     }),
 });
 
@@ -83,4 +107,5 @@ export const {
     useGetCategoriesQuery,
     useSearchProductsQuery,
     useGetProductsByCategoryQuery,
+    useUpdateProductStockMutation,
 } = productsApi;

@@ -1,6 +1,6 @@
 describe('Admin Dashboard', () => {
     beforeEach(() => {
-        cy.login('admin@talview.com', 'Admin@123');
+        cy.login('admin@example.com', 'Admin@123');
     });
 
     it('should see all orders in the dashboard', () => {

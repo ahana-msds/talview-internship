@@ -23,6 +23,7 @@ import { OrdersPage } from './pages/OrdersPage';
 // Feature pages wrapped in appropriate route guards
 import AdminDashboard from './pages/AdminDashboard';
 import { GlobalFlagIssue } from './components/GlobalFlagIssue';
+import { TrackOrderPage } from './pages/TrackOrderPage';
 
 /**
  * ProtectedRoute: Wraps components that require authentication.
@@ -41,7 +42,7 @@ const AdminRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.email !== 'admin@talview.com') {
+  if (user.email !== 'admin@example.com') {
     return <Navigate to="/dashboard" replace />;
   }
   return children;
@@ -164,6 +165,14 @@ function App() {
               element={
                 <AuthenticatedRoute>
                   <OrdersPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/track-order/:orderId"
+              element={
+                <AuthenticatedRoute>
+                  <TrackOrderPage />
                 </AuthenticatedRoute>
               }
             />

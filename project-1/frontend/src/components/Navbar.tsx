@@ -2,7 +2,7 @@
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 // Navigation and Styling
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
 // Redux for cart status
 import { useSelector } from 'react-redux';
@@ -22,7 +22,9 @@ import { NavbarCartIcon } from './navbar/NavbarCartIcon';
 export const Navbar = () => {
     const { theme, setTheme } = useTheme();
     const { user, logout } = useAuth();
+    const location = useLocation();
     const navigate = useNavigate();
+    const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
     // Calculate total item count in cart for the badge
     const cartItems = useSelector(selectCartItems);
@@ -39,7 +41,7 @@ export const Navbar = () => {
         <nav className={styles.nav}>
             <NavbarLogo />
             <div className={styles.actions}>
-                {user && (
+                {user && !isAuthPage && (
                     <NavbarUserInfo displayName={user.displayName} />
                 )}
                 <NavbarThemeSelector
@@ -47,10 +49,10 @@ export const Navbar = () => {
                     onThemeChange={(newTheme) => setTheme(newTheme as any)}
                 />
 
-                {user && (
+                {user && !isAuthPage && (
                     <NavbarLogout onLogout={handleLogout} />
                 )}
-                {user && (
+                {user && !isAuthPage && (
                     <NavbarCartIcon
                         count={cartTotal}
                         onClick={() => navigate('/cart')}

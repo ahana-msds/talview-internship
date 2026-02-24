@@ -15,10 +15,13 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@apollo/client": "^4.1.6",
     "@reduxjs/toolkit": "^2.11.2",
     "@sentry/react": "^10.38.0",
     "@sinclair/typebox": "^0.34.48",
     "firebase": "^12.8.0",
+    "graphql": "^16.13.0",
+    "graphql-ws": "^6.0.7",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

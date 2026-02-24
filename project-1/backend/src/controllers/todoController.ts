@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../db.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
+import { getNextId } from '../utils/idGenerator.js';
 
 const LIST_1_ID = 'list-1';
 
@@ -70,20 +71,26 @@ export const createTodoList = async (req: AuthRequest, res: Response) => {
         const { name, users } = req.body;
         const email = req.user?.email || 'unknown';
 
+        // Advanced ID: list-{count}-{slug}
+        const listId = await getNextId('todo_lists', 'list', name);
+
         // Create the list
-        const idResult = await db.query(
-            'INSERT INTO todo_lists (name, owner_id) VALUES ($1, $2) RETURNING id',
-            [name, email]
+        await db.query(
+            'INSERT INTO todo_lists (id, name, owner_id) VALUES ($1, $2, $3)',
+            [listId, name, email]
         );
-        const listId = idResult.rows[0].id;
 
         // Add shared users
         if (users && users.length > 0) {
             for (const u of users) {
                 if (u.email && u.role) {
+                    const userSuffix = u.email.split('@')[0];
+                    const listSuffix = listId.split('-')[1];
+                    const permId = await getNextId('todo_permissions', 'perm', `u-${userSuffix}-l-${listSuffix}`);
+
                     await db.query(
-                        'INSERT INTO todo_permissions (user_id, list_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
-                        [u.email, listId, u.role]
+                        'INSERT INTO todo_permissions (id, user_id, list_id, role) VALUES ($1, $2, $3, $4)',
+                        [permId, u.email, listId, u.role]
                     );
                 }
             }
@@ -125,8 +132,10 @@ export const addTodo = async (req: AuthRequest, res: Response) => {
         }
 
         const { text } = req.body;
-        // Readable ID: TASK-{timestamp}-{random4chars}
-        const todoId = `TASK-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        // Advanced ID: task-{count}-list-{suffix}
+        // Extract list number from listId (e.g. list-1-shopping -> 1)
+        const listSuffix = id.split('-')[1] || 'unknown';
+        const todoId = await getNextId('todos', 'task', `list-${listSuffix}`);
 
         await db.query(
             'INSERT INTO todos (id, text, completed, list_id) VALUES ($1, $2, false, $3)',
@@ -236,9 +245,13 @@ export const shareTodoList = async (req: AuthRequest, res: Response) => {
             return res.status(403).json({ error: 'Only owners or admins can manage sharing' });
         }
 
+        const userSuffix = userId.split('@')[0];
+        const listSuffix = id.split('-')[1];
+        const permId = await getNextId('todo_permissions', 'perm', `u-${userSuffix}-l-${listSuffix}`);
+
         await db.query(
-            'INSERT INTO todo_permissions (user_id, list_id, role) VALUES ($1, $2, $3) ON CONFLICT (user_id, list_id) DO UPDATE SET role = $3',
-            [userId, listId, role || 'editor']
+            'INSERT INTO todo_permissions (id, user_id, list_id, role) VALUES ($1, $2, $3, $4)',
+            [permId, userId, id, role || 'editor']
         );
         res.json({ success: true });
     } catch (err: any) {
