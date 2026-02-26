@@ -4,7 +4,7 @@
     justify-content: center;
     padding: 2rem;
     min-height: 150px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.3s;
     text-decoration: none;
     color: inherit;
 }
