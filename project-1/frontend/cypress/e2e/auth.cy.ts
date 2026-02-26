@@ -1,8 +1,8 @@
 describe('Authentication Flow', () => {
     it('should login an existing user', () => {
         cy.visit('/login');
-        cy.get('input[name="email"]').type('ahana@talview.com');
-        cy.get('input[name="password"]').type('Ahana@123');
+        cy.get('input[type="email"]').type('ahana@talview.com');
+        cy.get('input[type="password"]').type('Ahana@123');
         cy.get('button[type="submit"]').click();
 
         // Should redirect to dashboard/home

@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS stock_reservations (
 
 -- Seed users (Default Admin)
 INSERT INTO users (id, email, password_hash, role) 
-VALUES ('user-0-admin', 'admin@example.com', 'admin123', 'admin')
+VALUES ('user-0-admin', 'admin@example.com', 'Admin123', 'admin')
 ON CONFLICT (id) DO NOTHING;
 
 -- Default "General Tasks" list (accessible to everyone)

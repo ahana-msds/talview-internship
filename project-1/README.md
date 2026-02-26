@@ -8,7 +8,6 @@ A comprehensive Full-Stack application demonstrating modern web development prac
 *   **Durable Workflows**: Temporal.io
 *   **Monitoring**: Sentry
 
-## 🚀 Recent Major Updates
 
 
 ### 2. Advanced Clean IDs
