@@ -23,7 +23,7 @@ const Cart = () => {
                 <>
                     <ul style={{ listStyle: 'none', padding: 0 }}>
                         {items.map((item) => (
-                            <li key={item.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+                            <li key={item.id} className="cart-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
                                 {/* Item thumbnail and basic info */}
                                 <img src={item.thumbnail} alt={item.title} style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '10px' }} />
                                 <div style={{ flexGrow: 1 }}>

@@ -197,6 +197,7 @@ export const TodoList = () => {
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div className={styles.listSelector} style={{ flex: 1, marginBottom: 0, minWidth: '200px' }}>
                         <select
+                            data-testid="list-selector"
                             value={selectedListId || ''}
                             onChange={(e) => setSelectedListId(e.target.value)}
                             className="input"
@@ -357,7 +358,7 @@ export const TodoList = () => {
                             disabled={!canEdit}
                             style={{ flex: 1 }}
                         />
-                        <button onClick={handleAddTodo} className="btn" disabled={!canEdit}>ADD</button>
+                        <button data-testid="add-task-button" onClick={handleAddTodo} className="btn" disabled={!canEdit}>ADD</button>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

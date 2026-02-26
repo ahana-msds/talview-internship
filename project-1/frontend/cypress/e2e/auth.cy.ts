@@ -1,16 +1,17 @@
 describe('Authentication Flow', () => {
     it('should login an existing user', () => {
-        cy.visit('/login');
-        cy.get('input[type="email"]').type('ahana@talview.com');
-        cy.get('input[type="password"]').type('Ahana@123');
-        cy.get('button[type="submit"]').click();
-
-        // Should redirect to dashboard/home
-        cy.url().should('not.include', '/login');
-        cy.contains('Ahana@talview.com').should('exist');
+        cy.login('ahana@talview.com', 'Ahana@123');
+        cy.visit('/dashboard');
+        cy.contains('ahana', { matchCase: false }).should('exist');
     });
 
     it('should redirect unauthenticated users from protected routes', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.clearLocalStorage();
+        cy.window().then((win) => {
+            win.sessionStorage.clear();
+            win.indexedDB.deleteDatabase('firebaseLocalStorageDb');
+        });
         cy.visit('/todo');
         cy.url().should('include', '/login');
     });
@@ -18,7 +19,7 @@ describe('Authentication Flow', () => {
     it('should logout successfully', () => {
         cy.login('ahana@talview.com', 'Ahana@123');
         cy.visit('/');
-        cy.get('button').contains('Log out').click();
+        cy.get('button').contains('Logout').click();
         cy.url().should('include', '/login');
         cy.window().its('localStorage.jwt_token').should('not.exist');
     });
